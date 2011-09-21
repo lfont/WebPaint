@@ -1,0 +1,48 @@
+{
+    "%transparent": "Transparent",
+    "%black": "Noir",
+    "%white": "Blanc",
+    "%red": "Rouge",
+    "%blue": "Bleu",
+    "%green": "Vert",
+    "%yellow": "Jaune",
+    "%chocolate": "Chocolat",
+    "%pink": "Rose",
+    "%orange": "Orange",
+    "%violet": "Violet",
+    "%turquoise": "Turquoise",
+
+    "%main.title": "WebPaint",
+    "%main.undoButton": "Défaire",
+    "%main.redoButton": "Refaire",
+    "%main.widthButton": "Epaisseur",
+    "%main.colorButton": "Couleur",
+    "%main.optionButton": "Options",
+
+    "%option.title": "Options",
+    "%option.new": "Nouveau",
+    "%option.clear": "Effacer",
+    "%option.history": "Historique",
+    "%option.language": "Langues",
+    "%option.about": "A propos",
+
+    "%newDrawing.title": "Nouveau",
+
+    "%width.title": "Epaisseur",
+    "%width.sliderLabel": "Epaisseur : ",
+
+    "%color.title": "Couleurs",
+
+    "%history.title": "Historique",
+    "%history.historyLabel": "Historique n°",
+
+    "%language.title": "Langues",
+    "%language.information": "Un rechargement est nécessaire pour la prise en compte des modifications.",
+    "%language.default": "Default",
+    "%language.english": "English",
+    "%language.french": "Français",
+
+    "%about.title": "A propos",
+    "%about.description": "Une application de dessin simple pour appareils tactiles.",
+    "%about.source": "MIT Licensed - Fork me on"
+}

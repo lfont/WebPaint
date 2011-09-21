@@ -1,0 +1,45 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
+@media screen and (orientation: landscape) {
+    html, body {
+        width: 100%;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    html, body {
+        width: 100%;
+    }
+}
+
+[data-role='content'] {
+    text-align: center;
+}
+
+#main [data-role='content'] canvas {
+    border: 1px solid black;
+    background: transparent url('images/background.png') repeat 0 0;
+}
+
+.ui-title-left {
+    margin-left: 15px !important;
+    text-align: left !important;
+}
+
+.webpaint-color {
+    top: 2px;
+    left: -30px;
+    position: relative;
+    float: left;
+    height: 16px;
+    width: 16px;
+}
+
+.webpaint-history-image {
+    background: transparent url('images/background.png') repeat 0 0;
+    height: 115px;
+    width: 115px;
+}

@@ -1,0 +1,245 @@
+<!--
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+-->
+
+<html>
+    <head>
+        <title>WebPaint</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+        <meta charset='utf-8'>
+        <link rel="localizations" href="l10n/index/localizations.json" type="application/vnd.oftn.l10n+json" />
+        <link rel="stylesheet" href="libs/jquery.mobile-1.0b3/jquery.mobile-1.0b3.css" />
+        <link rel="stylesheet" href="themes/index/index.css" />
+        <script src="libs/jquery-1.6.2.js"></script>
+        <script src="libs/jquery.mobile.mvc.js"></script>
+        <script src="libs/l10n.js"></script>
+        <script src="libs/jpeg_encoder_basic.js"></script>
+        <script src="scripts/index.js"></script>
+        <script src="libs/jquery.mobile-1.0b3/jquery.mobile-1.0b3.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="main"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: main, name: pagebeforecreate }">
+            <div data-role="header" data-position="fixed"
+                data-mvc-binding="{ type: object, property: page.$header }">
+                <h1 class="ui-title-left"><%= page.title %></h1>
+                <div class="ui-btn-right">
+                    <a href="" data-role="button" data-icon="back"
+                        data-iconpos="notext" data-theme="b"
+                        data-mvc-command="{ event: vclick, method: undo }"><%= page.undoButton %></a>
+                    <a href="" data-role="button" data-icon="forward"
+                        data-iconpos="notext" data-theme="b"
+                        data-mvc-command="{ event: vclick, method: redo }"><%= page.redoButton %></a>
+                    <a href="#width" data-rel="dialog" data-transition="fade"
+                        data-role="button" data-icon="star" data-iconpos="notext"
+                        data-theme="b"><%= page.widthButton %></a>
+                    <a href="#color" data-rel="dialog" data-transition="fade"
+                        data-role="button" data-icon="gear" data-iconpos="notext"
+                        data-theme="b"><%= page.colorButton %></a>
+                    <a href="#option" data-rel="dialog" data-transition="fade"
+                        data-role="button" data-icon="grid" data-iconpos="notext"
+                        data-theme="b"><%= page.optionButton %></a>
+                </div>
+            </div><!-- /header -->
+
+            <div data-role="content"
+                data-mvc-binding="{ type: object, property: page.$content }">
+                <canvas data-mvc-binding="{ type: object, property: page.$canvas }"
+                    data-mvc-command="{ event: vmousedown, method: draw }"></canvas>
+            </div><!-- /content -->
+        </script>
+
+        <div data-role="page" id="option"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: option, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <ul data-role="listview">
+                    <% for (var i = 0; i < model.options.length; i += 1) { %>
+                        <% var option = model.options[i]; %>
+                        <li><a href="<%= option.link %>"
+                        <% if (option.method) { %>
+                            data-mvc-command="{ event: vclick, method: <%= option.method %> }"
+                            <% if (option.arguments) { %>
+                                data-mvc-command-arguments="<%= option.arguments %>"
+                            <% } %>
+                        <% } %>
+                            data-rel="dialog"><%= option.name %></a></li>
+                    <% } %>
+                </ul>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+
+        <div data-role="page" id="newDrawing"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: newDrawing, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <ul data-role="listview">
+                    <% for (var i = 0; i < model.colors.length; i += 1) { %>
+                        <% var color = model.colors[i]; %>
+                        <li data-mvc-command="{ event: vclick, method: setColor }"
+                            data-mvc-command-arguments="<%= color.code %>">
+                            <img src="themes/index/images/background.png"
+                                alt="<%= color.name %>" class="ui-li-icon" />
+                            <span class="webpaint-color"
+                                style="background-color: <%= color.code %>"></span>
+                            <%= color.name %>
+                        </li>
+                    <% } %>
+                </ul>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+
+        <div data-role="page" id="width"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: width, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <div data-role="fieldcontain"
+                    data-mvc-binding="{ type: object, property: page.$slider }">
+                    <label for="slider"><%= page.sliderLabel %></label>
+                    <input type="range" name="slider" id="slider"
+                        data-track-theme="a" value="1" min="1" max="50" />
+                </div>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+
+        <div data-role="page" id="color"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: color, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b"
+                data-mvc-view-anchor="pagebeforeshow">
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+        <script type="text/html" data-mvc-view="{ page: color, name: pagebeforeshow }">
+            <ul data-role="listview">
+                <% for (var i = 0; i < model.colors.length; i += 1) { %>
+                    <% var color = model.colors[i]; %>
+                    <% if (color.code !== "transparent") { %>
+                        <li data-mvc-command="{ event: vclick, method: setColor }"
+                            data-mvc-command-arguments="<%= color.code %>">
+                            <img src="themes/index/images/background.png"
+                                alt="<%= color.name %>" class="ui-li-icon" />
+                            <span class="webpaint-color"
+                                style="background-color: <%= color.code %>"></span>
+                            <%= color.name %>
+                            <% if (color.code === selectedColorCode) { %>
+                                <span class="ui-li-count">*</span>
+                            <% } %>
+                        </li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </script>
+
+        <div data-role="page" id="history"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: history, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b"
+                data-mvc-view-anchor="pagebeforeshow">
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+        <script type="text/html" data-mvc-view="{ page: history, name: pagebeforeshow }">
+            <ul data-role="listview">
+                <% for (var i = 0; i < model.histories.length; i += 1) { %>
+                    <% var imageDataURL = model.histories[i]; %>
+                    <li data-mvc-command="{ event: vclick, method: setHistoryIndex }"
+                        data-mvc-command-arguments="<%= i %>">
+                        <img src="<%= imageDataURL %>" alt="<%= i %>"
+                            class="webpaint-history-image" />
+                        <%= page.historyLabel + i %>
+                    </li>
+                <% } %>
+            </ul>
+        </script>
+
+        <div data-role="page" id="language"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: language, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <p><%= page.information %></p>
+                <div data-mvc-view-anchor="pagebeforeshow"></div>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+        <script type="text/html" data-mvc-view="{ page: language, name: pagebeforeshow }">
+            <ul data-role="listview">
+                <% for (var i = 0; i < model.languages.length; i += 1) { %>
+                    <% var language = model.languages[i]; %>
+                    <li data-mvc-command="{ event: vclick, method: setLanguage }"
+                        data-mvc-command-arguments="<%= language.code %>">
+                        <img src="themes/index/images/<%= language.code %>.png"
+                            alt="<%= language.name %>" class="ui-li-icon" />
+                        <%= language.name %>
+                        <% if (language.code === selectedLanguageCode) { %>
+                            <span class="ui-li-count">*</span>
+                        <% } %>
+                    </li>
+                <% } %>
+            </ul>
+        </script>
+
+        <div data-role="page" id="about"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: about, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= page.title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <h2><%= page.version %></h2>
+                <p>
+                    <%= page.description %>
+                </p>
+                <p>
+                    <%= page.source %>&nbsp;
+                    <a href="http://github.com/lfont/WebPaint" target="_blank">github</a><br />
+                    &copy; 2011 Loïc Fontaine
+                </p>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+    </body>
+</html>
