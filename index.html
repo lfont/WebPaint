@@ -14,7 +14,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <script src="libs/jquery-1.6.2.js"></script>
         <script src="libs/jquery.mobile.mvc.js"></script>
         <script src="libs/l10n.js"></script>
-        <script src="libs/jpeg_encoder_basic.js"></script>
+        <script src="scripts/drawing.js"></script>
+        <script src="scripts/drawing.event.js"></script>
         <script src="scripts/index.js"></script>
         <script src="libs/jquery.mobile-1.0b3/jquery.mobile-1.0b3.js"></script>
     </head>
@@ -22,7 +23,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="main"></div><!-- /page -->
         <script type="text/html" data-mvc-view="{ page: main, name: pagebeforecreate }">
             <div data-role="header" data-position="fixed"
-                data-mvc-binding="{ type: object, property: page.$header }">
+                data-mvc-binding="{ type: object, property: page.header }">
                 <h1 class="ui-title-left"><%= page.title %></h1>
                 <div class="ui-btn-right">
                     <a href="" data-role="button" data-icon="back"
@@ -44,9 +45,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /header -->
 
             <div data-role="content"
-                data-mvc-binding="{ type: object, property: page.$content }">
-                <canvas data-mvc-binding="{ type: object, property: page.$canvas }"
-                    data-mvc-command="{ event: vmousedown, method: draw }"></canvas>
+                data-mvc-binding="{ type: object, property: page.content }">
+                <canvas data-mvc-binding="{ type: object, property: page.canvas }"</canvas>
             </div><!-- /content -->
         </script>
 
@@ -64,7 +64,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         <% if (option.method) { %>
                             data-mvc-command="{ event: vclick, method: <%= option.method %> }"
                             <% if (option.arguments) { %>
-                                data-mvc-command-arguments="<%= option.arguments %>"
+                                data-mvc-command-arguments="<%= option.methodArguments %>"
                             <% } %>
                         <% } %>
                             data-rel="dialog"><%= option.name %></a></li>
@@ -112,7 +112,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
             <div data-role="content" data-theme="b">
                 <div data-role="fieldcontain"
-                    data-mvc-binding="{ type: object, property: page.$slider }">
+                    data-mvc-binding="{ type: object, property: page.slider }">
                     <label for="slider"><%= page.sliderLabel %></label>
                     <input type="range" name="slider" id="slider"
                         data-track-theme="a" value="1" min="1" max="50" />

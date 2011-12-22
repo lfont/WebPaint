@@ -3,8 +3,8 @@ Simple MVC library for jQuery Mobile
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-"use strict";
 (function (window) {
+    "use strict";
     var VIEW_ATTRIBUTE = "data-mvc-view",
         VIEW_ANCHOR_ATTRIBUTE = "data-mvc-view-anchor",
         COMMAND_ATTRIBUTE = "data-mvc-command",
@@ -67,8 +67,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                 .replace(/\t=(.*?)%>/g, "',$1,'")
                                 .split("\t").join("');")
                                 .split("%>").join("p.push('")
-                                .split("\r").join("\\'")
-                            + "');}return p.join('');");
+                                .split("\r").join("\\'") +
+                            "');}return p.join('');");
 
                     // Provide some basic currying to the user
                     return data ? fn( data ) : fn;
@@ -253,7 +253,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         $page,
                         controller,
                         eventIndex,
-                        eventArguments = {},
+                        mvcData,
                         renderViewCallback,
                         // Set the application's options to the defaults.
                         options = $.extend({}, defaultOptions, appOptions);
@@ -282,8 +282,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                             return function (event) {
                                                 // Initialize the shared object so
                                                 // page*show have a fresh reference to deals with.
-                                                eventArguments = {};
-                                                event.arguments = eventArguments;
+                                                mvcData = {};
+                                                event.mvcData = mvcData;
                                                 property.entryPoint[property.name](event, callback);
                                             };
                                         } else if (command.event === "pagebeforeshow" ||
@@ -291,7 +291,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                             return function (event) {
                                                 // Pass the shared objet that has been
                                                 // initialized by the page*hide event.
-                                                event.arguments = eventArguments;
+                                                event.mvcData = mvcData;
                                                 property.entryPoint[property.name](event, callback);
                                             };
                                         } else {

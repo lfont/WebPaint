@@ -85,7 +85,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 canvas: function () {
                     return canvas;
                 },
-                histories: function () {
+                histories: function (histo) {
+                    if (histo) {
+                        histories = histo;
+                        if (historyIndex >= histories.length) {
+                            historyIndex = histories.length - 1;
+                        }
+                    }
+                    
                     return histories;
                 },
                 properties: function (props) {
@@ -108,7 +115,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                      clearCanvas(canvas, context, backgroundColor);
                 },
                 history: function (index) {
-                    if (index || index === 0) {
+                    if ((index || index === 0) && index < histories.length) {
                         historyIndex = index;
                         clearCanvas(canvas, context, backgroundColor);
                         restoreContextImage(context, histories[index]);
@@ -123,7 +130,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     histories.push(canvas.toDataURL());
                     historyIndex = (histories.length - 1);
                 },
-                init: function (backgroundColor) {
+                init: function () {
                     clearCanvas(canvas, context, backgroundColor);
                     histories = [];
                     this.store();
