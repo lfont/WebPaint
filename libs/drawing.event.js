@@ -45,6 +45,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     shapeDrawer.begin(getPosition(event, offset));
                     
                     handlers.move = function (event) {
+                        event.stopPropagation();
                         shapeDrawer.update(getPosition(event, offset));
                     };
                     
