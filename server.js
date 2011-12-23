@@ -3,13 +3,13 @@ var http = require('http'),
     path = require('path'),
     fs = require('fs'),
     mime = require('mime'),
-    dir = '',
-    host = '0.0.0.0',
+    dir = 'app',
+    host = '127.0.0.1',
     port = process.env.PORT;
     
 process.argv.forEach(function (val) {
     var arg = val.split('=');
-    
+
     switch (arg[0]) {
         case 'dir':
             dir = arg[1];
