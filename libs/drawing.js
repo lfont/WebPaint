@@ -70,6 +70,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 this.history(history + 1);
             }
         },
+        saveAs = function () {
+            window.location.href = this.canvas().toDataURL()
+                .replace('image/png', 'image/octet-stream');
+        },
         canvasDrawerBuilder = function (canvas, options) {
             var context = canvas.getContext('2d'),
                 opts = $.extend({}, defaultOptions, options),
@@ -81,6 +85,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 shapeDrawer: shapeDrawer,
                 undo: undo,
                 redo: redo,
+                saveAs: saveAs,
                 canvas: function () {
                     return canvas;
                 },

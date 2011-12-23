@@ -21,7 +21,7 @@
 
     "%option.title": "Options",
     "%option.new": "Nouveau",
-    "%option.saveAs": "Sauver Sous...",
+    "%option.saveAs": "Enregistrer Sous...",
     "%option.clear": "Effacer",
     "%option.history": "Historique",
     "%option.language": "Langues",

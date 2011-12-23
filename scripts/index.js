@@ -213,6 +213,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         }
                         drawer.init();
                     },
+                    saveAs: function () {
+                        drawer.saveAs();
+                    },
                     setLineWidth: function (width) {
                         drawer.properties({
                             lineWidth: width
@@ -256,6 +259,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         this.model.options = [{
                             link: '#newDrawing',
                             name: l('%option.new')
+                        }, {
+                            link: '#',
+                            method: {
+                                name: 'callMethod',
+                                args: 'saveAs'
+                            },            
+                            name: l('%option.saveAs')
                         }, {
                             link: '#',
                             method: {
