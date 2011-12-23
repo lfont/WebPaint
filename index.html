@@ -14,8 +14,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <script src="libs/jquery-1.6.2.js"></script>
         <script src="libs/jquery.mobile.mvc.js"></script>
         <script src="libs/l10n.js"></script>
-        <script src="scripts/drawing.js"></script>
-        <script src="scripts/drawing.event.js"></script>
+        <script src="libs/drawing.js"></script>
+        <script src="libs/drawing.event.js"></script>
         <script src="scripts/index.js"></script>
         <script src="libs/jquery.mobile-1.0b3/jquery.mobile-1.0b3.js"></script>
     </head>
@@ -62,9 +62,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         <% var option = model.options[i]; %>
                         <li><a href="<%= option.link %>"
                         <% if (option.method) { %>
-                            data-mvc-command="{ event: vclick, method: <%= option.method %> }"
-                            <% if (option.arguments) { %>
-                                data-mvc-command-arguments="<%= option.methodArguments %>"
+                            data-mvc-command="{ event: vclick, method: <%= option.method.name %> }"
+                            <% if (option.method.args) { %>
+                                data-mvc-command-arguments="<%= option.method.args %>"
                             <% } %>
                         <% } %>
                             data-rel="dialog"><%= option.name %></a></li>
@@ -150,7 +150,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             <span class="webpaint-color"
                                 style="background-color: <%= color.code %>"></span>
                             <%= color.name %>
-                            <% if (color.code === selectedColorCode) { %>
+                            <% if (color.code === model.color) { %>
                                 <span class="ui-li-count">*</span>
                             <% } %>
                         </li>
@@ -182,6 +182,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         <img src="<%= imageDataURL %>" alt="<%= i %>"
                             class="webpaint-history-image" />
                         <%= page.historyLabel + i %>
+                        <% if (i === model.history) { %>
+                            <span class="ui-li-count">*</span>
+                        <% } %>
                     </li>
                 <% } %>
             </ul>
@@ -211,7 +214,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         <img src="themes/index/images/<%= language.code %>.png"
                             alt="<%= language.name %>" class="ui-li-icon" />
                         <%= language.name %>
-                        <% if (language.code === selectedLanguageCode) { %>
+                        <% if (language.code === model.locale) { %>
                             <span class="ui-li-count">*</span>
                         <% } %>
                     </li>
@@ -231,8 +234,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     <%= page.description %>
                 </p>
                 <p>
+                    <%= page.follow %>&nbsp;
+                    <a href="http://twitter.com/loic_fontaine" target="_blank">Twitter</a>
+                </p>
+                <p>
                     <%= page.source %>&nbsp;
-                    <a href="http://github.com/lfont/WebPaint" target="_blank">github</a><br />
+                    <a href="http://github.com/lfont/WebPaint" target="_blank">github</a>
+                    <br />
                     &copy; 2011 Loïc Fontaine
                 </p>
             </div><!-- /content -->

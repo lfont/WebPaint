@@ -6,50 +6,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 (function (mvc, drawing, $) {
     'use strict';
     var colors,
-        // settings
-        SETTINGS_STORAGE_KEY = 'settings',
-        settings = {},
-        loadSettings = function () {
-            var settingsString = localStorage.getItem(SETTINGS_STORAGE_KEY),
-                defaultSettings = {
-                    locale: '',
-                    drawer = {
-                        shape: 'pencil',
-                        properties = {
-                            backgroundColor: 'transparent',
-                            strokeStyle: '#000000',
-                            fillStyle: '#000000',
-                            lineWidth: 1,
-                            lineCap: 'round'
-                        },
-                        histories: []
-                    }
-                },
-                userSettings;
-
-            if (settingsString) {
-                try {
-                    userSettings = JSON.parse(settingsString);
-                    $.extend(settings, defaultSettings, userSettings);
-                    return;
-                } catch (error) {
-                    console.error(error.message);
-                }
-            }
-
-            settings = defaultSettings;
-        },
-        storeSettings = function () {
-            localStorage.setItem(SETTINGS_STORAGE_KEY,
-                JSON.stringify(settings));
-        },
-        // translation
+        // localization
         l = function (string) {
             return string.toLocaleString();
         },
+        // navigation
+        goToPage = function (name) {
+            $.mobile.changePage(name, {
+                transition: 'fade',
+                reverse: true
+            });
+        },
         // application
         webPaint = mvc.application({
-            // main page
             main: (function () {
                 var isInitialized = false,
                     drawer,
@@ -60,6 +29,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         this.page.widthButton = l('%main.widthButton');
                         this.page.colorButton = l('%main.colorButton');
                         this.page.optionButton = l('%main.optionButton');
+                        
                         colors = [{
                             code: 'transparent',
                             name: l('%transparent')
@@ -98,15 +68,53 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             name: l('%yellow')
                         }];
                     },
+                    // settings
+                    SETTINGS_STORAGE_KEY = 'settings',
+                    settings = {},
+                    loadSettings = function () {
+                        var settingsString = localStorage
+                                .getItem(SETTINGS_STORAGE_KEY),
+                            defaultSettings = {
+                                locale: '',
+                                drawer: {
+                                    shape: 'pencil',
+                                    properties: {
+                                        backgroundColor: 'transparent',
+                                        strokeStyle: '#000000',
+                                        fillStyle: '#000000',
+                                        lineWidth: 1,
+                                        lineCap: 'round'
+                                    },
+                                    histories: [],
+                                    historicSize: 10,
+                                    history: 0
+                                }
+                            },
+                            userSettings;
+                        if (settingsString) {
+                            try {
+                                userSettings = JSON.parse(settingsString);
+                                $.extend(settings, defaultSettings,
+                                    userSettings);
+                                return;
+                            }
+                            catch (error) {
+                                console.error(error.message);
+                            }
+                        }
+                        settings = defaultSettings;
+                    },
+                    storeSettings = function () {
+                        localStorage.setItem(SETTINGS_STORAGE_KEY,
+                            JSON.stringify(settings));
+                    },
+                    // geometry
                     fixContentGeometry = function () {
-                        /* Calculate the geometry that our content area 
-                        should take */
                         var contentHeight = $(window).height() -
                             this.page.header.outerHeight() -
-                                (this.page.footer &&
-                                    this.page.footer.outerHeight() || 0);
-
-                        /* Trim margin/border/padding height */
+                            (this.page.footer &&
+                                this.page.footer.outerHeight() || 0);
+                                
                         contentHeight -= (this.page.content.outerHeight() -
                             this.page.content.height());
                         this.page.content.height(contentHeight);
@@ -121,7 +129,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             (this.page.canvas.outerWidth() -
                                 this.page.canvas.width()));
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: '',
@@ -136,17 +144,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     pagebeforecreate: function (event, callback) {
                         loadSettings();
-        
                         if (settings.locale) {
                             String.locale = settings.locale;
                         }
-    
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event) {
                         if (!drawer) {
-                            drawer = drawing.canvasDrawer(this.page.canvas[0]);
+                            drawer = drawing.canvasDrawer(this.page.canvas[0], {
+                                historicSize: settings.drawer.historicSize    
+                            });
                             drawer.properties(settings.drawer.properties);
                             drawer.histories(settings.drawer.histories);
                             drawing.canvasDrawerEventWrapper(drawer, {
@@ -156,19 +164,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                     move: 'vmousemove'
                                 }
                             });
-                                
-                            if (settings.drawer.histories().length) {
-                                this.setHistory(drawer.histories().length - 1);
-                            } else {
+                            
+                            if (settings.drawer.histories.length) {
+                                this.setHistory(settings.drawer.history);
+                            }
+                            else {
                                 this.newDrawing();
                             }
                             
                             this.setShape(settings.drawer.shape);
                         }
-
+                        
                         if (event.mvcData.method) {
-                            this[event.mvcData.method].apply(this,
-                                event.mvcData.methodArguments);
+                            this[event.mvcData.method.name].apply(this,
+                                event.mvcData.method.args);
                         }
                     },
                     pageshow: function () {
@@ -179,12 +188,18 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         }
                     },
                     pagebeforehide: function (event) {
-                        event.mvcData.drawerProperties = drawer.properties();
-                        event.mvcData.drawerHistories = drawer.histories();
+                        event.mvcData.locale = settings.locale;
+                        event.mvcData.drawer = {
+                            properties: drawer.properties(),
+                            histories: drawer.histories(),
+                            history: drawer.history()
+                        };
                     },
                     unload: function () {
+                        console.log('Unloading WebPaint...');
                         settings.drawer.properties = drawer.properties();
                         settings.drawer.histories = drawer.histories();
+                        settings.drawer.history = drawer.history();
                         storeSettings();
                     },
                     clear: function () {
@@ -206,7 +221,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     setStyle: function (style) {
                         drawer.properties({
                             strokeStyle: style,
-                            fillStyle: style       
+                            fillStyle: style
                         });
                     },
                     setHistory: function (index) {
@@ -215,6 +230,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     setShape: function (kind) {
                         settings.drawer.shape = kind;
                         drawer.eventShapeDrawer(kind);
+                    },
+                    setLocale: function (locale) {
+                        settings.locale = locale;
+                        window.location.reload();
                     },
                     undo: function (event) {
                         event.preventDefault();
@@ -228,39 +247,34 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     }
                 });
             }()),
-            // option page
+            // option controller
             option: (function () {
-                var mainMethod,
+                var mvcData,
+                    methodName,
                     translate = function () {
                         this.page.title = l('%option.title');
                         this.model.options = [{
                             link: '#newDrawing',
-                            method: '',
-                            methodArguments: '',
                             name: l('%option.new')
                         }, {
-                            link: '',
-                            method: 'callMainMethod',
-                            methodArguments: 'clear',
+                            link: '#',
+                            method: {
+                                name: 'callMethod',
+                                args: 'clear'
+                            },                            
                             name: l('%option.clear')
                         }, {
                             link: '#history',
-                            method: '',
-                            methodArguments: '',
                             name: l('%option.history')
                         }, {
                             link: '#language',
-                            method: '',
-                            methodArguments: '',
                             name: l('%option.language')
                         }, {
                             link: '#about',
-                            method: '',
-                            methodArguments: '',
                             name: l('%option.about')
                         }];
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: ''
@@ -273,26 +287,34 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event) {
-                        mainMethod = null;
-                    },
-                    pagebeforehide: function (event) {
-                        if (mainMethod) {
-                            event.mvcData.method = mainMethod;
+                        methodName = null;
+                        if (event.mvcData.locale || 
+                            event.mvcData.drawer) {
+                            mvcData = event.mvcData;
                         }
                     },
-                    callMainMethod: function (event, callback, method) {
-                        mainMethod = method;
-                        window.history.back();
+                    pagebeforehide: function (event) {
+                        event.mvcData.locale = mvcData.locale;
+                        event.mvcData.drawer = mvcData.drawer;
+                        if (methodName) {
+                            event.mvcData.method = {
+                                name: methodName
+                            };
+                        }
+                    },
+                    callMethod: function (event, callback, name) {
+                        methodName = name;
+                        goToPage('#main');
                     }
                 });
             }()),
-            // newDrawing page
+            // newDrawing controller
             newDrawing: (function () {
                 var color,
                     translate = function () {
                         this.page.title = l('%newDrawing.title');
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: ''
@@ -310,22 +332,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     pagebeforehide: function (event) {
                         if (color) {
-                            event.mvcData.method = 'newDrawing';
-                            event.mvcData.methodArguments = [
-                                color
-                            ];
+                            event.mvcData.method = {
+                                name: 'newDrawing',
+                                args: [
+                                    color
+                                ]
+                            };
                         }
                     },
                     setColor: function (event, callback, colorCode) {
                         color = colorCode;
-                        $.mobile.changePage('#main', { 
-                            transition: 'fade',
-                            reverse: true
-                        });
+                        goToPage('#main');
                     }
                 });
             }()),
-            // width page
+            // width controller
             width: (function () {
                 var width,
                     range,
@@ -333,7 +354,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         this.page.title = l('%width.title');
                         this.page.sliderLabel = l('%width.sliderLabel');
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: '',
@@ -344,81 +365,85 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
-                    pagebeforeshow: function (event, callback) {
-                        width = event.mvcData.drawerProperties.lineWidth;
+                    pagebeforeshow: function (event) {
+                        width = event.mvcData.drawer.properties.lineWidth;
                         if (!range) {
                             range = this.page.slider
-                                             .find('input[data-type="range"]');
+                                .find('input[data-type="range"]');
                         }
                     },
                     pageshow: function () {
-                        range.val(width)
-                             .slider('refresh');
+                        range.val(width).slider('refresh');
                     },
                     pagebeforehide: function (event) {
-                        event.mvcData.method = 'setLineWidth';
-                        event.mvcData.methodArguments = [
-                            range.val()
-                        ];
+                        event.mvcData.method = {
+                            name: 'setLineWidth',
+                            args: [
+                                range.val()
+                            ]
+                        };
                     }
                 });
             }()),
-            // color page
+            // color controller
             color: (function () {
-                var color,
+                var colorCode,
                     translate = function () {
                         this.page.title = l('%color.title');
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: ''
                     },
                     model: {
-                        colors: null
+                        colors: null,
+                        color: ''
                     },
-                    selectedColorCode: '',
                     pagebeforecreate: function (event, callback) {
                         this.model.colors = colors;
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event, callback) {
-                        color = null;
-                        this.selectedColorCode =
-                            event.mvcData.drawerProperties.strokeStyle;
+                        colorCode = null;
+                        this.model.color = event.mvcData.drawer
+                            .properties.strokeStyle;
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
                     pagebeforehide: function (event) {
-                        if (color) {
-                            event.mvcData.method = 'setStyle';
-                            event.mvcData.methodArguments = [
-                                color
-                            ];
+                        if (colorCode) {
+                            event.mvcData.method = {
+                                name: 'setStyle',
+                                args: [
+                                    colorCode
+                                ]
+                            };
                         }
                     },
-                    setColor: function (event, callback, colorCode) {
-                        color = colorCode;
-                        window.history.back();
+                    setColor: function (event, callback, code) {
+                        colorCode = code;
+                        goToPage('#main');
                     }
                 });
             }()),
-            // history page
+            // history controller
             history: (function () {
                 var historyIndex,
                     translate = function () {
                         this.page.title = l('%history.title');
                         this.page.historyLabel = l('%history.historyLabel');
                     };
-
+                    
                 return mvc.controller({
                     page: {
                         title: '',
                         historyLabel: ''
                     },
                     model: {
-                        histories: []
+                        histories: [],
+                        history: 0
                     },
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
@@ -426,84 +451,99 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     pagebeforeshow: function (event, callback) {
                         historyIndex = null;
-                        this.model.histories = event.mvcData.drawerHistories;
+                        this.model.histories = event.mvcData.drawer.histories;
+                        this.model.history = event.mvcData.drawer.history;
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
                     pagebeforehide: function (event) {
                         if (historyIndex !== null) {
-                            event.mvcData.method = 'setHistory';
-                            event.mvcData.methodArguments = [
-                                historyIndex
-                            ];
+                            event.mvcData.method = {
+                                name: 'setHistory',
+                                args: [
+                                    historyIndex
+                                ]
+                            };
                         }
                     },
                     setHistoryIndex: function (event, callback, index) {
-                        historyIndex = index;
-                        $.mobile.changePage('#main', {
-                            transition: 'fade',
-                            reverse: true
-                        });
+                        historyIndex = parseInt(index, 10);
+                        goToPage('#main');
                     }
                 });
             }()),
-            // language page
+            // language controller
             language: (function () {
-                var translate = function () {
-                    this.page.title = l('%language.title');
-                    this.page.information = l('%language.information');
-                    this.model.languages = [{
-                        code: 'xx-XX',
-                        name: l('%language.default')
-                    }, {
-                        code: 'en-US',
-                        name: l('%language.english')
-                    }, {
-                        code: 'fr-FR',
-                        name: l('%language.french')
-                    }];
-                };
-
+                var locale,
+                    DEFAULT_LOCALE = 'xx-XX',
+                    translate = function () {
+                        this.page.title = l('%language.title');
+                        this.page.information = l('%language.information');
+                        this.model.languages = [{
+                            code: DEFAULT_LOCALE,
+                            name: l('%language.default')
+                        }, {
+                            code: 'en-US',
+                            name: l('%language.english')
+                        }, {
+                            code: 'fr-FR',
+                            name: l('%language.french')
+                        }];
+                    };
+                    
                 return mvc.controller({
                     page: {
                         title: '',
                         information: ''
                     },
                     model: {
-                        languages: null
+                        languages: null,
+                        locale: ''
                     },
-                    selectedLanguageCode: '',
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event, callback) {
-                        this.selectedLanguageCode = (settings.locale === '') ?
-                            "xx-XX" : 
-                            settings.locale;
+                        locale = null;
+                        this.model.locale =
+                            (event.mvcData.locale === '') ?
+                                DEFAULT_LOCALE :
+                                event.mvcData.locale;
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
-                    setLanguage: function (event, callback, languageCode) {
-                        settings.locale = (languageCode === 'xx-XX') ?
-                            '' : 
-                            languageCode;
-                        window.history.back();
+                    pagebeforehide: function (event) {
+                        if (locale !== null) {
+                            event.mvcData.method = {
+                                name: 'setLocale',
+                                args: [
+                                    locale
+                                ]
+                            };
+                        }
+                    },
+                    setLanguage: function (event, callback, code) {
+                        locale = (code === DEFAULT_LOCALE) ?
+                            '' :
+                            code;
+                        goToPage('#main');
                     }
                 });
             }()),
-            // about page
+            // about controller
             about: (function () {
                 var translate = function () {
-                    this.page.title = l('%about.title');
-                    this.page.description = l('%about.description');
-                    this.page.source = l('%about.source');
-                };
-
+                        this.page.title = l('%about.title');
+                        this.page.description = l('%about.description');
+                        this.page.source = l('%about.source');
+                        this.page.follow = l('%about.follow');
+                    };
+                    
                 return mvc.controller({
                     page: {
                         title: '',
-                        version: 'WebPaint 0.2.0',
+                        version: 'WebPaint 0.1.5',
                         description: '',
                         source: ''
                     },
@@ -514,16 +554,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 });
             }())
         });
-            
+        
     $(function () {
+        $(window).unload(webPaint.controllers.main.unload);
+        
         webPaint.start({
             pageEvents: [
                 'pagebeforecreate',
                 'pagecreate',
                 'pagebeforeshow',
                 'pageshow',
-                'pagebeforehide',
-                'unload'
+                'pagebeforehide'
             ]
         });
     });

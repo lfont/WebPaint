@@ -253,15 +253,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         $page,
                         controller,
                         eventIndex,
-                        mvcData,
+                        mvcData = {},
                         renderViewCallback,
                         // Set the application's options to the defaults.
                         options = $.extend({}, defaultOptions, appOptions);
 
-                    for (pageId in this.mapping) {
-                        if (this.mapping.hasOwnProperty(pageId)) {
+                    for (pageId in this.controllers) {
+                        if (this.controllers.hasOwnProperty(pageId)) {
                             $page = $("#" + pageId);
-                            controller = this.mapping[pageId];
+                            controller = this.controllers[pageId];
                             renderViewCallback = createRenderViewCallback(controller, $page);
                             for (eventIndex = 0; eventIndex < options.pageEvents.length;
                                 eventIndex += 1) {
@@ -306,9 +306,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     }
                 };
 
-            return function (mapping) {
+            return function (controllers) {
                 return {
-                    mapping: mapping,
+                    controllers: controllers,
                     start: start
                 };
             };

@@ -36,12 +36,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             canvasDrawer.eventShapeDrawer = function (kind) {
                 var shapeDrawer = this.shapeDrawer(kind),
-                    offset = canvas.offset();
-            
+                    offset;
+                    
                 canvas.unbind(opts.events.down, handlers.down);
-                body.unbind(opts.events.up, handlers.up);
         
                 handlers.down = function (event) {
+                    offset = canvas.offset();
                     shapeDrawer.begin(getPosition(event, offset));
                     
                     handlers.move = function (event) {
@@ -51,6 +51,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     handlers.up = function () {
                         shapeDrawer.end();
                         canvas.unbind(opts.events.move, handlers.move);
+                        body.unbind(opts.events.up, handlers.up);
                     };
                     
                     body.bind(opts.events.up, handlers.up);

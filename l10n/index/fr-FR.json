@@ -21,6 +21,7 @@
 
     "%option.title": "Options",
     "%option.new": "Nouveau",
+    "%option.saveAs": "Sauver Sous...",
     "%option.clear": "Effacer",
     "%option.history": "Historique",
     "%option.language": "Langues",
@@ -37,12 +38,13 @@
     "%history.historyLabel": "Historique n°",
 
     "%language.title": "Langues",
-    "%language.information": "Un rechargement est nécessaire pour la prise en compte des modifications.",
+    "%language.information": "Un rechargement de l'application sera éffectué pour prendre en compte les modifications.",
     "%language.default": "Default",
     "%language.english": "English",
     "%language.french": "Français",
 
     "%about.title": "A propos",
-    "%about.description": "Une application de dessin simple pour appareils tactiles.",
-    "%about.source": "MIT Licensed - Fork me on"
+    "%about.description": "Une application de dessin simple pour le fun.",
+    "%about.source": "MIT Licensed - Fork me on",
+    "%about.follow": "Follow me on"
 }

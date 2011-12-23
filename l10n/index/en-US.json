@@ -21,6 +21,7 @@
 
     "%option.title": "Options",
     "%option.new": "New",
+    "%option.saveAs": "Save As...",
     "%option.clear": "Clear",
     "%option.history": "History",
     "%option.language": "Languages",
@@ -37,12 +38,13 @@
     "%history.historyLabel": "History #",
 
     "%language.title": "Languages",
-    "%language.information": "A refresh is required for consideration of amendments.",
+    "%language.information": "Reloading of the application will be made to reflect the changes.",
     "%language.default": "Default",
     "%language.english": "English",
     "%language.french": "Français",
 
     "%about.title": "About",
-    "%about.description": "A simple drawing application for touch devices.",
-    "%about.source": "MIT Licensed - Fork me on"
+    "%about.description": "A simple drawing application for fun.",
+    "%about.source": "MIT Licensed - Fork me on",
+    "%about.follow": "Follow me on"
 }

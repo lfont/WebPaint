@@ -7,7 +7,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     'use strict';
     var $ = window.jQuery,
         defaultOptions = {
-            historicSize: 10
+            historicSize: 100
         },
         restoreContextImage = function (context, imageDataURL) {
             var image = new Image();
@@ -49,9 +49,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.fillStyle = fillStyle;
         },
-        clearCanvas = function (canvas, context, backgroundColor) {
+        clearCanvas = function (canvas) {  
             canvas.width = canvas.width;
-            drawCanvasBackground(canvas, context, backgroundColor);
         },
         // canvasBuilder
         shapeDrawer = function (kind) {
@@ -88,7 +87,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 histories: function (histo) {
                     if (histo) {
                         histories = histo;
-                        if (historyIndex >= histories.length) {
+                        if (historyIndex > histories.length - 1) {
                             historyIndex = histories.length - 1;
                         }
                     }
@@ -111,13 +110,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                     return drawerProperties;
                 },
-                clear: function () {
-                     clearCanvas(canvas, context, backgroundColor);
-                },
                 history: function (index) {
-                    if ((index || index === 0) && index < histories.length) {
+                    if (index || index === 0) {
                         historyIndex = index;
-                        clearCanvas(canvas, context, backgroundColor);
+                        clearCanvas(canvas);
                         restoreContextImage(context, histories[index]);
                     }
                     
@@ -130,9 +126,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     histories.push(canvas.toDataURL());
                     historyIndex = (histories.length - 1);
                 },
+                clear: function () {
+                    clearCanvas(canvas);
+                    drawCanvasBackground(canvas, context, backgroundColor);
+                },
                 init: function () {
-                    clearCanvas(canvas, context, backgroundColor);
                     histories = [];
+                    this.clear();
                     this.store();
                 }
             };
