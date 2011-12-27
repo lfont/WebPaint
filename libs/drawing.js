@@ -141,7 +141,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         clearCanvas(canvas);
                         setContextProperties(context, props);
                         drawCanvasBackground(canvas, context, background);
-                        this.store();
                         return this;
                     },
                     init: function (backgroundColor) {

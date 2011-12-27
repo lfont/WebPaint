@@ -134,6 +134,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     actions = {
                         clear: function () {
                             drawer.clear();
+                            drawer.store();
                         },
                         newDrawing: function (backgroundColor) {
                             drawer.init(backgroundColor);
