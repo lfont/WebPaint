@@ -69,6 +69,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             code: '#ffff00',
                             name: l('%yellow')
                         }];
+                        
+                        $.mobile.page.prototype.options.backBtnText =
+                            l('%backButton');
                     },
                     // settings
                     SETTINGS_STORAGE_KEY = 'settings',
@@ -81,15 +84,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                 drawer: {
                                     shape: 'pencil',
                                     properties: {
-                                        backgroundColor: 'transparent',
                                         strokeStyle: '#000000',
                                         fillStyle: '#000000',
                                         lineWidth: 1,
                                         lineCap: 'round'
-                                    },
-                                    histories: [],
-                                    historicSize: 10,
-                                    history: 0
+                                    }
                                 }
                             },
                             userSettings;
@@ -145,18 +144,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         canvas: null
                     },
                     pagebeforecreate: function (event, callback) {
+                        console.log('Loading WebPaint...');
+                        
                         loadSettings();
                         if (settings.locale) {
                             String.locale = settings.locale;
                         }
+                                
+                        $.mobile.page.prototype.options.addBackBtn = true;
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event) {
                         if (!drawer) {
-                            drawer = drawing.canvasDrawer(this.page.canvas[0], {
-                                historicSize: settings.drawer.historicSize    
-                            });
+                            drawer = drawing.canvasDrawer(this.page.canvas[0]);
                             drawer.properties(settings.drawer.properties);
                             drawer.histories(settings.drawer.histories);
                             drawing.canvasDrawerEventWrapper(drawer, {
@@ -198,22 +199,25 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         };
                     },
                     unload: function () {
+                        var histories = drawer.histories(),
+                            history = drawer.history();
+                        
                         console.log('Unloading WebPaint...');
                         settings.drawer.properties = drawer.properties();
-                        settings.drawer.histories = drawer.histories();
-                        settings.drawer.history = drawer.history();
+                        settings.drawer.histories = (histories.length > 10) ?
+                            histories.slice(histories.length - 10) :
+                            histories;
+                        settings.drawer.history = (history >=
+                            settings.drawer.histories.length) ?
+                            settings.drawer.histories.length - 1 :
+                            history;
                         storeSettings();
                     },
                     clear: function () {
                         drawer.clear();
                     },
                     newDrawing: function (backgroundColor) {
-                        if (backgroundColor) {
-                            drawer.properties({
-                                backgroundColor: backgroundColor
-                            });
-                        }
-                        drawer.init();
+                        drawer.init(backgroundColor);
                     },
                     saveAs: function () {
                         drawer.saveAs();
@@ -242,12 +246,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     undo: function (event) {
                         event.preventDefault();
-                        event.stopPropagation();
                         drawer.undo();
                     },
                     redo: function (event) {
                         event.preventDefault();
-                        event.stopPropagation();
                         drawer.redo();
                     }
                 });
@@ -548,7 +550,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 return mvc.controller({
                     page: {
                         title: '',
-                        version: 'WebPaint 0.1.6',
+                        version: 'WebPaint 0.1.7',
                         description: '',
                         source: ''
                     },

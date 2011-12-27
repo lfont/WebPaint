@@ -28,19 +28,29 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <div class="ui-btn-right">
                     <a href="" data-role="button" data-icon="back"
                         data-iconpos="notext" data-theme="b"
-                        data-mvc-command="{ event: vclick, method: undo }"><%= page.undoButton %></a>
+                        data-mvc-command="{ event: vclick, method: undo }">
+                        <%= page.undoButton %>
+                    </a>
                     <a href="" data-role="button" data-icon="forward"
                         data-iconpos="notext" data-theme="b"
-                        data-mvc-command="{ event: vclick, method: redo }"><%= page.redoButton %></a>
+                        data-mvc-command="{ event: vclick, method: redo }">
+                        <%= page.redoButton %>
+                    </a>
                     <a href="#width" data-rel="dialog" data-transition="fade"
                         data-role="button" data-icon="star" data-iconpos="notext"
-                        data-theme="b"><%= page.widthButton %></a>
+                        data-theme="b">
+                        <%= page.widthButton %>
+                    </a>
                     <a href="#color" data-rel="dialog" data-transition="fade"
-                        data-role="button" data-icon="gear" data-iconpos="notext"
-                        data-theme="b"><%= page.colorButton %></a>
-                    <a href="#option" data-rel="dialog" data-transition="fade"
                         data-role="button" data-icon="grid" data-iconpos="notext"
-                        data-theme="b"><%= page.optionButton %></a>
+                        data-theme="b">
+                        <%= page.colorButton %>
+                    </a>
+                    <a href="#option" data-rel="dialog" data-transition="fade"
+                        data-role="button" data-icon="gear" data-iconpos="notext"
+                        data-theme="b">
+                        <%= page.optionButton %>
+                    </a>
                 </div>
             </div><!-- /header -->
 
@@ -120,16 +130,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
-                <div data-role="fieldcontain">
-                    <label for="slider"><%= page.sliderLabel %></label>
-                    <input type="range" name="slider" id="slider"
-                        data-theme="a" data-track-theme="b" min="1" max="100"
-                        data-mvc-binding="{ type: object, property: page.range }" />
-                </div>
+                <form>
+                    <div data-role="fieldcontain">
+                        <label for="slider"><%= page.sliderLabel %></label>
+                        <input type="range" name="slider" id="slider"
+                            data-theme="a" data-track-theme="b"
+                            value="1" min="1" max="100"
+                            data-mvc-binding="{ type: object, property: page.range }" />
+                    </div>
+                </form>
             </div><!-- /content -->
 
             <div data-role="footer">
-                <h4></h4>
+                <h4>&nbsp;</h4>
             </div><!-- /footer -->
         </script>
 

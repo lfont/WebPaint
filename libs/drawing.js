@@ -9,6 +9,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         defaultOptions = {
             historicSize: 100
         },
+        defaultBackgroundColor = 'transparent',
         restoreContextImage = function (context, imageDataURL) {
             var image = new Image();
             
@@ -25,20 +26,28 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 lineCap: context.lineCap
             };
         },
-        setContextProperties = function (context, properties) {
-            if (properties.strokeStyle !== undefined) {
+        setContextProperties = function (context, properties, newProperties) {
+            if (!newProperties) {
+                newProperties = properties;
+            }
+            
+            if (newProperties.strokeStyle !== undefined) {
+                properties.strokeStyle = newProperties.strokeStyle;
                 context.strokeStyle = properties.strokeStyle;
             }
             
-            if (properties.fillStyle !== undefined) {
+            if (newProperties.fillStyle !== undefined) {
+                properties.fillStyle = newProperties.fillStyle;
                 context.fillStyle = properties.fillStyle;
             }
             
-            if (properties.lineWidth !== undefined) {
+            if (newProperties.lineWidth !== undefined) {
+                properties.lineWidth = newProperties.lineWidth;
                 context.lineWidth = properties.lineWidth;
             }
             
-            if (properties.lineCap !== undefined) {
+            if (newProperties.lineCap !== undefined) {
+                properties.lineCap = newProperties.lineCap;
                 context.lineCap = properties.lineCap;
             }
         },
@@ -62,6 +71,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             if (history > 0) {
                 this.history(history - 1);
             }
+            
+            return this;
         },
         redo = function () {
             var history = this.history();
@@ -69,78 +80,84 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             if (history + 1 < this.histories().length) {
                 this.history(history + 1);
             }
+            
+            return this;
         },
         saveAs = function () {
             window.location.href = this.canvas().toDataURL()
                 .replace('image/png', 'image/octet-stream');
+            return this;
         },
         canvasDrawerBuilder = function (canvas, options) {
             var context = canvas.getContext('2d'),
                 opts = $.extend({}, defaultOptions, options),
-                histories = [],
-                historyIndex = 0,
-                backgroundColor = context.fillStyle;
-            
-            return {
-                shapeDrawer: shapeDrawer,
-                undo: undo,
-                redo: redo,
-                saveAs: saveAs,
-                canvas: function () {
-                    return canvas;
-                },
-                histories: function (histo) {
-                    if (histo) {
-                        histories = histo;
-                        if (historyIndex > histories.length - 1) {
-                            historyIndex = histories.length - 1;
+                histories,
+                historyIndex,
+                background,
+                props,
+                drawer = {
+                    shapeDrawer: shapeDrawer,
+                    undo: undo,
+                    redo: redo,
+                    saveAs: saveAs,
+                    canvas: function () {
+                        return canvas;
+                    },
+                    histories: function (histo) {
+                        if (histo) {
+                            histories = histo;
+                            if (historyIndex > histories.length - 1) {
+                                historyIndex = histories.length - 1;
+                            }
                         }
-                    }
-                    
-                    return histories;
-                },
-                properties: function (props) {
-                    var drawerProperties;
-                    
-                    if (props) {
-                        setContextProperties(context, props);
                         
-                        if (props.backgroundColor !== undefined) {
-                            backgroundColor = props.backgroundColor;
+                        return histories;
+                    },
+                    properties: function (newProps) {
+                        if (newProps) {
+                            setContextProperties(context, props, newProps);  
                         }
-                    }
-                    
-                    drawerProperties = getContextProperties(context);
-                    drawerProperties.backgroundColor = backgroundColor;
-                    
-                    return drawerProperties;
-                },
-                history: function (index) {
-                    if (index || index === 0) {
-                        historyIndex = index;
+                        
+                        return props;
+                    },
+                    history: function (index) {
+                        if (index || index === 0) {
+                            historyIndex = index;
+                            clearCanvas(canvas);
+                            restoreContextImage(context, histories[index]);
+                        }
+                        
+                        return historyIndex;
+                    },
+                    store: function () {
+                        if (histories.length === opts.historicSize) {
+                            histories.shift();
+                        }
+                        histories.push(canvas.toDataURL());
+                        historyIndex = (histories.length - 1);
+                        return this;
+                    },
+                    clear: function () {
                         clearCanvas(canvas);
-                        restoreContextImage(context, histories[index]);
+                        setContextProperties(context, props);
+                        drawCanvasBackground(canvas, context, background);
+                        this.store();
+                        return this;
+                    },
+                    init: function (backgroundColor) {
+                        histories = [];
+                        historyIndex = 0;
+                        clearCanvas(canvas);
+                        props = getContextProperties(context);
+                        setContextProperties(context, props);
+                        background = backgroundColor || defaultBackgroundColor;
+                        drawCanvasBackground(canvas, context, background);
+                        this.store();
+                        return this;
                     }
-                    
-                    return historyIndex;
-                },
-                store: function () {
-                    if (histories.length === opts.historicSize) {
-                        histories.shift();
-                    }
-                    histories.push(canvas.toDataURL());
-                    historyIndex = (histories.length - 1);
-                },
-                clear: function () {
-                    clearCanvas(canvas);
-                    drawCanvasBackground(canvas, context, backgroundColor);
-                },
-                init: function () {
-                    histories = [];
-                    this.clear();
-                    this.store();
-                }
-            };
+                };
+            
+            return drawer.init();
         },
         // namespace
         drawingBuilder = function () {

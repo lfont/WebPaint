@@ -12,6 +12,8 @@
     "%violet": "Violet",
     "%turquoise": "Turquoise",
 
+    "%backButton": "Retour",
+    
     "%main.title": "WebPaint",
     "%main.undoButton": "Undo",
     "%main.redoButton": "Redo",
