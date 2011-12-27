@@ -514,7 +514,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 return mvc.controller({
                     page: {
                         title: '',
-                        version: 'WebPaint 0.2.0',
+                        version: 'WebPaint 0.2.1',
                         description: '',
                         source: ''
                     },

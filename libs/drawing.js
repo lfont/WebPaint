@@ -261,9 +261,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         },
         pencilBuilder = function (context) {
             var orig,
-                hasDrawn = false,
+                hasDrawn,
                 pencil = {
                     open: function (origin) {
+                        hasDrawn = false;
                         orig = origin;
                         context.beginPath();
                     },
