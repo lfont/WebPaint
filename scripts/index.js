@@ -11,11 +11,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             return string.toLocaleString();
         },
         // navigation
-        goToPage = function (name) {
-            $.mobile.changePage(name, {
-                transition: 'fade',
-                reverse: true
-            });
+        navigator = {
+            goBackTo: function (pageName) {
+                $.mobile.changePage(pageName, {
+                    transition: 'fade',
+                    reverse: true
+                });
+            }
         },
         // application
         webPaint = mvc.application({
@@ -260,14 +262,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             link: '#newDrawing',
                             name: l('%option.new')
                         }, {
-                            link: '#',
                             method: {
                                 name: 'callMethod',
                                 args: 'saveAs'
                             },            
                             name: l('%option.saveAs')
                         }, {
-                            link: '#',
                             method: {
                                 name: 'callMethod',
                                 args: 'clear'
@@ -314,7 +314,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     callMethod: function (event, callback, name) {
                         methodName = name;
-                        goToPage('#main');
+                        navigator.goBackTo('#main');
                     }
                 });
             }()),
@@ -352,14 +352,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     setColor: function (event, callback, colorCode) {
                         color = colorCode;
-                        goToPage('#main');
+                        navigator.goBackTo('#main');
                     }
                 });
             }()),
             // width controller
             width: (function () {
                 var width,
-                    range,
                     translate = function () {
                         this.page.title = l('%width.title');
                         this.page.sliderLabel = l('%width.sliderLabel');
@@ -369,7 +368,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     page: {
                         title: '',
                         sliderLabel: '',
-                        slider: null
+                        range: null
                     },
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
@@ -377,19 +376,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     pagebeforeshow: function (event) {
                         width = event.mvcData.drawer.properties.lineWidth;
-                        if (!range) {
-                            range = this.page.slider
-                                .find('input[data-type="range"]');
-                        }
                     },
                     pageshow: function () {
-                        range.val(width).slider('refresh');
+                        this.page.range.val(width).slider('refresh');
                     },
                     pagebeforehide: function (event) {
                         event.mvcData.method = {
                             name: 'setLineWidth',
                             args: [
-                                range.val()
+                                this.page.range.val()
                             ]
                         };
                     }
@@ -434,7 +429,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     setColor: function (event, callback, code) {
                         colorCode = code;
-                        goToPage('#main');
+                        navigator.goBackTo('#main');
                     }
                 });
             }()),
@@ -478,7 +473,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     setHistoryIndex: function (event, callback, index) {
                         historyIndex = parseInt(index, 10);
-                        goToPage('#main');
+                        navigator.goBackTo('#main');
                     }
                 });
             }()),
@@ -537,7 +532,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         locale = (code === DEFAULT_LOCALE) ?
                             '' :
                             code;
-                        goToPage('#main');
+                        navigator.goBackTo('#main');
                     }
                 });
             }()),
@@ -553,7 +548,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 return mvc.controller({
                     page: {
                         title: '',
-                        version: 'WebPaint 0.1.5',
+                        version: 'WebPaint 0.1.6',
                         description: '',
                         source: ''
                     },

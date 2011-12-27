@@ -26,19 +26,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             };
         },
         setContextProperties = function (context, properties) {
-            if (properties.strokeStyle !== 'undefined') {
+            if (properties.strokeStyle !== undefined) {
                 context.strokeStyle = properties.strokeStyle;
             }
             
-            if (properties.fillStyle !== 'undefined') {
+            if (properties.fillStyle !== undefined) {
                 context.fillStyle = properties.fillStyle;
             }
             
-            if (properties.lineWidth !== 'undefined') {
+            if (properties.lineWidth !== undefined) {
                 context.lineWidth = properties.lineWidth;
             }
             
-            if (properties.lineCap !== 'undefined') {
+            if (properties.lineCap !== undefined) {
                 context.lineCap = properties.lineCap;
             }
         },
@@ -105,7 +105,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     if (props) {
                         setContextProperties(context, props);
                         
-                        if (props.backgroundColor !== 'undefined') {
+                        if (props.backgroundColor !== undefined) {
                             backgroundColor = props.backgroundColor;
                         }
                     }
