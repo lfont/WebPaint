@@ -36,10 +36,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         data-mvc-command="{ event: vclick, method: redo }">
                         <%= page.redoButton %>
                     </a>
-                    <a href="#width" data-rel="dialog" data-transition="fade"
+                    <a href="#shape" data-rel="dialog" data-transition="fade"
                         data-role="button" data-icon="star" data-iconpos="notext"
                         data-theme="b">
-                        <%= page.widthButton %>
+                        <%= page.shapeButton %>
                     </a>
                     <a href="#color" data-rel="dialog" data-transition="fade"
                         data-role="button" data-icon="grid" data-iconpos="notext"
@@ -123,18 +123,37 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /footer -->
         </script>
 
-        <div data-role="page" id="width"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: width, name: pagebeforecreate }">
+        <div data-role="page" id="shape"></div><!-- /page -->
+        <script type="text/html" data-mvc-view="{ page: shape, name: pagebeforecreate }">
             <div data-role="header">
                 <h1><%= page.title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="b">
+            <div data-role="content" data-theme="b"
                 <form>
+                    <div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup"
+                            data-type="horizontal"
+                            data-mvc-binding="{ type: object, property: page.shape }">
+                            <legend><%= page.shapeLabel %></legend>
+                            
+                             <input type="radio" name="shape" id="pencil" value="pencil" />
+         	                <label for="pencil" data-theme="d"><%= page.pencilLabel %></label>
+                            
+                            <input type="radio" name="shape" id="line" value="line" />
+                            <label for="line" data-theme="d"><%= page.lineLabel %></label>
+                            
+                            <input type="radio" name="shape" id="rectangle" value="rectangle" />
+                            <label for="rectangle" data-theme="d"><%= page.rectangleLabel %></label>
+                            
+                            <input type="radio" name="shape" id="circle" value="circle" />
+                            <label for="circle" data-theme="d"><%= page.circleLabel %></label>
+                         </fieldset>
+                    </div>
                     <div data-role="fieldcontain">
                         <label for="slider"><%= page.sliderLabel %></label>
                         <input type="range" name="slider" id="slider"
-                            data-theme="a" data-track-theme="b"
+                            data-theme="b" data-track-theme="d"
                             value="1" min="1" max="100"
                             data-mvc-binding="{ type: object, property: page.range }" />
                     </div>
@@ -142,7 +161,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /content -->
 
             <div data-role="footer">
-                <h4>&nbsp;</h4>
+                <h4></h4>
             </div><!-- /footer -->
         </script>
 
@@ -198,10 +217,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
         <script type="text/html" data-mvc-view="{ page: history, name: pagebeforeshow }">
             <ul data-role="listview">
-                <% for (var i = 0; i < model.histories.length; i += 1) { %>
+                <% for (var i = model.histories.length - 1; i >= 0; i -= 1) { %>
                     <% var imageDataURL = model.histories[i]; %>
                     <li data-theme="d"
-                        data-mvc-command="{ event: vclick, method: setHistoryIndex }"
+                        data-mvc-command="{ event: vclick, method: setHistory }"
                         data-mvc-command-arguments="<%= i %>">
                         <img src="<%= imageDataURL %>" alt="<%= i %>"
                             class="webpaint-history-image" />
@@ -234,7 +253,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <% for (var i = 0; i < model.languages.length; i += 1) { %>
                     <% var language = model.languages[i]; %>
                     <li data-theme="d"
-                        data-mvc-command="{ event: vclick, method: setLanguage }"
+                        data-mvc-command="{ event: vclick, method: setLocale }"
                         data-mvc-command-arguments="<%= language.code %>">
                         <img src="themes/index/images/<%= language.code %>.png"
                             alt="<%= language.name %>" class="ui-li-icon" />

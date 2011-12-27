@@ -28,7 +28,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         this.page.title = l('%main.title');
                         this.page.undoButton = l('%main.undoButton');
                         this.page.redoButton = l('%main.redoButton');
-                        this.page.widthButton = l('%main.widthButton');
+                        this.page.shapeButton = l('%main.shapeButton');
                         this.page.colorButton = l('%main.colorButton');
                         this.page.optionButton = l('%main.optionButton');
                         
@@ -75,22 +75,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     // settings
                     SETTINGS_STORAGE_KEY = 'settings',
+                    defaultSettings = {
+                        locale: '',
+                        drawer: {
+                            shape: 'pencil',
+                            properties: {
+                                strokeStyle: '#000000',
+                                fillStyle: '#000000',
+                                lineWidth: 1,
+                                lineCap: 'round'
+                            }
+                        }
+                    },
                     settings = {},
                     loadSettings = function () {
                         var settingsString = localStorage
                                 .getItem(SETTINGS_STORAGE_KEY),
-                            defaultSettings = {
-                                locale: '',
-                                drawer: {
-                                    shape: 'pencil',
-                                    properties: {
-                                        strokeStyle: '#000000',
-                                        fillStyle: '#000000',
-                                        lineWidth: 1,
-                                        lineCap: 'round'
-                                    }
-                                }
-                            },
                             userSettings;
                         if (settingsString) {
                             try {
@@ -129,6 +129,41 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         canvas.width = (this.page.content.width() -
                             (this.page.canvas.outerWidth() -
                                 this.page.canvas.width()));
+                    },
+                    // actions
+                    actions = {
+                        clear: function () {
+                            drawer.clear();
+                        },
+                        newDrawing: function (backgroundColor) {
+                            drawer.init(backgroundColor);
+                            this.setShape(defaultSettings.drawer.shape);
+                        },
+                        saveAs: function () {
+                            drawer.saveAs();
+                        },
+                        setLineWidth: function (width) {
+                            drawer.properties({
+                                lineWidth: width
+                            });
+                        },
+                        setColor: function (color) {
+                            drawer.properties({
+                                strokeStyle: color,
+                                fillStyle: color
+                            });
+                        },
+                        setHistory: function (index) {
+                            drawer.history(index);
+                        },
+                        setShape: function (kind) {
+                            settings.drawer.shape = kind;
+                            drawer.eventShapeDrawer(kind);
+                        },
+                        setLocale: function (locale) {
+                            settings.locale = locale;
+                            window.location.reload();
+                        }
                     };
                     
                 return mvc.controller({
@@ -155,7 +190,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
-                    pagebeforeshow: function (event) {
+                    pagebeforeshow: function () {
                         if (!drawer) {
                             drawer = drawing.canvasDrawer(this.page.canvas[0]);
                             drawer.properties(settings.drawer.properties);
@@ -169,18 +204,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             });
                             
                             if (settings.drawer.histories.length) {
-                                this.setHistory(settings.drawer.history);
+                                actions.setHistory(settings.drawer.history);
+                                actions.setShape(settings.drawer.shape);
                             }
                             else {
-                                this.newDrawing();
+                                actions.newDrawing();
                             }
-                            
-                            this.setShape(settings.drawer.shape);
-                        }
-                        
-                        if (event.mvcData.method) {
-                            this[event.mvcData.method.name].apply(this,
-                                event.mvcData.method.args);
                         }
                     },
                     pageshow: function () {
@@ -191,11 +220,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         }
                     },
                     pagebeforehide: function (event) {
+                        event.mvcData.actions = actions;
                         event.mvcData.locale = settings.locale;
                         event.mvcData.drawer = {
                             properties: drawer.properties(),
                             histories: drawer.histories(),
-                            history: drawer.history()
+                            history: drawer.history(),
+                            shape: settings.drawer.shape
                         };
                     },
                     unload: function () {
@@ -213,37 +244,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             history;
                         storeSettings();
                     },
-                    clear: function () {
-                        drawer.clear();
-                    },
-                    newDrawing: function (backgroundColor) {
-                        drawer.init(backgroundColor);
-                    },
-                    saveAs: function () {
-                        drawer.saveAs();
-                    },
-                    setLineWidth: function (width) {
-                        drawer.properties({
-                            lineWidth: width
-                        });
-                    },
-                    setStyle: function (style) {
-                        drawer.properties({
-                            strokeStyle: style,
-                            fillStyle: style
-                        });
-                    },
-                    setHistory: function (index) {
-                        drawer.history(index);
-                    },
-                    setShape: function (kind) {
-                        settings.drawer.shape = kind;
-                        drawer.eventShapeDrawer(kind);
-                    },
-                    setLocale: function (locale) {
-                        settings.locale = locale;
-                        window.location.reload();
-                    },
                     undo: function (event) {
                         event.preventDefault();
                         drawer.undo();
@@ -257,7 +257,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             // option controller
             option: (function () {
                 var mvcData,
-                    methodName,
                     translate = function () {
                         this.page.title = l('%option.title');
                         this.model.options = [{
@@ -265,13 +264,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             name: l('%option.new')
                         }, {
                             method: {
-                                name: 'callMethod',
+                                name: 'callAction',
                                 args: 'saveAs'
                             },            
                             name: l('%option.saveAs')
                         }, {
                             method: {
-                                name: 'callMethod',
+                                name: 'callAction',
                                 args: 'clear'
                             },                            
                             name: l('%option.clear')
@@ -299,30 +298,24 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event) {
-                        methodName = null;
-                        if (event.mvcData.locale || 
-                            event.mvcData.drawer) {
+                        if (event.mvcData.actions) {
                             mvcData = event.mvcData;
                         }
                     },
                     pagebeforehide: function (event) {
+                        event.mvcData.actions = mvcData.actions;
                         event.mvcData.locale = mvcData.locale;
                         event.mvcData.drawer = mvcData.drawer;
-                        if (methodName) {
-                            event.mvcData.method = {
-                                name: methodName
-                            };
-                        }
                     },
-                    callMethod: function (event, callback, name) {
-                        methodName = name;
+                    callAction: function (event, callback, name) {
+                        mvcData.actions[name]();
                         navigator.goBackTo('#main');
                     }
                 });
             }()),
             // newDrawing controller
             newDrawing: (function () {
-                var color,
+                var actions,
                     translate = function () {
                         this.page.title = l('%newDrawing.title');
                     };
@@ -339,62 +332,62 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
-                    pagebeforeshow: function () {
-                        color = null;
+                    pagebeforeshow: function (event) {
+                        actions = event.mvcData.actions;
                     },
-                    pagebeforehide: function (event) {
-                        if (color) {
-                            event.mvcData.method = {
-                                name: 'newDrawing',
-                                args: [
-                                    color
-                                ]
-                            };
-                        }
-                    },
-                    setColor: function (event, callback, colorCode) {
-                        color = colorCode;
+                    setColor: function (event, callback, backgroundColor) {
+                        actions.newDrawing(backgroundColor);
                         navigator.goBackTo('#main');
                     }
                 });
             }()),
-            // width controller
-            width: (function () {
-                var width,
+            // shape controller
+            shape: (function () {
+                var actions,
+                    shapeKind,
+                    lineWidth,
                     translate = function () {
-                        this.page.title = l('%width.title');
-                        this.page.sliderLabel = l('%width.sliderLabel');
+                        this.page.title = l('%shape.title');
+                        this.page.sliderLabel = l('%shape.sliderLabel');
+                        this.page.shapeLabel = l('%shape.shapeLabel');
+                        this.page.pencilLabel = l('%shape.pencilLabel');
+                        this.page.lineLabel = l('%shape.lineLabel');
+                        this.page.rectangleLabel = l('%shape.rectangleLabel');
+                        this.page.circleLabel = l('%shape.circleLabel');
                     };
                     
                 return mvc.controller({
                     page: {
                         title: '',
                         sliderLabel: '',
+                        shape: null,
                         range: null
                     },
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
-                    pagebeforeshow: function (event) {
-                        width = event.mvcData.drawer.properties.lineWidth;
+                    pagebeforeshow: function (event, callback) {
+                        actions = event.mvcData.actions;
+                        shapeKind = event.mvcData.drawer.shape;
+                        lineWidth = event.mvcData.drawer.properties.lineWidth;
                     },
                     pageshow: function () {
-                        this.page.range.val(width).slider('refresh');
+                        this.page.shape.find('input[value="' + shapeKind + '"]')
+                            .attr('checked', true).checkboxradio('refresh');
+                        this.page.range.val(lineWidth).slider('refresh');
                     },
                     pagebeforehide: function (event) {
-                        event.mvcData.method = {
-                            name: 'setLineWidth',
-                            args: [
-                                this.page.range.val()
-                            ]
-                        };
+                        actions.setShape(this.page.shape.find('input:checked')
+                            .val());
+                        actions.setLineWidth(
+                            parseInt(this.page.range.val(), 10));
                     }
                 });
             }()),
             // color controller
             color: (function () {
-                var colorCode,
+                var actions,
                     translate = function () {
                         this.page.title = l('%color.title');
                     };
@@ -413,31 +406,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event, callback) {
-                        colorCode = null;
+                        actions = event.mvcData.actions;
                         this.model.color = event.mvcData.drawer
                             .properties.strokeStyle;
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
-                    pagebeforehide: function (event) {
-                        if (colorCode) {
-                            event.mvcData.method = {
-                                name: 'setStyle',
-                                args: [
-                                    colorCode
-                                ]
-                            };
-                        }
-                    },
-                    setColor: function (event, callback, code) {
-                        colorCode = code;
+                    setColor: function (event, callback, color) {
+                        actions.setColor(color);
                         navigator.goBackTo('#main');
                     }
                 });
             }()),
             // history controller
             history: (function () {
-                var historyIndex,
+                var actions,
                     translate = function () {
                         this.page.title = l('%history.title');
                         this.page.historyLabel = l('%history.historyLabel');
@@ -457,31 +440,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event, callback) {
-                        historyIndex = null;
+                        actions = event.mvcData.actions;
                         this.model.histories = event.mvcData.drawer.histories;
                         this.model.history = event.mvcData.drawer.history;
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
-                    pagebeforehide: function (event) {
-                        if (historyIndex !== null) {
-                            event.mvcData.method = {
-                                name: 'setHistory',
-                                args: [
-                                    historyIndex
-                                ]
-                            };
-                        }
-                    },
-                    setHistoryIndex: function (event, callback, index) {
-                        historyIndex = parseInt(index, 10);
+                    setHistory: function (event, callback, index) {
+                        actions.setHistory(parseInt(index, 10));
                         navigator.goBackTo('#main');
                     }
                 });
             }()),
             // language controller
             language: (function () {
-                var locale,
+                var actions,
                     DEFAULT_LOCALE = 'xx-XX',
                     translate = function () {
                         this.page.title = l('%language.title');
@@ -512,7 +485,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforecreate'));
                     },
                     pagebeforeshow: function (event, callback) {
-                        locale = null;
+                        actions = event.mvcData.actions;
                         this.model.locale =
                             (event.mvcData.locale === '') ?
                                 DEFAULT_LOCALE :
@@ -520,20 +493,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         callback(this.renderView('pagebeforeshow'))
                             .trigger('create');
                     },
-                    pagebeforehide: function (event) {
-                        if (locale !== null) {
-                            event.mvcData.method = {
-                                name: 'setLocale',
-                                args: [
-                                    locale
-                                ]
-                            };
-                        }
-                    },
-                    setLanguage: function (event, callback, code) {
-                        locale = (code === DEFAULT_LOCALE) ?
+                    setLocale: function (event, callback, locale) {
+                        locale = (locale === DEFAULT_LOCALE) ?
                             '' :
-                            code;
+                            locale;
+                        actions.setLocale(locale);
                         navigator.goBackTo('#main');
                     }
                 });
@@ -550,7 +514,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 return mvc.controller({
                     page: {
                         title: '',
-                        version: 'WebPaint 0.1.7',
+                        version: 'WebPaint 0.2.0',
                         description: '',
                         source: ''
                     },

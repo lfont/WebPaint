@@ -17,8 +17,8 @@
     "%main.title": "WebPaint",
     "%main.undoButton": "Undo",
     "%main.redoButton": "Redo",
-    "%main.widthButton": "Width",
-    "%main.colorButton": "Color",
+    "%main.shapeButton": "Shapes",
+    "%main.colorButton": "Colors",
     "%main.optionButton": "Options",
 
     "%option.title": "Options",
@@ -31,8 +31,13 @@
 
     "%newDrawing.title": "New",
 
-    "%width.title": "Width",
-    "%width.sliderLabel": "Width: ",
+    "%shape.title": "Shapes",
+    "%shape.shapeLabel": "Shapes: ",
+    "%shape.sliderLabel": "Width: ",
+    "%shape.pencilLabel": "S",
+    "%shape.lineLabel": "|",
+    "%shape.rectangleLabel": "[]",
+    "%shape.circleLabel": "O",
 
     "%color.title": "Colors",
 
