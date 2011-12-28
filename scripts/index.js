@@ -14,7 +14,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         navigator = {
             goBackTo: function (pageName) {
                 $.mobile.changePage(pageName, {
-                    transition: 'fade',
                     reverse: true
                 });
             }
@@ -31,6 +30,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         this.page.shapeButton = l('%main.shapeButton');
                         this.page.colorButton = l('%main.colorButton');
                         this.page.optionButton = l('%main.optionButton');
+                        this.page.lastUndo = l('%main.lastUndo');
+                        this.page.lastRedo = l('%main.lastRedo');
                         
                         colors = [{
                             code: 'transparent',
@@ -133,8 +134,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     // actions
                     actions = {
                         clear: function () {
-                            drawer.clear();
-                            drawer.store();
+                            drawer.clear().store();
                         },
                         newDrawing: function (backgroundColor) {
                             drawer.init(backgroundColor);
@@ -169,12 +169,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                 return mvc.controller({
                     page: {
-                        title: '',
-                        undoButton: '',
-                        redoButton: '',
-                        widthButton: '',
-                        colorButton: '',
-                        optionButton: '',
                         header: null,
                         content: null,
                         canvas: null
@@ -186,8 +180,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         if (settings.locale) {
                             String.locale = settings.locale;
                         }
-                                
-                        $.mobile.page.prototype.options.addBackBtn = true;
+                        
                         translate.call(this);
                         callback(this.renderView('pagebeforecreate'));
                     },
@@ -247,11 +240,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     undo: function (event) {
                         event.preventDefault();
-                        drawer.undo();
+                        if (!drawer.undo()) {
+                            $.mobile.showToast(this.page.lastUndo);
+                        }
                     },
                     redo: function (event) {
                         event.preventDefault();
-                        drawer.redo();
+                        if (!drawer.redo()) {
+                            $.mobile.showToast(this.page.lastRedo);
+                        }
                     }
                 });
             }()),
@@ -288,9 +285,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     };
                     
                 return mvc.controller({
-                    page: {
-                        title: ''
-                    },
+                    page: {},
                     model: {
                         options: null
                     },
@@ -300,13 +295,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
                     pagebeforeshow: function (event) {
                         if (event.mvcData.actions) {
+                            // the previous page was '#main'
                             mvcData = event.mvcData;
                         }
                     },
                     pagebeforehide: function (event) {
-                        event.mvcData.actions = mvcData.actions;
-                        event.mvcData.locale = mvcData.locale;
-                        event.mvcData.drawer = mvcData.drawer;
+                        $.extend(event.mvcData, mvcData);
                     },
                     callAction: function (event, callback, name) {
                         mvcData.actions[name]();
@@ -322,9 +316,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     };
                     
                 return mvc.controller({
-                    page: {
-                        title: ''
-                    },
+                    page: {},
                     model: {
                         colors: null
                     },
@@ -359,8 +351,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                 return mvc.controller({
                     page: {
-                        title: '',
-                        sliderLabel: '',
                         shape: null,
                         range: null
                     },
@@ -394,9 +384,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     };
                     
                 return mvc.controller({
-                    page: {
-                        title: ''
-                    },
+                    page: {},
                     model: {
                         colors: null,
                         color: ''
@@ -428,10 +416,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     };
                     
                 return mvc.controller({
-                    page: {
-                        title: '',
-                        historyLabel: ''
-                    },
+                    page: {},
                     model: {
                         histories: [],
                         history: 0
@@ -473,10 +458,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     };
                     
                 return mvc.controller({
-                    page: {
-                        title: '',
-                        information: ''
-                    },
+                    page: {},
                     model: {
                         languages: null,
                         locale: ''
@@ -514,10 +496,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                 return mvc.controller({
                     page: {
-                        title: '',
-                        version: 'WebPaint 0.2.2',
-                        description: '',
-                        source: ''
+                        version: 'WebPaint 0.2.3'
                     },
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
@@ -527,9 +506,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }())
         });
         
-    $(function () {
-        $(window).unload(webPaint.controllers.main.unload);
+    $(document).bind('mobileinit', function () {
+        $.mobile.defaultPageTransition = 'none';
+        $.mobile.defaultDialogTransition = 'none';
+        $.mobile.page.prototype.options.addBackBtn = true;                
+    });
         
+    $(window).unload(webPaint.controllers.main.unload);
+    
+    $(function () {    
         webPaint.start({
             pageEvents: [
                 'pagebeforecreate',

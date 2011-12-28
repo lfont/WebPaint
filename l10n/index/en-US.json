@@ -20,7 +20,9 @@
     "%main.shapeButton": "Shapes",
     "%main.colorButton": "Colors",
     "%main.optionButton": "Options",
-
+    "%main.lastUndo": "Nothing to undo",
+    "%main.lastRedo": "Nothing to redo",
+    
     "%option.title": "Options",
     "%option.new": "New",
     "%option.saveAs": "Save As...",

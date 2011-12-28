@@ -66,22 +66,24 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             return window.drawing.shapeDrawer(this, kind);
         },
         undo = function () {
-            var history = this.history();
+            var history = this.history(),
+                isFirst = (history <= 0);
             
-            if (history > 0) {
+            if (!isFirst) {
                 this.history(history - 1);
             }
             
-            return this;
+            return !isFirst;
         },
         redo = function () {
-            var history = this.history();
+            var history = this.history(),
+                isLast = (history + 1 >= this.histories().length);
             
-            if (history + 1 < this.histories().length) {
+            if (!isLast) {
                 this.history(history + 1);
             }
             
-            return this;
+            return !isLast;
         },
         saveAs = function () {
             window.location.href = this.canvas().toDataURL()
@@ -151,8 +153,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         setContextProperties(context, props);
                         background = backgroundColor || defaultBackgroundColor;
                         drawCanvasBackground(canvas, context, background);
-                        this.store();
-                        return this;
+                        return this.store();
                     }
                 };
             

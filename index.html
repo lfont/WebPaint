@@ -18,6 +18,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <script src="libs/drawing.event.js"></script>
         <script src="scripts/index.js"></script>
         <script src="libs/jquery.mobile-1.0/jquery.mobile-1.0.js"></script>
+        <script src="libs/jquery.mobile.toast.js"></script>
     </head>
     <body>
         <div data-role="page" id="main"></div><!-- /page -->
@@ -26,29 +27,26 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 data-mvc-binding="{ type: object, property: page.header }">
                 <h1 class="ui-title-left"><%= page.title %></h1>
                 <div class="ui-btn-right">
-                    <a href="" data-role="button" data-icon="back"
+                    <a href="#" data-role="button" data-icon="back"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: undo }">
                         <%= page.undoButton %>
                     </a>
-                    <a href="" data-role="button" data-icon="forward"
+                    <a href="#" data-role="button" data-icon="forward"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: redo }">
                         <%= page.redoButton %>
                     </a>
-                    <a href="#shape" data-rel="dialog" data-transition="fade"
-                        data-role="button" data-icon="star" data-iconpos="notext"
-                        data-theme="b">
+                    <a href="#shape" data-role="button" data-icon="star"
+                        data-iconpos="notext" data-theme="b" data-rel="dialog">
                         <%= page.shapeButton %>
                     </a>
-                    <a href="#color" data-rel="dialog" data-transition="fade"
-                        data-role="button" data-icon="grid" data-iconpos="notext"
-                        data-theme="b">
+                    <a href="#color" data-role="button" data-icon="grid"
+                        data-iconpos="notext" data-theme="b" data-rel="dialog">
                         <%= page.colorButton %>
                     </a>
-                    <a href="#option" data-rel="dialog" data-transition="fade"
-                        data-role="button" data-icon="gear" data-iconpos="notext"
-                        data-theme="b">
+                    <a href="#option" data-role="button" data-icon="gear"
+                        data-iconpos="notext" data-theme="b" data-rel="dialog">
                         <%= page.optionButton %>
                     </a>
                 </div>
@@ -66,25 +64,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h1><%= page.title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="b">
+            <div data-role="content" data-theme="d">
                 <ul data-role="listview">
                     <% for (var i = 0; i < model.options.length; i += 1) { %>
                         <% var option = model.options[i]; %>
-                        <li data-theme="d"
-                            <% if (option.link) { %>
-                                >
-                                <a href="<%= option.link %>"
-                                   data-rel="dialog">
-                                    <%= option.name %>
-                                </a>
-                            <% } else { %>
-                                data-mvc-command="{ event: vclick, method: <%= option.method.name %> }"
-                                <% if (option.method.args) { %>
-                                    data-mvc-command-arguments="<%= option.method.args %>"
+                        <li>
+                            <a href="<%= option.link %>" data-rel="dialog"
+                                <% if (option.method) { %>
+                                    data-mvc-command="{ event: vclick, method: <%= option.method.name %> }"
+                                    <% if (option.method.args) { %>
+                                        data-mvc-command-arguments="<%= option.method.args %>"
+                                    <% } %>
                                 <% } %>
                                 >
                                 <%= option.name %>
-                            <% } %>
+                            </a>
                         </li>
                     <% } %>
                 </ul>
@@ -101,18 +95,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h1><%= page.title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="b">
+            <div data-role="content" data-theme="d">
                 <ul data-role="listview">
                     <% for (var i = 0; i < model.colors.length; i += 1) { %>
                         <% var color = model.colors[i]; %>
-                        <li data-theme="d"
-                            data-mvc-command="{ event: vclick, method: setColor }"
-                            data-mvc-command-arguments="<%= color.code %>">
-                            <img src="themes/index/images/background.png"
-                                 alt="<%= color.name %>" class="ui-li-icon" />
-                            <span class="webpaint-color"
-                                  style="background-color: <%= color.code %>"></span>
-                            <%= color.name %>
+                        <li>
+                            <a href="#" data-mvc-command="{ event: vclick, method: setColor }"
+                                data-mvc-command-arguments="<%= color.code %>">
+                                <img src="themes/index/images/background.png"
+                                    alt="<%= color.name %>" class="ui-li-icon" />
+                                <span class="webpaint-color"
+                                      style="background-color: <%= color.code %>"></span>
+                                <%= color.name %>
+                            </a>
                         </li>
                     <% } %>
                 </ul>
@@ -180,21 +175,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /footer -->
         </script>
         <script type="text/html" data-mvc-view="{ page: color, name: pagebeforeshow }">
-            <ul data-role="listview">
+            <ul data-role="listview" data-theme="d">
                 <% for (var i = 0; i < model.colors.length; i += 1) { %>
                     <% var color = model.colors[i]; %>
                     <% if (color.code !== "transparent") { %>
-                        <li data-theme="d"
-                            data-mvc-command="{ event: vclick, method: setColor }"
-                            data-mvc-command-arguments="<%= color.code %>">
-                            <img src="themes/index/images/background.png"
-                                 alt="<%= color.name %>" class="ui-li-icon" />
-                            <span class="webpaint-color"
-                                  style="background-color: <%= color.code %>"></span>
-                            <%= color.name %>
-                            <% if (color.code === model.color) { %>
-                                <span class="ui-li-count">*</span>
-                            <% } %>
+                        <li>
+                            <a href="#" data-mvc-command="{ event: vclick, method: setColor }"
+                                data-mvc-command-arguments="<%= color.code %>">
+                                <img src="themes/index/images/background.png"
+                                     alt="<%= color.name %>" class="ui-li-icon" />
+                                <span class="webpaint-color"
+                                      style="background-color: <%= color.code %>"></span>
+                                <%= color.name %>
+                                <% if (color.code === model.color) { %>
+                                    <span class="ui-li-count">*</span>
+                                <% } %>
+                            </a>
                         </li>
                     <% } %>
                 <% } %>
@@ -207,7 +203,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h1><%= page.title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="b"
+            <div data-role="content" data-theme="d"
                 data-mvc-view-anchor="pagebeforeshow">
             </div><!-- /content -->
 
@@ -219,15 +215,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             <ul data-role="listview">
                 <% for (var i = model.histories.length - 1; i >= 0; i -= 1) { %>
                     <% var imageDataURL = model.histories[i]; %>
-                    <li data-theme="d"
-                        data-mvc-command="{ event: vclick, method: setHistory }"
-                        data-mvc-command-arguments="<%= i %>">
-                        <img src="<%= imageDataURL %>" alt="<%= i %>"
-                            class="webpaint-history-image" />
-                        <%= page.historyLabel + i %>
-                        <% if (i === model.history) { %>
-                            <span class="ui-li-count">*</span>
-                        <% } %>
+                    <li>
+                        <a href="#" data-mvc-command="{ event: vclick, method: setHistory }"
+                            data-mvc-command-arguments="<%= i %>">
+                            <img src="<%= imageDataURL %>" alt="<%= i %>"
+                                class="webpaint-history-image" />
+                            <%= page.historyLabel + i %>
+                            <% if (i === model.history) { %>
+                                <span class="ui-li-count">*</span>
+                            <% } %>
+                        </a>
                     </li>
                 <% } %>
             </ul>
@@ -249,18 +246,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /footer -->
         </script>
         <script type="text/html" data-mvc-view="{ page: language, name: pagebeforeshow }">
-            <ul data-role="listview">
+            <ul data-role="listview" data-theme="d">
                 <% for (var i = 0; i < model.languages.length; i += 1) { %>
                     <% var language = model.languages[i]; %>
-                    <li data-theme="d"
-                        data-mvc-command="{ event: vclick, method: setLocale }"
-                        data-mvc-command-arguments="<%= language.code %>">
-                        <img src="themes/index/images/<%= language.code %>.png"
-                            alt="<%= language.name %>" class="ui-li-icon" />
-                        <%= language.name %>
-                        <% if (language.code === model.locale) { %>
-                            <span class="ui-li-count">*</span>
-                        <% } %>
+                    <li>
+                        <a href="#" data-mvc-command="{ event: vclick, method: setLocale }"
+                            data-mvc-command-arguments="<%= language.code %>">
+                            <img src="themes/index/images/<%= language.code %>.png"
+                                alt="<%= language.name %>" class="ui-li-icon" />
+                            <%= language.name %>
+                            <% if (language.code === model.locale) { %>
+                                <span class="ui-li-count">*</span>
+                            <% } %>
+                        </a>
                     </li>
                 <% } %>
             </ul>

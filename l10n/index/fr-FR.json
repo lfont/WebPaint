@@ -20,7 +20,9 @@
     "%main.shapeButton": "Formes",
     "%main.colorButton": "Couleurs",
     "%main.optionButton": "Options",
-
+    "%main.lastUndo": "Rien à défaire",
+    "%main.lastRedo": "Rien à refaire",
+        
     "%option.title": "Options",
     "%option.new": "Nouveau",
     "%option.saveAs": "Enregistrer Sous...",
