@@ -496,7 +496,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                 return mvc.controller({
                     page: {
-                        version: 'WebPaint 0.2.3'
+                        version: 'WebPaint 0.2.4'
                     },
                     pagebeforecreate: function (event, callback) {
                         translate.call(this);
