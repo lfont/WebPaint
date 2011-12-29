@@ -19,9 +19,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
+#main {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 #main canvas {
     border: 1px solid black;
     background: transparent url('images/background.png') repeat 0 0;
+    cursor: pointer;
+}
+
+#main canvas:active {
+    cursor: crosshair;
 }
 
 .ui-title-left {

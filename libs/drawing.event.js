@@ -35,13 +35,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
             
             canvasDrawer.eventShapeDrawer = function (kind) {
-                var shapeDrawer = this.shapeDrawer(kind),
-                    offset;
+                var shapeDrawer = this.shapeDrawer(kind);
                     
                 canvas.unbind(opts.events.down, handlers.down);
         
                 handlers.down = function (event) {
-                    offset = canvas.offset();
+                    var offset = canvas.offset();
+                    
                     shapeDrawer.begin(getPosition(event, offset));
                     
                     handlers.move = function (event) {
