@@ -12,7 +12,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <link rel="stylesheet" href="libs/jquery.mobile-1.0/jquery.mobile-1.0.css" />
         <link rel="stylesheet" href="themes/index/index.css" />
         <script src="libs/jquery-1.6.4.js"></script>
-        <script src="libs/jquery.mobile.mvc.js"></script>
+        <script src="libs/jquery.mobile.mvc-0.5.0.js"></script>
         <script src="libs/l10n.js"></script>
         <script src="libs/drawing.js"></script>
         <script src="libs/drawing.event.js"></script>
@@ -22,59 +22,56 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     </head>
     <body>
         <div data-role="page" id="main"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: main, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: main, name: pagebeforecreate }">
             <div data-role="header" data-position="fixed"
-                data-mvc-binding="{ type: object, property: page.header }">
-                <h1 class="ui-title-left"><%= page.title %></h1>
+                data-mvc-binding="{ type: object, property: header }">
+                <h1 class="ui-title-left"><%= title %></h1>
                 <div class="ui-btn-right">
                     <a href="#" data-role="button" data-icon="back"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: undo }">
-                        <%= page.undoButton %>
+                        <%= undoButton %>
                     </a>
                     <a href="#" data-role="button" data-icon="forward"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: redo }">
-                        <%= page.redoButton %>
+                        <%= redoButton %>
                     </a>
                     <a href="#shape" data-role="button" data-icon="star"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= page.shapeButton %>
+                        <%= shapeButton %>
                     </a>
                     <a href="#color" data-role="button" data-icon="grid"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= page.colorButton %>
+                        <%= colorButton %>
                     </a>
                     <a href="#option" data-role="button" data-icon="gear"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= page.optionButton %>
+                        <%= optionButton %>
                     </a>
                 </div>
             </div><!-- /header -->
 
             <div data-role="content"
-                data-mvc-binding="{ type: object, property: page.content }">
-                <canvas data-mvc-binding="{ type: object, property: page.canvas }" />
+                data-mvc-binding="{ type: object, property: content }">
+                <canvas data-mvc-binding="{ type: object, property: canvas }" />
             </div><!-- /content -->
         </script>
 
         <div data-role="page" id="option"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: option, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: option, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d">
                 <ul data-role="listview">
-                    <% for (var i = 0; i < model.options.length; i += 1) { %>
-                        <% var option = model.options[i]; %>
+                    <% for (var i = 0; i < options.length; i += 1) { %>
+                        <% var option = options[i]; %>
                         <li>
                             <a href="<%= option.link %>" data-rel="dialog"
                                 <% if (option.method) { %>
-                                    data-mvc-command="{ event: vclick, method: <%= option.method.name %> }"
-                                    <% if (option.method.args) { %>
-                                        data-mvc-command-arguments="<%= option.method.args %>"
-                                    <% } %>
+                                    data-mvc-command="{ event: vclick, method: <%= option.method.name %>, param-name: <%= option.method.param %> }"
                                 <% } %>
                                 >
                                 <%= option.name %>
@@ -90,18 +87,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="newDrawing"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: newDrawing, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: newDrawing, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d">
                 <ul data-role="listview">
-                    <% for (var i = 0; i < model.colors.length; i += 1) { %>
-                        <% var color = model.colors[i]; %>
+                    <% for (var i = 0; i < colors.length; i += 1) { %>
+                        <% var color = colors[i]; %>
                         <li>
-                            <a href="#" data-mvc-command="{ event: vclick, method: setColor }"
-                                data-mvc-command-arguments="<%= color.code %>">
+                            <a href="#" data-mvc-command="{ event: vclick, method: setColor, param-code: <%= color.code %> }">
                                 <img src="themes/index/images/background.png"
                                     alt="<%= color.name %>" class="ui-li-icon" />
                                 <span class="webpaint-color"
@@ -119,9 +115,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="shape"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: shape, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: shape, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b"
@@ -129,28 +125,28 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     <div data-role="fieldcontain">
                         <fieldset data-role="controlgroup"
                             data-type="horizontal"
-                            data-mvc-binding="{ type: object, property: page.shape }">
-                            <legend><%= page.shapeLabel %></legend>
+                            data-mvc-binding="{ type: object, property: shape }">
+                            <legend><%= shapeLabel %></legend>
                             
                              <input type="radio" name="shape" id="pencil" value="pencil" />
-         	                <label for="pencil" data-theme="d"><%= page.pencilLabel %></label>
+         	                <label for="pencil" data-theme="d"><%= pencilLabel %></label>
                             
                             <input type="radio" name="shape" id="line" value="line" />
-                            <label for="line" data-theme="d"><%= page.lineLabel %></label>
+                            <label for="line" data-theme="d"><%= lineLabel %></label>
                             
                             <input type="radio" name="shape" id="rectangle" value="rectangle" />
-                            <label for="rectangle" data-theme="d"><%= page.rectangleLabel %></label>
+                            <label for="rectangle" data-theme="d"><%= rectangleLabel %></label>
                             
                             <input type="radio" name="shape" id="circle" value="circle" />
-                            <label for="circle" data-theme="d"><%= page.circleLabel %></label>
+                            <label for="circle" data-theme="d"><%= circleLabel %></label>
                          </fieldset>
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="slider"><%= page.sliderLabel %></label>
+                        <label for="slider"><%= sliderLabel %></label>
                         <input type="range" name="slider" id="slider"
                             data-theme="b" data-track-theme="d"
                             value="1" min="1" max="100"
-                            data-mvc-binding="{ type: object, property: page.range }" />
+                            data-mvc-binding="{ type: object, property: range }" />
                     </div>
                 </form>
             </div><!-- /content -->
@@ -161,9 +157,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="color"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: color, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: color, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b"
@@ -174,20 +170,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h4></h4>
             </div><!-- /footer -->
         </script>
-        <script type="text/html" data-mvc-view="{ page: color, name: pagebeforeshow }">
+        <script type="text/template" data-mvc-view="{ page: color, name: pagebeforeshow }">
             <ul data-role="listview" data-theme="d">
-                <% for (var i = 0; i < model.colors.length; i += 1) { %>
-                    <% var color = model.colors[i]; %>
+                <% for (var i = 0; i < colors.length; i += 1) { %>
+                    <% var color = colors[i]; %>
                     <% if (color.code !== "transparent") { %>
                         <li>
-                            <a href="#" data-mvc-command="{ event: vclick, method: setColor }"
-                                data-mvc-command-arguments="<%= color.code %>">
+                            <a href="#" data-mvc-command="{ event: vclick, method: setColor, param-code: <%= color.code %> }">
                                 <img src="themes/index/images/background.png"
                                      alt="<%= color.name %>" class="ui-li-icon" />
                                 <span class="webpaint-color"
                                       style="background-color: <%= color.code %>"></span>
                                 <%= color.name %>
-                                <% if (color.code === model.color) { %>
+                                <% if (color.code === code) { %>
                                     <span class="ui-li-count">*</span>
                                 <% } %>
                             </a>
@@ -198,9 +193,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="history"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: history, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: history, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d"
@@ -211,17 +206,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h4></h4>
             </div><!-- /footer -->
         </script>
-        <script type="text/html" data-mvc-view="{ page: history, name: pagebeforeshow }">
+        <script type="text/template" data-mvc-view="{ page: history, name: pagebeforeshow }">
             <ul data-role="listview">
-                <% for (var i = model.histories.length - 1; i >= 0; i -= 1) { %>
-                    <% var imageDataURL = model.histories[i]; %>
+                <% for (var i = histories.length - 1; i >= 0; i -= 1) { %>
+                    <% var imageDataURL = histories[i]; %>
                     <li>
-                        <a href="#" data-mvc-command="{ event: vclick, method: setHistory }"
-                            data-mvc-command-arguments="<%= i %>">
+                        <a href="#" data-mvc-command="{ event: vclick, method: setHistory, param-index: <%= i %> }">
                             <img src="<%= imageDataURL %>" alt="<%= i %>"
                                 class="webpaint-history-image" />
-                            <%= page.historyLabel + i %>
-                            <% if (i === model.history) { %>
+                            <%= historyLabel + i %>
+                            <% if (i === history) { %>
                                 <span class="ui-li-count">*</span>
                             <% } %>
                         </a>
@@ -231,13 +225,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="language"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: language, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: language, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
-                <p><%= page.information %></p>
+                <p><%= information %></p>
                 <div data-mvc-view-anchor="pagebeforeshow"></div>
             </div><!-- /content -->
 
@@ -245,17 +239,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h4></h4>
             </div><!-- /footer -->
         </script>
-        <script type="text/html" data-mvc-view="{ page: language, name: pagebeforeshow }">
+        <script type="text/template" data-mvc-view="{ page: language, name: pagebeforeshow }">
             <ul data-role="listview" data-theme="d">
-                <% for (var i = 0; i < model.languages.length; i += 1) { %>
-                    <% var language = model.languages[i]; %>
+                <% for (var i = 0; i < languages.length; i += 1) { %>
+                    <% var language = languages[i]; %>
                     <li>
-                        <a href="#" data-mvc-command="{ event: vclick, method: setLocale }"
-                            data-mvc-command-arguments="<%= language.code %>">
+                        <a href="#" data-mvc-command="{ event: vclick, method: setLocale, param-locale: <%= language.code %> }">
                             <img src="themes/index/images/<%= language.code %>.png"
                                 alt="<%= language.name %>" class="ui-li-icon" />
                             <%= language.name %>
-                            <% if (language.code === model.locale) { %>
+                            <% if (language.code === locale) { %>
                                 <span class="ui-li-count">*</span>
                             <% } %>
                         </a>
@@ -265,22 +258,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         </script>
 
         <div data-role="page" id="about"></div><!-- /page -->
-        <script type="text/html" data-mvc-view="{ page: about, name: pagebeforecreate }">
+        <script type="text/template" data-mvc-view="{ page: about, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= page.title %></h1>
+                <h1><%= title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
-                <h2><%= page.version %></h2>
+                <h2><%= version %></h2>
                 <p>
-                    <%= page.description %>
+                    <%= description %>
                 </p>
                 <p>
-                    <%= page.follow %>&nbsp;
+                    <%= follow %>&nbsp;
                     <a href="http://twitter.com/loic_fontaine" target="_blank">Twitter</a>
                 </p>
                 <p>
-                    <%= page.source %>&nbsp;
+                    <%= source %>&nbsp;
                     <a href="http://github.com/lfont/WebPaint" target="_blank">github</a>
                     <br />
                     &copy; 2011 Loïc Fontaine
