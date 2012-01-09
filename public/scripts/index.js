@@ -141,7 +141,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     this.setShape(defaultSettings.drawer.shape);
                 },
                 saveAs: function () {
-                    drawer.saveAs();
+                    $.mobile.download("/service/saveAs/drawing.png", "POST", {
+                        dataURL: drawer.histories()[drawer.history()]
+                    });
                 },
                 setLineWidth: function (width) {
                     drawer.properties({
@@ -465,7 +467,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         
     webPaint.controller("#about", (function () {
         var model = {
-                version: "WebPaint 0.3.0"
+                version: "WebPaint 0.3.1"
             },
             translate = function (model) {
                 model.title = l("%about.title");
