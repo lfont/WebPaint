@@ -336,6 +336,21 @@ John Resig - http://ejohn.org/ - MIT Licensed
                 return page;
             };
         },
+        buildGetName = function (name) {
+            return function () {
+                return name;
+            };
+        },
+        buildGetAlias = function (alias) {
+            return function () {
+                return alias;
+            };
+        },
+        buildGetComponent = function (components) {
+            return function (alias) {
+                return components[alias];
+            };
+        },
         application =  function (options) {
             var opts = $.extend(options, defaultOptions),
                 controllers = {},
@@ -346,17 +361,29 @@ John Resig - http://ejohn.org/ - MIT Licensed
                     value: null
                 },
                 buildRender = function (controller) {
-                    var render = function (templateName, data) {
-                            var pageId = controller.page().attr("id"),
-                                cacheId =  pageId + templateName,
-                                template = templateCache[cacheId] =
-                                    templateCache[cacheId] ||
-                                    compile(getTemplate(pageId, templateName)),
-                                html = template(data);
+                    var pageId = controller.page().attr("id"),
+                        render = function (source, data) {
+                            var viewName,
+                                anchor,
+                                cacheId,
+                                template;
+    
+                            if (typeof(source) === "object") {
+                                viewName = source.name();
+                                anchor = source.name() + ":" + source.alias();
+                            } else {
+                                viewName = source;
+                                anchor = source;
+                            }
+    
+                            cacheId = pageId + viewName;
+                            template = templateCache[cacheId] =
+                                templateCache[cacheId] ||
+                                compile(getTemplate(pageId, viewName));
     
                             return renderTemplate(controller, {
-                                name: templateName,
-                                html: html
+                                name: anchor,
+                                html: template(data)
                             }, render);
                         };
                     
@@ -375,7 +402,10 @@ John Resig - http://ejohn.org/ - MIT Licensed
                     },
                     start: function (callback) {
                         var pageSelector,
-                            controller;
+                            controller,
+                            components,
+                            component,
+                            componentProperties;
                         
                         if (callback && typeof(callback) === "function") {
                             startCallbacks.push(callback);
@@ -387,10 +417,38 @@ John Resig - http://ejohn.org/ - MIT Licensed
                                 continue;
                             }
                             
+                            components = {};
                             controller = controllers[pageSelector];
                             controller.page = buildGetPage(pageSelector);
+                            
                             bindEventsToController.call(this, controller,
                                 sharedData, buildRender(controller));
+                                
+                            if (controller.components) {
+                                for (var i = 0;
+                                    i < controller.components.length;
+                                    i += 1) {
+                                    componentProperties = 
+                                        controller.components[i];
+                                    
+                                    component = window.jqmMvc.components[
+                                        componentProperties.name]();
+                                    component.page = controller.page;
+                                    component.name = buildGetName(
+                                        componentProperties.name);
+                                    component.alias = buildGetAlias(
+                                        componentProperties.alias);
+                                        
+                                    bindEventsToController.call(this, component,
+                                        sharedData, buildRender(component));
+                                        
+                                    components[componentProperties.alias] =
+                                        component;    
+                                }
+                            }
+                            
+                            controller.component =
+                                buildGetComponent(components);
                         }
                         
                         for (var i = 0; i < startCallbacks.length;
@@ -424,7 +482,8 @@ John Resig - http://ejohn.org/ - MIT Licensed
 
     if (typeof (window.jqmMvc) !== "object") {
         window.jqmMvc = {
-            application: application
+            application: application,
+            components: {}
         };
     }
 }(window.jQuery));

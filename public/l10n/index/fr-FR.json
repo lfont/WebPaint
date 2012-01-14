@@ -32,6 +32,7 @@
     "%option.about": "A propos",
 
     "%newDrawing.title": "Nouveau",
+    "%newDrawing.information": "Choisissez une couleur de fond : ",
     
     "%shape.title": "Formes",
     "%shape.shapeLabel": "Formes : ",

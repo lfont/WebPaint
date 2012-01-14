@@ -39,17 +39,36 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: left !important;
 }
 
-.webpaint-color {
-    top: 3px;
-    left: -30px;
-    position: relative;
-    float: left;
-    height: 16px;
-    width: 16px;
+.colorpicker-colors {
+    margin: 0 auto;
+    width: 90%;
 }
 
+.colorpicker-color {
+    padding: 0.5em;
+}
+
+.colorpicker-color-code {
+    background: transparent url("images/background.png") repeat 0 0;
+    border: 1px solid gray;
+    cursor: pointer;
+    height: 30px;
+}
+
+.colorpicker-color-code div {
+    height: 100%;
+}
+
+.colorpicker-color-code div:hover {
+    outline: 4px solid gray;
+}
+
+.colorpicker-color-code-selected {
+    outline: 4px solid gray;
+}
+    
 .webpaint-history-image {
-    background: transparent url('images/background.png') repeat 0 0;
+    background: transparent url("images/background.png") repeat 0 0;
     height: 115px;
     width: 115px;
 }

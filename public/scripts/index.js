@@ -21,6 +21,61 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         // application
         webPaint = mvc.application();
     
+    $.extend(mvc.components, {
+        colorPicker: function () {
+            var hasPendingRendering = true,
+                model = {
+                    selectedColor: null
+                },
+                translate = function (model) {
+                    model.predefinedColorHint =
+                        l("%colorPicker.predefinedColorHint");        
+                },
+                changeCallbacks = [];
+            
+            return {
+                pagebeforecreate: function () {
+                    translate(model);
+                },
+                pagebeforeshow: function (req, res) {
+                    if (hasPendingRendering) {
+                        res.render(this, model);
+                        hasPendingRendering = false;
+                    }
+                },
+                colors: function (colrs) {
+                    if (colrs) {
+                        model.colors = colrs;
+                        hasPendingRendering = true;
+                    }
+                    return model.colors;
+                },
+                select: function (color) {
+                    model.selectedColor = color;
+                    hasPendingRendering = true;
+                    return this;
+                },
+                change: function (callback) {
+                    if (callback && typeof(callback) == "function") {
+                        changeCallbacks.push(callback);
+                    } else {
+                        for (var i = 0; i < changeCallbacks.length; i += 1) {
+                            changeCallbacks[i].call(this);
+                        }
+                    }
+                    return this;
+                },
+                value: function (req) {
+                    if (req) {
+                        model.selectedColor = req.get("color");
+                        this.change();
+                    }
+                    return model.selectedColor;
+                }
+            };
+        }
+    });
+    
     webPaint.controller("#main", (function () {
         var isInitialized = false,
             drawer,
@@ -312,20 +367,23 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             model = {},
             translate = function (model) {
                 model.title = l("%newDrawing.title");
+                model.information = l("%newDrawing.information");
             };
             
         return {
+            components: [
+                { name: "colorPicker", alias: "cPicker" }    
+            ],
             pagebeforecreate: function (req, res) {
-                model.colors = colors;
                 translate(model);
                 res.render("pagebeforecreate", model);
+                this.component("cPicker").change(function () {       
+                    actions.newDrawing(this.value());
+                    navigator.goBackTo("#main");
+                }).colors(colors)
             },
             pagebeforeshow: function (req) {
                 actions = req.get("actions");
-            },
-            setColor: function (req) {
-                actions.newDrawing(req.get("code"));
-                navigator.goBackTo("#main");
             }
         };
     }()));
@@ -375,19 +433,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             };
             
         return {
+            components: [
+                { name: "colorPicker", alias: "cPicker" }    
+            ],
             pagebeforecreate: function (req, res) {
-                model.colors = colors;
                 translate(model);
                 res.render("pagebeforecreate", model);
+                this.component("cPicker").change(function () {       
+                    actions.setColor(this.value());
+                    navigator.goBackTo("#main");
+                }).colors(colors.slice(1));
             },
-            pagebeforeshow: function (req, res) {
+            pagebeforeshow: function (req) {
                 actions = req.get("actions");
-                model.code = req.get("drawer").properties.strokeStyle;
-                res.render("pagebeforeshow", model).trigger("create");
-            },
-            setColor: function (req) {
-                actions.setColor(req.get("code"));
-                navigator.goBackTo("#main");
+                this.component("cPicker").select(
+                    req.get("drawer").properties.strokeStyle);
             }
         };
     }()));
@@ -467,7 +527,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         
     webPaint.controller("#about", (function () {
         var model = {
-                version: "WebPaint 0.3.1"
+                version: "WebPaint 0.4.0"
             },
             translate = function (model) {
                 model.title = l("%about.title");

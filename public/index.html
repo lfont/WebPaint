@@ -12,7 +12,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <link rel="stylesheet" href="lib/jquery.mobile-1.0/jquery.mobile-1.0.css" />
         <link rel="stylesheet" href="themes/index/index.css" />
         <script src="lib/jquery-1.6.4.js"></script>
-        <script src="lib/jquery.mobile.mvc-0.5.0.js"></script>
+        <script src="lib/jquery.mobile.mvc-0.6.0.js"></script>
         <script src="lib/l10n.js"></script>
         <script src="lib/drawing.js"></script>
         <script src="lib/drawing.event.js"></script>
@@ -22,6 +22,30 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <script src="lib/jquery.mobile.toast.js"></script>
     </head>
     <body>
+        <script type="text/template" data-mvc-view="{ name: colorPicker }">
+            <div>
+                <table class="colorpicker-colors">
+                    <tr>
+                    <% for (var i = 0; i < colors.length; i += 1) { %>
+                        <% var color = colors[i]; %>
+                        <% if (i !== 0 && i % 4 === 0) { %>
+                            </tr>
+                            <tr>
+                        <% } %>
+                        <td class="colorpicker-color">
+                            <div class="colorpicker-color-code"
+                                title="<%= color.name %>"
+                                data-mvc-command="{ event: vclick, method: value, param-color: <%= color.code %> }">
+                                <div class="<%= (color.code === selectedColor) ? 'colorpicker-color-code-selected' : '' %>"
+                                    style="background-color: <%= color.code %>"></div>
+                            </div>
+                        </td>
+                    <% } %>
+                    </tr>
+                </table>
+            </div>
+        </script>
+        
         <div data-role="page" id="main"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: main, name: pagebeforecreate }">
             <div data-role="header" data-position="fixed"
@@ -93,21 +117,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <h1><%= title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="d">
-                <ul data-role="listview">
-                    <% for (var i = 0; i < colors.length; i += 1) { %>
-                        <% var color = colors[i]; %>
-                        <li>
-                            <a href="#" data-mvc-command="{ event: vclick, method: setColor, param-code: <%= color.code %> }">
-                                <img src="themes/index/images/background.png"
-                                    alt="<%= color.name %>" class="ui-li-icon" />
-                                <span class="webpaint-color"
-                                      style="background-color: <%= color.code %>"></span>
-                                <%= color.name %>
-                            </a>
-                        </li>
-                    <% } %>
-                </ul>
+            <div data-role="content" data-theme="b">
+                <p><%= information %></p>
+                <div data-mvc-view-anchor="colorPicker:cPicker"></div>
             </div><!-- /content -->
 
             <div data-role="footer">
@@ -144,8 +156,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     </div>
                     <div data-role="fieldcontain">
                         <label for="slider"><%= sliderLabel %></label>
-                        <input type="range" name="slider" id="slider"
-                            data-theme="b" data-track-theme="d"
+                        <input type="number" name="slider" id="slider"
+                            data-type="range" data-theme="c" data-track-theme="b"
                             value="1" min="1" max="100"
                             data-mvc-binding="{ type: object, property: range }" />
                     </div>
@@ -164,33 +176,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b"
-                data-mvc-view-anchor="pagebeforeshow">
+                data-mvc-view-anchor="colorPicker:cPicker">
             </div><!-- /content -->
 
             <div data-role="footer">
                 <h4></h4>
             </div><!-- /footer -->
-        </script>
-        <script type="text/template" data-mvc-view="{ page: color, name: pagebeforeshow }">
-            <ul data-role="listview" data-theme="d">
-                <% for (var i = 0; i < colors.length; i += 1) { %>
-                    <% var color = colors[i]; %>
-                    <% if (color.code !== "transparent") { %>
-                        <li>
-                            <a href="#" data-mvc-command="{ event: vclick, method: setColor, param-code: <%= color.code %> }">
-                                <img src="themes/index/images/background.png"
-                                     alt="<%= color.name %>" class="ui-li-icon" />
-                                <span class="webpaint-color"
-                                      style="background-color: <%= color.code %>"></span>
-                                <%= color.name %>
-                                <% if (color.code === code) { %>
-                                    <span class="ui-li-count">*</span>
-                                <% } %>
-                            </a>
-                        </li>
-                    <% } %>
-                <% } %>
-            </ul>
         </script>
 
         <div data-role="page" id="history"></div><!-- /page -->
