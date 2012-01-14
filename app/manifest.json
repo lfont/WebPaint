@@ -1,0 +1,16 @@
+{
+    "name": "WebPaint",
+    "description": "Simple drawing app",
+    "version": "1.0.0",
+    "app": {
+        "urls": [
+            "*://webpaint.nodester.com/"
+        ],
+        "launch": {
+            "web_url": "http://webpaint.nodester.com/"
+        }
+    },
+    "icons": {
+        "128": "icon_128.png"
+    }
+}
