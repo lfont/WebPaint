@@ -15,8 +15,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     }
 }
 
-[data-role='content'] {
+[data-role="content"] {
     text-align: center;
+}
+
+input[type="number"] {
+    width: 55px !important;
 }
 
 #main {
@@ -26,7 +30,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 #main canvas {
     border: 1px solid black;
-    background: transparent url('images/background.png') repeat 0 0;
+    background: transparent url("images/background.png") repeat 0 0;
     cursor: pointer;
 }
 
@@ -39,34 +43,58 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: left !important;
 }
 
-.colorpicker-colors {
+.colorpicker-custom-colors label {
+    display: inline-block;
+    text-align: left;
+    width: 5em;
+}
+    
+.colorpicker-predefined-colors {
     margin: 0 auto;
     width: 90%;
 }
 
-.colorpicker-color {
+.colorpicker-predefined-colors td {
     padding: 0.5em;
 }
 
-.colorpicker-color-code {
-    background: transparent url("images/background.png") repeat 0 0;
-    border: 1px solid gray;
-    cursor: pointer;
+.colorpicker-custom-color,
+.colorpicker-predefined-color {
     height: 30px;
+    width: 92px;
 }
 
-.colorpicker-color-code div {
-    height: 100%;
+.colorpicker-custom-color,
+.colorpicker-predefined-color div {
+    border: 1px solid gray;
 }
 
-.colorpicker-color-code div:hover {
-    outline: 4px solid gray;
+.colorpicker-custom-color,
+.colorpicker-predefined-color,
+.colorpicker-predefined-color div {
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
-.colorpicker-color-code-selected {
-    outline: 4px solid gray;
+.colorpicker-custom-color {
+    margin: 0.5em auto;
 }
-    
+
+.colorpicker-predefined-color {
+    background: transparent url("images/background.png") repeat 0 0;
+}
+
+.colorpicker-predefined-color div {
+    height: 100%;    
+}
+
+.colorpicker-custom-color:hover,
+.colorpicker-predefined-color div:hover,
+.colorpicker-color-selected {
+    cursor: pointer;
+    box-shadow: 0 0 0 3px gray;
+}
+
 .webpaint-history-image {
     background: transparent url("images/background.png") repeat 0 0;
     height: 115px;

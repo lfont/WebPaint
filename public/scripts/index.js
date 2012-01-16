@@ -20,62 +20,151 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         },
         // application
         webPaint = mvc.application();
-    
+
     $.extend(mvc.components, {
-        colorPicker: function () {
-            var hasPendingRendering = true,
-                model = {
-                    selectedColor: null
-                },
+        colorPicker: (function () {
+            var SELECTED_CLASS = "colorpicker-color-selected",
                 translate = function (model) {
+                    model.customColorHint = l("%colorPicker.customColorHint");
                     model.predefinedColorHint =
-                        l("%colorPicker.predefinedColorHint");        
+                        l("%colorPicker.predefinedColorHint");
+                    model.redLabel = l("%colorPicker.redLabel");
+                    model.greenLabel = l("%colorPicker.greenLabel");
+                    model.blueLabel = l("%colorPicker.blueLabel");
                 },
-                changeCallbacks = [];
-            
-            return {
-                pagebeforecreate: function () {
-                    translate(model);
-                },
-                pagebeforeshow: function (req, res) {
-                    if (hasPendingRendering) {
-                        res.render(this, model);
-                        hasPendingRendering = false;
-                    }
-                },
-                colors: function (colrs) {
-                    if (colrs) {
-                        model.colors = colrs;
-                        hasPendingRendering = true;
-                    }
-                    return model.colors;
-                },
-                select: function (color) {
-                    model.selectedColor = color;
-                    hasPendingRendering = true;
-                    return this;
-                },
-                change: function (callback) {
-                    if (callback && typeof(callback) == "function") {
-                        changeCallbacks.push(callback);
-                    } else {
-                        for (var i = 0; i < changeCallbacks.length; i += 1) {
-                            changeCallbacks[i].call(this);
+                hexFromRGB = function (r, g, b) {
+                    var hex = [
+                            parseInt(r, 10).toString(16),
+                            parseInt(g, 10).toString(16),
+                            parseInt(b, 10).toString(16)
+                        ];
+
+                    $.each(hex, function (nr, val) {
+                        if (val.length === 1) {
+                            hex[nr] = "0" + val;
                         }
-                    }
-                    return this;
+                    });
+
+                    return "#" + hex.join("");
                 },
-                value: function (req) {
-                    if (req) {
-                        model.selectedColor = req.get("color");
-                        this.change();
+                RGBFromHex = function (hex) {
+                    var match = /([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/
+                        .exec(hex);
+                    
+                    if (match && match.length === 4) {
+                        return {
+                            r: parseInt(match[1], 16),
+                            g: parseInt(match[2], 16),
+                            b: parseInt(match[3], 16)
+                        };
                     }
-                    return model.selectedColor;
-                }
-            };
-        }
-    });
+                    
+                    return null;
+                },
+                getColorChangeHandler = function (colorPicker) {
+                    return function () {
+                        colorPicker.customColor
+                            .removeClass(SELECTED_CLASS)
+                            .css("background-color",
+                                hexFromRGB(colorPicker.red.val(),
+                                    colorPicker.green.val(),
+                                    colorPicker.blue.val())); 
+                    };
+                };
+
+            return function () {
+                var hasPendingRendering = true,
+                    model = {
+                        selectedColor: null
+                    },
+                    changeCallbacks = [];
     
+                return {
+                    customColor: null,
+                    red: null,
+                    green: null,
+                    blue: null,
+                    pagebeforecreate: function (req, res) {
+                        var colorChangeHandler;
+                        
+                        translate(model);
+                        res.render(this, model);
+                        colorChangeHandler = getColorChangeHandler(this);
+                        this.red.change(colorChangeHandler);
+                        this.green.change(colorChangeHandler);
+                        this.blue.change(colorChangeHandler).change();
+                    },
+                    pagebeforeshow: function (req, res) {
+                        if (hasPendingRendering) {
+                            res.render("cpPredefinedColors", model);
+                            hasPendingRendering = false;
+                        }
+                    },
+                    colors: function (colrs) {
+                        if (colrs) {
+                            model.colors = colrs;
+                            hasPendingRendering = true;
+                        }
+                        return model.colors;
+                    },
+                    hasPredefinedColor: function (color) {
+                        var contains = false;
+                        
+                        $.each(model.colors, function (nr, val) {
+                            if (val.code === color) {
+                                contains = true;
+                                return false;
+                            }
+                        });
+                        
+                        return contains;
+                    },
+                    select: function (color) {
+                        var rgb;
+                        
+                        model.selectedColor = color;
+                        if (this.hasPredefinedColor(color)) {
+                            this.customColor.removeClass(SELECTED_CLASS);
+                        } else {
+                            rgb = RGBFromHex(color);
+                            this.red.val(rgb.r).slider("refresh");
+                            this.green.val(rgb.g).slider("refresh");
+                            this.blue.val(rgb.b).slider("refresh").change();
+                            this.customColor.addClass(SELECTED_CLASS);
+                        }
+                        hasPendingRendering = true;
+                        return this;
+                    },
+                    change: function (callback) {
+                        if (callback && typeof(callback) === "function") {
+                            changeCallbacks.push(callback);
+                        } else {
+                            for (var i = 0; i < changeCallbacks.length;
+                                i += 1) {
+                                changeCallbacks[i].call(this);
+                            }
+                        }
+                        return this;
+                    },
+                    value: function (req) {
+                        var color;
+    
+                        if (req) {
+                            color = req.get("color");
+                            if (color === "custom") {
+                                color = hexFromRGB(this.red.val(),
+                                    this.green.val(), this.blue.val());
+                            }
+                            model.selectedColor = color;
+                            this.change();
+                        }
+                        return model.selectedColor;
+                    }
+                };
+            };
+        }())
+    });
+
     webPaint.controller("#main", (function () {
         var isInitialized = false,
             drawer,
@@ -89,7 +178,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 model.optionButton = l("%main.optionButton");
                 model.lastUndo = l("%main.lastUndo");
                 model.lastRedo = l("%main.lastRedo");
-                
+
                 colors = [{
                     code: "transparent",
                     name: l("%transparent")
@@ -127,7 +216,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     code: "#ffff00",
                     name: l("%yellow")
                 }];
-                
+
                 $.mobile.page.prototype.options.backBtnText = l("%backButton");
             },
             // settings
@@ -148,7 +237,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             loadSettings = function () {
                 var settingsString = localStorage.getItem(SETTINGS_STORAGE_KEY),
                     userSettings;
-                    
+
                 if (settingsString) {
                     try {
                         userSettings = JSON.parse(settingsString);
@@ -170,14 +259,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var contentHeight = $(window).height() -
                         this.header.outerHeight() -
                         (this.footer && this.footer.outerHeight() || 0);
-                        
+
                 contentHeight -= (this.content.outerHeight() -
                     this.content.height());
                 this.content.height(contentHeight);
             },
             fixCanvasGeometry = function () {
                 var canvas = this.canvas[0];
-                
+
                 canvas.height = (this.content.height() -
                     (this.canvas.outerHeight() -
                         this.canvas.height()));
@@ -223,19 +312,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     window.location.reload();
                 }
             };
-            
+
         return {
             header: null,
             content: null,
             canvas: null,
             pagebeforecreate: function (req, res) {
                 console.log("Loading WebPaint...");
-                
+
                 loadSettings();
                 if (settings.locale) {
                     String.locale = settings.locale;
                 }
-                
+
                 translate(model);
                 res.render("pagebeforecreate", model);
             },
@@ -249,7 +338,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             move: "vmousemove"
                         }
                     });
-                    
+
                     if (settings.drawer.histories.length) {
                         drawer.init(settings.drawer.backgroundColor);
                         drawer.properties(settings.drawer.properties);
@@ -282,7 +371,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             unload: function () {
                 var histories = drawer.histories(),
                     history = drawer.history();
-                
+
                 console.log("Unloading WebPaint...");
                 settings.drawer.properties = drawer.properties();
                 settings.drawer.histories = (histories.length > 10) ?
@@ -308,7 +397,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-    
+
     webPaint.controller("#option", (function () {
         var data,
             model = {},
@@ -321,7 +410,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     method: {
                         name: "callAction",
                         param: "saveAs"
-                    },            
+                    },
                     name: l("%option.saveAs")
                 }, {
                     method: {
@@ -340,7 +429,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     name: l("%option.about")
                 }];
             };
-            
+
         return {
             pagebeforecreate: function (req, res) {
                 translate(model);
@@ -361,7 +450,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-    
+
     webPaint.controller("#newDrawing", (function () {
         var actions,
             model = {},
@@ -369,15 +458,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 model.title = l("%newDrawing.title");
                 model.information = l("%newDrawing.information");
             };
-            
+
         return {
             components: [
-                { name: "colorPicker", alias: "cPicker" }    
+                { name: "colorPicker", alias: "cPicker" }
             ],
             pagebeforecreate: function (req, res) {
                 translate(model);
                 res.render("pagebeforecreate", model);
-                this.component("cPicker").change(function () {       
+                this.component("cPicker").change(function () {
                     actions.newDrawing(this.value());
                     navigator.goBackTo("#main");
                 }).colors(colors)
@@ -387,7 +476,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-    
+
     webPaint.controller("#shape", (function () {
         var actions,
             drawer,
@@ -401,7 +490,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 model.rectangleLabel = l("%shape.rectangleLabel");
                 model.circleLabel = l("%shape.circleLabel");
             };
-            
+
         return {
             shape: null,
             range: null,
@@ -424,22 +513,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-    
+
     webPaint.controller("#color", (function () {
         var actions,
             model = {},
             translate = function (model) {
                 model.title = l("%color.title");
             };
-            
+
         return {
             components: [
-                { name: "colorPicker", alias: "cPicker" }    
+                { name: "colorPicker", alias: "cPicker" }
             ],
             pagebeforecreate: function (req, res) {
                 translate(model);
                 res.render("pagebeforecreate", model);
-                this.component("cPicker").change(function () {       
+                this.component("cPicker").change(function () {
                     actions.setColor(this.value());
                     navigator.goBackTo("#main");
                 }).colors(colors.slice(1));
@@ -451,7 +540,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-    
+
     webPaint.controller("#history", (function () {
         var actions,
             model = {},
@@ -459,7 +548,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 model.title = l("%history.title");
                 model.historyLabel = l("%history.historyLabel");
             };
-            
+
         return {
             pagebeforecreate: function (req, res) {
                 translate(model);
@@ -467,7 +556,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             },
             pagebeforeshow: function (req, res) {
                 var drawer = req.get("drawer");
-                
+
                 actions = req.get("actions");
                 model.histories = drawer.histories;
                 model.history = drawer.history;
@@ -479,7 +568,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-        
+
     webPaint.controller("#language", (function () {
         var DEFAULT_LOCALE = "xx-XX",
             actions,
@@ -498,7 +587,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     name: l("%language.french")
                 }];
             };
-            
+
         return {
             pagebeforecreate: function (req, res) {
                 translate(model);
@@ -506,7 +595,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             },
             pagebeforeshow: function (req, res) {
                 var appLocale = req.get("locale");
-                
+
                 actions = req.get("actions");
                 model.locale = (appLocale === "") ?
                     DEFAULT_LOCALE :
@@ -515,7 +604,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             },
             setLocale: function (req) {
                 var locale = req.get("locale");
-                
+
                 locale = (locale === DEFAULT_LOCALE) ?
                     "" :
                     locale;
@@ -524,7 +613,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-        
+
     webPaint.controller("#about", (function () {
         var model = {
                 version: "WebPaint 0.4.0"
@@ -535,7 +624,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 model.source = l("%about.source");
                 model.follow = l("%about.follow");
             };
-            
+
         return {
             pagebeforecreate: function (req, res) {
                 translate(model);
@@ -543,14 +632,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
     }()));
-        
+
     webPaint.stop(function () {
         this.controller("#main").unload();
     });
-        
+
     $(document).bind("mobileinit", function () {
         $.mobile.defaultPageTransition = "none";
         $.mobile.defaultDialogTransition = "none";
-        $.mobile.page.prototype.options.addBackBtn = true;                
+        $.mobile.page.prototype.options.addBackBtn = true;
     });
 }(window.jQuery, window.jqmMvc, window.drawing));

@@ -14,6 +14,12 @@
 
     "%backButton": "Back",
     
+    "%colorPicker.customColorHint": "Créez votre propre couleur : ",
+    "%colorPicker.predefinedColorHint": "Ou choisissez en une prédéfinie : ",
+    "%colorPicker.redLabel": "Rouge : ",
+    "%colorPicker.greenLabel": "Vert : ",
+    "%colorPicker.blueLabel": "Bleu : ",
+    
     "%main.title": "WebPaint",
     "%main.undoButton": "Défaire",
     "%main.redoButton": "Refaire",

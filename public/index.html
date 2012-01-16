@@ -24,26 +24,61 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     <body>
         <script type="text/template" data-mvc-view="{ name: colorPicker }">
             <div>
-                <table class="colorpicker-colors">
-                    <tr>
-                    <% for (var i = 0; i < colors.length; i += 1) { %>
-                        <% var color = colors[i]; %>
-                        <% if (i !== 0 && i % 4 === 0) { %>
-                            </tr>
-                            <tr>
-                        <% } %>
-                        <td class="colorpicker-color">
-                            <div class="colorpicker-color-code"
-                                title="<%= color.name %>"
-                                data-mvc-command="{ event: vclick, method: value, param-color: <%= color.code %> }">
-                                <div class="<%= (color.code === selectedColor) ? 'colorpicker-color-code-selected' : '' %>"
-                                    style="background-color: <%= color.code %>"></div>
-                            </div>
-                        </td>
-                    <% } %>
-                    </tr>
-                </table>
+                <div class="colorpicker-custom-colors">
+                    <p><%= customColorHint %></p>
+                    <div class="colorpicker-custom-color"
+                        data-mvc-binding="{ type: object, property: customColor }"
+                        data-mvc-command="{ event: vclick, method: value, param-color: custom }">
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="red"><%= redLabel %></label>
+                        <input type="number" name="red"
+                            data-type="range" data-theme="c" data-track-theme="b"
+                            value="0" min="0" max="255"
+                            data-mvc-binding="{ type: object, property: red }" />
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="green"><%= greenLabel %></label>
+                        <input type="number" name="green"
+                            data-type="range" data-theme="c" data-track-theme="b"
+                            value="0" min="0" max="255"
+                            data-mvc-binding="{ type: object, property: green }" />
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="blue"><%= blueLabel %></label>
+                        <input type="number" name="blue"
+                            data-type="range" data-theme="c" data-track-theme="b"
+                            value="0" min="0" max="255"
+                            data-mvc-binding="{ type: object, property: blue }" />
+                    </div>
+                </div>
+                <div>
+                    <p><%= predefinedColorHint %></p>
+                    <div data-mvc-view-anchor="cpPredefinedColors">
+                    </div>
+                </div>
             </div>
+        </script>
+        <script type="text/template" data-mvc-view="{ name: cpPredefinedColors }">
+            <table class="colorpicker-predefined-colors">
+                <tr>
+                <% for (var i = 0; i < colors.length; i += 1) { %>
+                    <% var color = colors[i]; %>
+                    <% if (i !== 0 && i % 4 === 0) { %>
+                        </tr>
+                        <tr>
+                    <% } %>
+                    <td>
+                        <div class="colorpicker-predefined-color"
+                            title="<%= color.name %>"
+                            data-mvc-command="{ event: vclick, method: value, param-color: <%= color.code %> }">
+                            <div class="<%= (color.code === selectedColor) ? 'colorpicker-color-selected' : '' %>"
+                                style="background-color: <%= color.code %>"></div>
+                        </div>
+                    </td>
+                <% } %>
+                </tr>
+            </table>
         </script>
         
         <div data-role="page" id="main"></div><!-- /page -->
@@ -134,7 +169,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b"
-                <form>
+                <div>
                     <div data-role="fieldcontain">
                         <fieldset data-role="controlgroup"
                             data-type="horizontal"
@@ -161,7 +196,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             value="1" min="1" max="100"
                             data-mvc-binding="{ type: object, property: range }" />
                     </div>
-                </form>
+                </div>
             </div><!-- /content -->
 
             <div data-role="footer">

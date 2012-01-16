@@ -14,6 +14,12 @@
 
     "%backButton": "Retour",
     
+    "%colorPicker.customColorHint": "Create your own color: ",
+    "%colorPicker.predefinedColorHint": "Or choose a predefined one: ",
+    "%colorPicker.redLabel": "Red: ",
+    "%colorPicker.greenLabel": "Green: ",
+    "%colorPicker.blueLabel": "Blue: ",
+    
     "%main.title": "WebPaint",
     "%main.undoButton": "Undo",
     "%main.redoButton": "Redo",
