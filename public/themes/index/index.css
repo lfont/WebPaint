@@ -38,9 +38,23 @@ input[type="number"] {
     cursor: crosshair;
 }
 
-.ui-title-left {
-    margin-left: 15px !important;
-    text-align: left !important;
+.block {
+    margin-top: 1em;     
+}
+
+.block>label {
+    display: block;
+    font-weight: bold;
+    text-align: left;    
+}
+
+.block>fieldset,
+.block>div {
+    margin: 2em auto 0 auto;
+}
+
+.block>fieldset {
+    width: 50%;    
 }
 
 .colorpicker-custom-colors label {
@@ -60,13 +74,9 @@ input[type="number"] {
 
 .colorpicker-custom-color,
 .colorpicker-predefined-color {
+    border: 1px solid gray;
     height: 30px;
     width: 92px;
-}
-
-.colorpicker-custom-color,
-.colorpicker-predefined-color div {
-    border: 1px solid gray;
 }
 
 .colorpicker-custom-color,
@@ -85,7 +95,7 @@ input[type="number"] {
 }
 
 .colorpicker-predefined-color div {
-    height: 100%;    
+    height: 100%;
 }
 
 .colorpicker-custom-color:hover,
@@ -93,6 +103,11 @@ input[type="number"] {
 .colorpicker-color-selected {
     cursor: pointer;
     box-shadow: 0 0 0 3px gray;
+}
+
+.ui-title-left {
+    margin-left: 15px !important;
+    text-align: left !important;
 }
 
 .webpaint-history-image {

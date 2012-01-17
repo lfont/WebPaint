@@ -136,20 +136,16 @@ John Resig - http://ejohn.org/ - MIT Licensed
             
             return request;
         },
-        getResponseObject = function (renderingCallback, data) {
+        getResponseObject = function (data) {
             var response = {
-                render: renderingCallback
-            };
-            
-            if (data) {
-                response.send = function (key, value) {
-                    if (typeof(key) === "object") {
-                        $.extend(data, key);
-                    } else {
-                        data[key] = value;
+                    send: function (key, value) {
+                        if (typeof(key) === "object") {
+                            $.extend(data, key);
+                        } else {
+                            data[key] = value;
+                        }
                     }
                 };
-            }
             
             return response;
         },
@@ -166,8 +162,7 @@ John Resig - http://ejohn.org/ - MIT Licensed
                 }
             });
         },
-        bindCommandToController = function (controller, view, command,
-            renderingCallback) {
+        bindCommandToController = function (controller, view, command) {
             command.isRequired = true;
                             
             bindEvent(controller, command,
@@ -200,12 +195,11 @@ John Resig - http://ejohn.org/ - MIT Licensed
                                     }
                                     
                                     return data;
-                                }),
-                            getResponseObject(renderingCallback));
+                                }));
                     };
                 });
         },
-        renderTemplate = function (controller, template, renderingCallback) {
+        renderTemplate = function (controller, template) {
             var view = controller.page().find("[" + VIEW_ANCHOR_ATTRIBUTE +
                     "='" + template.name + "']");
 
@@ -229,8 +223,7 @@ John Resig - http://ejohn.org/ - MIT Licensed
                         commandIndex += 1) {
                         command = commands[commandIndex];
                         command.element = element;
-                        bindCommandToController(controller, view, command,
-                            renderingCallback);
+                        bindCommandToController(controller, view, command);
                     }
                 });
 
@@ -273,8 +266,7 @@ John Resig - http://ejohn.org/ - MIT Licensed
                     "'); } return p.join('');");
         },
         // application's methods
-        bindEventsToController = function (controller, sharedData,
-            renderingCallback) {
+        bindEventsToController = function (controller, sharedData) {
             var pageEvents = this.options().pageEvents,
                 eventIndex,
                 pageEvent,
@@ -292,8 +284,7 @@ John Resig - http://ejohn.org/ - MIT Licensed
                                 sharedData.value = {};
                                 handler.call(controller,
                                     getRequestObject(event, ui),
-                                    getResponseObject(renderingCallback,
-                                        sharedData.value));
+                                    getResponseObject(sharedData.value));
                             };
                         }
                         else if (eventName === "pagebeforeshow" ||
@@ -304,15 +295,13 @@ John Resig - http://ejohn.org/ - MIT Licensed
                                 handler.call(controller,
                                     getRequestObject(event, ui, function () {
                                         return sharedData.value;
-                                    }),
-                                    getResponseObject(renderingCallback));
+                                    }));
                             };
                         }
                         else {  
                             return function (event) {
                                 handler.call(controller,
-                                    getRequestObject(event),
-                                    getResponseObject(renderingCallback));
+                                    getRequestObject(event));
                             };
                         }
                     };
@@ -384,7 +373,7 @@ John Resig - http://ejohn.org/ - MIT Licensed
                             return renderTemplate(controller, {
                                 name: anchor,
                                 html: template(data)
-                            }, render);
+                            });
                         };
                     
                     return render;
@@ -420,9 +409,10 @@ John Resig - http://ejohn.org/ - MIT Licensed
                             components = {};
                             controller = controllers[pageSelector];
                             controller.page = buildGetPage(pageSelector);
+                            controller.render = buildRender(controller);
                             
                             bindEventsToController.call(this, controller,
-                                sharedData, buildRender(controller));
+                                sharedData);
                                 
                             if (controller.components) {
                                 for (var i = 0;
@@ -438,9 +428,10 @@ John Resig - http://ejohn.org/ - MIT Licensed
                                         componentProperties.name);
                                     component.alias = buildGetAlias(
                                         componentProperties.alias);
+                                    component.render = buildRender(component);
                                         
                                     bindEventsToController.call(this, component,
-                                        sharedData, buildRender(component));
+                                        sharedData);
                                         
                                     components[componentProperties.alias] =
                                         component;    

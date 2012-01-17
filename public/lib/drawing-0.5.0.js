@@ -4,12 +4,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 (function () {
-    'use strict';
+    "use strict";
     var $ = window.jQuery,
         defaultOptions = {
             historicSize: 100
         },
-        defaultBackgroundColor = 'transparent',
+        defaultBackgroundColor = "transparent",
         restoreContextImage = function (context, imageDataURL) {
             var image = new Image();
             
@@ -61,11 +61,123 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         clearCanvas = function (canvas) {  
             canvas.width = canvas.width;
         },
-        // canvasBuilder
-        shapeDrawer = function (kind) {
-            return window.drawing.shapeDrawer(this, kind);
+        shapeDrawerBuilder = function (canvasDrawer, kind) {
+            var canvas = canvasDrawer.canvas(),
+                context = canvas.getContext("2d"),
+                shape = window.drawing.shapes[kind](context),
+                image;
+            
+            if (!shape) {
+                throw new Error("Unknown shape kind: " + kind);
+            }
+            
+            return {
+                begin: function (position) {
+                    image = context.getImageData(0, 0, canvas.width,
+                        canvas.height);
+                        
+                    if (shape.hasOwnProperty("open")) {
+                        shape.open(position, function () {
+                            canvasDrawer.clear();
+                            context.putImageData(image, 0, 0);
+                        });
+                    }
+                },
+                update: function (position) {
+                    shape.draw(position);
+                },
+                end: function () {
+                    if (shape.hasOwnProperty("close")) {
+                        shape.close();
+                    }
+                    canvasDrawer.store();
+                }
+            };
         },
-        undo = function () {
+        // canvasBuilder
+        canvasDrawer = function (canvas, options) {
+            return new canvasDrawer.fn.init(canvas, options);
+        };
+    
+    canvasDrawer.fn = canvasDrawer.prototype = {
+        constructor: canvasDrawer,
+        init: function (canvas, options) {
+            var context = canvas.getContext("2d"),
+                opts = $.extend({}, defaultOptions, options),
+                histories,
+                historyIndex,
+                background,
+                props;
+                
+            this.canvas = function () {
+                return canvas;
+            };
+            
+            this.histories = function (histo) {
+                if (histo) {
+                    histories = histo;
+                    if (historyIndex > histories.length - 1) {
+                        historyIndex = histories.length - 1;
+                    }
+                }
+                
+                return histories;
+            };
+            
+            this.properties = function (newProps) {
+                if (newProps) {
+                    setContextProperties(context, props, newProps);  
+                }
+                
+                return props;
+            };
+                
+            this.history = function (index) {
+                if (index || index === 0) {
+                    historyIndex = index;
+                    clearCanvas(canvas);
+                    // Restore the default properties.
+                    setContextProperties(context, props);
+                    restoreContextImage(context, histories[index]);
+                }
+                
+                return historyIndex;
+            };
+            
+            this.store = function () {
+                if (histories.length === opts.historicSize) {
+                    histories.shift();
+                }
+                histories.push(canvas.toDataURL());
+                historyIndex = (histories.length - 1);
+                return this;
+            };
+            
+            this.clear = function () {
+                clearCanvas(canvas);
+                // Restore the default properties.
+                setContextProperties(context, props);
+                drawCanvasBackground(canvas, context, background);
+                return this;
+            };
+            
+            this.newDrawing = function (backgroundColor) {
+                histories = [];
+                historyIndex = 0;
+                clearCanvas(canvas);
+                // Build a default properties object.
+                props = getContextProperties(context);
+                background = backgroundColor || defaultBackgroundColor;
+                drawCanvasBackground(canvas, context, background);
+                return this.store();
+            };
+            
+            return this.newDrawing();
+        },
+        shapeDrawer: function (kind) {
+            return shapeDrawerBuilder(this, kind);
+        },
+        undo: function () {
             var history = this.history(),
                 isFirst = (history <= 0);
             
@@ -75,7 +187,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             return !isFirst;
         },
-        redo = function () {
+        redo: function () {
             var history = this.history(),
                 isLast = (history + 1 >= this.histories().length);
             
@@ -85,95 +197,25 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             return !isLast;
         },
-        saveAs = function () {
+        saveAs: function () {
             window.location.href = this.canvas().toDataURL()
-                .replace('image/png', 'image/octet-stream');
+                .replace("image/png", "image/octet-stream");
             return this;
-        },
-        canvasDrawerBuilder = function (canvas, options) {
-            var context = canvas.getContext('2d'),
-                opts = $.extend({}, defaultOptions, options),
-                histories,
-                historyIndex,
-                background,
-                props,
-                drawer = {
-                    shapeDrawer: shapeDrawer,
-                    undo: undo,
-                    redo: redo,
-                    saveAs: saveAs,
-                    canvas: function () {
-                        return canvas;
-                    },
-                    histories: function (histo) {
-                        if (histo) {
-                            histories = histo;
-                            if (historyIndex > histories.length - 1) {
-                                historyIndex = histories.length - 1;
-                            }
-                        }
-                        
-                        return histories;
-                    },
-                    properties: function (newProps) {
-                        if (newProps) {
-                            setContextProperties(context, props, newProps);  
-                        }
-                        
-                        return props;
-                    },
-                    history: function (index) {
-                        if (index || index === 0) {
-                            historyIndex = index;
-                            clearCanvas(canvas);
-                            restoreContextImage(context, histories[index]);
-                        }
-                        
-                        return historyIndex;
-                    },
-                    store: function () {
-                        if (histories.length === opts.historicSize) {
-                            histories.shift();
-                        }
-                        histories.push(canvas.toDataURL());
-                        historyIndex = (histories.length - 1);
-                        return this;
-                    },
-                    clear: function () {
-                        clearCanvas(canvas);
-                        setContextProperties(context, props);
-                        drawCanvasBackground(canvas, context, background);
-                        return this;
-                    },
-                    init: function (backgroundColor) {
-                        histories = [];
-                        historyIndex = 0;
-                        clearCanvas(canvas);
-                        props = getContextProperties(context);
-                        setContextProperties(context, props);
-                        background = backgroundColor || defaultBackgroundColor;
-                        drawCanvasBackground(canvas, context, background);
-                        return this.store();
-                    }
-                };
-            
-            return drawer.init();
-        },
-        // namespace
-        drawingBuilder = function () {
-            return {
-                canvasDrawer: canvasDrawerBuilder
-            };
-        };
+        }
+    };
     
-    if (typeof(window.drawing) !== 'object') {
-        window.drawing = drawingBuilder();
+    canvasDrawer.fn.init.prototype = canvasDrawer.fn;
+    
+    if (typeof(window.drawing) !== "object") {
+        window.drawing = {
+            canvasDrawer: canvasDrawer
+        };
     }
 }());
 
 (function (drawing) {
-    'use strict';
-        // line
+    "use strict";
+    // line
     var drawLine = function (context, origin, current) {
             context.beginPath();
             context.lineTo(origin.x, origin.y);
@@ -283,53 +325,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             return pencil;
         };
     
-    if (typeof(drawing.shapes) !== 'object') {
+    if (typeof(drawing.shapes) !== "object") {
         drawing.shapes = {
             line: lineBuilder,
             rectangle: rectangleBuilder,
             circle: circleBuilder,
             pencil: pencilBuilder
         };
-    }
-}(window.drawing));
-
-(function (drawing) {
-    'use strict';
-    var shapeDrawerBuilder = function (canvasDrawer, kind) {
-            var canvas = canvasDrawer.canvas(),
-                context = canvas.getContext('2d'),
-                shape = drawing.shapes[kind](context),
-                image;
-            
-            if (!shape) {
-                throw new Error('Unknown shape kind: ' + kind);
-            }
-            
-            return {
-                begin: function (position) {
-                    image = context.getImageData(0, 0, canvas.width,
-                        canvas.height);
-                        
-                    if (shape.hasOwnProperty('open')) {
-                        shape.open(position, function () {
-                            canvasDrawer.clear();
-                            context.putImageData(image, 0, 0);
-                        });
-                    }
-                },
-                update: function (position) {
-                    shape.draw(position);
-                },
-                end: function () {
-                    if (shape.hasOwnProperty('close')) {
-                        shape.close();
-                    }
-                    canvasDrawer.store();
-                }
-            };
-        };
-    
-    if (typeof(drawing.shapeDrawer) !== 'function') {
-        drawing.shapeDrawer = shapeDrawerBuilder;
     }
 }(window.drawing));

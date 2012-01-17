@@ -12,10 +12,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <link rel="stylesheet" href="lib/jquery.mobile-1.0/jquery.mobile-1.0.css" />
         <link rel="stylesheet" href="themes/index/index.css" />
         <script src="lib/jquery-1.6.4.js"></script>
-        <script src="lib/jquery.mobile.mvc-0.6.0.js"></script>
+        <script src="lib/jquery.mobile.mvc-0.6.1.js"></script>
         <script src="lib/l10n.js"></script>
-        <script src="lib/drawing.js"></script>
-        <script src="lib/drawing.event.js"></script>
+        <script src="lib/drawing-0.5.0.js"></script>
+        <script src="lib/drawing.event-0.5.0.js"></script>
         <script src="scripts/index.js"></script>
         <script src="lib/jquery.mobile-1.0/jquery.mobile-1.0.js"></script>
         <script src="lib/jquery.mobile.download.js"></script>
@@ -97,17 +97,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         data-mvc-command="{ event: vclick, method: redo }">
                         <%= redoButton %>
                     </a>
-                    <a href="#shape" data-role="button" data-icon="star"
+                    <a href="#tools" data-role="button" data-icon="star"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= shapeButton %>
+                        <%= toolsButton %>
                     </a>
-                    <a href="#color" data-role="button" data-icon="grid"
+                    <a href="#options" data-role="button" data-icon="gear"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= colorButton %>
-                    </a>
-                    <a href="#option" data-role="button" data-icon="gear"
-                        data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= optionButton %>
+                        <%= optionsButton %>
                     </a>
                 </div>
             </div><!-- /header -->
@@ -118,8 +114,58 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /content -->
         </script>
 
-        <div data-role="page" id="option"></div><!-- /page -->
-        <script type="text/template" data-mvc-view="{ page: option, name: pagebeforecreate }">
+        <div data-role="page" id="tools"></div><!-- /page -->
+        <script type="text/template" data-mvc-view="{ page: tools, name: pagebeforecreate }">
+            <div data-role="header">
+                <h1><%= title %></h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <div class="block">
+                    <label><%= shapeLabel %></label>
+                    
+                    <fieldset data-role="fieldcontain">
+                        <div data-role="controlgroup"
+                            data-type="horizontal"
+                            data-mvc-binding="{ type: object, property: shape }">
+                            <input type="radio" name="shape" id="pencil" value="pencil" />
+                            <label for="pencil" data-theme="d"><%= pencilLabel %></label>
+                            
+                            <input type="radio" name="shape" id="line" value="line" />
+                            <label for="line" data-theme="d"><%= lineLabel %></label>
+                            
+                            <input type="radio" name="shape" id="rectangle" value="rectangle" />
+                            <label for="rectangle" data-theme="d"><%= rectangleLabel %></label>
+                            
+                            <input type="radio" name="shape" id="circle" value="circle" />
+                            <label for="circle" data-theme="d"><%= circleLabel %></label>
+                         </div>
+                    </fieldset>
+                </div>
+                <div class="block">
+                    <label for="width"><%= widthLabel %></label>
+                    
+                    <div data-role="fieldcontain">
+                        <input type="number" name="width" id="width"
+                            data-type="range" data-theme="c" data-track-theme="b"
+                            value="1" min="1" max="100"
+                            data-mvc-binding="{ type: object, property: width }" />
+                    </div>
+                </div>
+                <div class="block">
+                    <label><%= colorLabel %></label>
+                    
+                    <div data-mvc-view-anchor="colorPicker:cPicker"></div>
+                </div>
+            </div><!-- /content -->
+
+            <div data-role="footer">
+                <h4></h4>
+            </div><!-- /footer -->
+        </script>
+        
+        <div data-role="page" id="options"></div><!-- /page -->
+        <script type="text/template" data-mvc-view="{ page: options, name: pagebeforecreate }">
             <div data-role="header">
                 <h1><%= title %></h1>
             </div><!-- /header -->
@@ -153,65 +199,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
-                <p><%= information %></p>
-                <div data-mvc-view-anchor="colorPicker:cPicker"></div>
-            </div><!-- /content -->
-
-            <div data-role="footer">
-                <h4></h4>
-            </div><!-- /footer -->
-        </script>
-
-        <div data-role="page" id="shape"></div><!-- /page -->
-        <script type="text/template" data-mvc-view="{ page: shape, name: pagebeforecreate }">
-            <div data-role="header">
-                <h1><%= title %></h1>
-            </div><!-- /header -->
-
-            <div data-role="content" data-theme="b"
-                <div>
-                    <div data-role="fieldcontain">
-                        <fieldset data-role="controlgroup"
-                            data-type="horizontal"
-                            data-mvc-binding="{ type: object, property: shape }">
-                            <legend><%= shapeLabel %></legend>
-                            
-                             <input type="radio" name="shape" id="pencil" value="pencil" />
-         	                <label for="pencil" data-theme="d"><%= pencilLabel %></label>
-                            
-                            <input type="radio" name="shape" id="line" value="line" />
-                            <label for="line" data-theme="d"><%= lineLabel %></label>
-                            
-                            <input type="radio" name="shape" id="rectangle" value="rectangle" />
-                            <label for="rectangle" data-theme="d"><%= rectangleLabel %></label>
-                            
-                            <input type="radio" name="shape" id="circle" value="circle" />
-                            <label for="circle" data-theme="d"><%= circleLabel %></label>
-                         </fieldset>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="slider"><%= sliderLabel %></label>
-                        <input type="number" name="slider" id="slider"
-                            data-type="range" data-theme="c" data-track-theme="b"
-                            value="1" min="1" max="100"
-                            data-mvc-binding="{ type: object, property: range }" />
-                    </div>
+                <div class="block">
+                    <label><%= background %></label>
+                    
+                    <div data-mvc-view-anchor="colorPicker:cPicker"></div>
                 </div>
-            </div><!-- /content -->
-
-            <div data-role="footer">
-                <h4></h4>
-            </div><!-- /footer -->
-        </script>
-
-        <div data-role="page" id="color"></div><!-- /page -->
-        <script type="text/template" data-mvc-view="{ page: color, name: pagebeforecreate }">
-            <div data-role="header">
-                <h1><%= title %></h1>
-            </div><!-- /header -->
-
-            <div data-role="content" data-theme="b"
-                data-mvc-view-anchor="colorPicker:cPicker">
             </div><!-- /content -->
 
             <div data-role="footer">
