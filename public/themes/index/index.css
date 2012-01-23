@@ -48,13 +48,8 @@ input[type="number"] {
     text-align: left;    
 }
 
-.block>fieldset,
 .block>div {
     margin: 2em auto 0 auto;
-}
-
-.block>fieldset {
-    width: 50%;    
 }
 
 .colorpicker-custom-colors label {
@@ -65,15 +60,10 @@ input[type="number"] {
     
 .colorpicker-predefined-colors {
     margin: 0 auto;
-    width: 90%;
-}
-
-.colorpicker-predefined-colors td {
-    padding: 0.5em;
 }
 
 .colorpicker-custom-color,
-.colorpicker-predefined-color {
+.colorpicker-predefined-color div {
     border: 1px solid gray;
     height: 30px;
     width: 92px;
@@ -92,10 +82,8 @@ input[type="number"] {
 
 .colorpicker-predefined-color {
     background: transparent url("images/background.png") repeat 0 0;
-}
-
-.colorpicker-predefined-color div {
-    height: 100%;
+    display: inline-block;
+    margin: 0 0.5em 1em 0.5em;
 }
 
 .colorpicker-custom-color:hover,

@@ -597,7 +597,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
     webPaint.controller("#about", (function () {
         var model = {
-                version: "WebPaint 0.4.0"
+                version: "WebPaint 0.4.1"
             },
             translate = function (model) {
                 model.title = l("%about.title");

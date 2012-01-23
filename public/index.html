@@ -60,25 +60,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             </div>
         </script>
         <script type="text/template" data-mvc-view="{ name: cpPredefinedColors }">
-            <table class="colorpicker-predefined-colors">
-                <tr>
+            <div class="colorpicker-predefined-colors">
                 <% for (var i = 0; i < colors.length; i += 1) { %>
                     <% var color = colors[i]; %>
-                    <% if (i !== 0 && i % 4 === 0) { %>
-                        </tr>
-                        <tr>
-                    <% } %>
-                    <td>
-                        <div class="colorpicker-predefined-color"
-                            title="<%= color.name %>"
-                            data-mvc-command="{ event: vclick, method: value, param-color: <%= color.code %> }">
-                            <div class="<%= (color.code === selectedColor) ? 'colorpicker-color-selected' : '' %>"
-                                style="background-color: <%= color.code %>"></div>
-                        </div>
-                    </td>
+                    <div class="colorpicker-predefined-color"
+                        title="<%= color.name %>"
+                        data-mvc-command="{ event: vclick, method: value, param-color: <%= color.code %> }">
+                        <div class="<%= (color.code === selectedColor) ? 'colorpicker-color-selected' : '' %>"
+                            style="background-color: <%= color.code %>"></div>
+                    </div>
                 <% } %>
-                </tr>
-            </table>
+            </div>
         </script>
         
         <div data-role="page" id="main"></div><!-- /page -->
@@ -124,10 +116,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <div class="block">
                     <label><%= shapeLabel %></label>
                     
-                    <fieldset data-role="fieldcontain">
-                        <div data-role="controlgroup"
+                    <div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup"
                             data-type="horizontal"
-                            data-mvc-binding="{ type: object, property: shape }">
+                            data-mvc-binding="{ type: object, property: shape }"> 
+                            <legend></legend>
+                    
                             <input type="radio" name="shape" id="pencil" value="pencil" />
                             <label for="pencil" data-theme="d"><%= pencilLabel %></label>
                             
@@ -139,8 +133,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             
                             <input type="radio" name="shape" id="circle" value="circle" />
                             <label for="circle" data-theme="d"><%= circleLabel %></label>
-                         </div>
-                    </fieldset>
+                        </fieldset>
+                    </div>
                 </div>
                 <div class="block">
                     <label for="width"><%= widthLabel %></label>
