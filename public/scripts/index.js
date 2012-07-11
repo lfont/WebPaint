@@ -227,6 +227,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             defaultSettings = {
                 locale: "",
                 drawer: {
+                    histories: [],
                     shape: "pencil",
                     properties: {
                         strokeStyle: "#000000",
@@ -597,7 +598,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
     webPaint.controller("#about", (function () {
         var model = {
-                version: "WebPaint 0.4.1"
+                version: "WebPaint 0.4.2"
             },
             translate = function (model) {
                 model.title = l("%about.title");
