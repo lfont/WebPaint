@@ -7,17 +7,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     <head>
         <title>WebPaint</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-        <meta charset='utf-8'>
+        <meta charset="utf-8">
         <link rel="localizations" href="l10n/index/localizations.json" type="application/vnd.oftn.l10n+json" />
-        <link rel="stylesheet" href="lib/jquery.mobile-1.0/jquery.mobile-1.0.css" />
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
         <link rel="stylesheet" href="themes/index/index.css" />
-        <script src="lib/jquery-1.6.4.js"></script>
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
         <script src="lib/jquery.mobile.mvc-0.6.1.js"></script>
         <script src="lib/l10n.js"></script>
-        <script src="lib/drawing-0.6.0.js"></script>
-        <script src="lib/drawing.event.jquery-0.6.0.js"></script>
+        <script src="lib/drawing-0.6.1.js"></script>
+        <script src="lib/drawing.event.jquery-0.6.1.js"></script>
         <script src="scripts/index.js"></script>
-        <script src="lib/jquery.mobile-1.0/jquery.mobile-1.0.js"></script>
+        <script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
         <script src="lib/jquery.mobile.download.js"></script>
         <script src="lib/jquery.mobile.toast.js"></script>
     </head>
@@ -105,14 +105,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 <canvas data-mvc-binding="{ type: object, property: canvas }" />
             </div><!-- /content -->
         </script>
-
+        
         <div data-role="page" id="tools"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: tools, name: pagebeforecreate }">
             <div data-role="header">
                 <h1><%= title %></h1>
             </div><!-- /header -->
 
-            <div data-role="content" data-theme="b">
+            <div data-role="content" data-theme="d">
                 <div class="block">
                     <label><%= shapeLabel %></label>
                     
@@ -123,16 +123,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             <legend></legend>
                     
                             <input type="radio" name="shape" id="pencil" value="pencil" />
-                            <label for="pencil" data-theme="d"><%= pencilLabel %></label>
+                            <label for="pencil"><%= pencilLabel %></label>
                             
                             <input type="radio" name="shape" id="line" value="line" />
-                            <label for="line" data-theme="d"><%= lineLabel %></label>
+                            <label for="line"><%= lineLabel %></label>
                             
                             <input type="radio" name="shape" id="rectangle" value="rectangle" />
-                            <label for="rectangle" data-theme="d"><%= rectangleLabel %></label>
+                            <label for="rectangle"><%= rectangleLabel %></label>
                             
                             <input type="radio" name="shape" id="circle" value="circle" />
-                            <label for="circle" data-theme="d"><%= circleLabel %></label>
+                            <label for="circle"><%= circleLabel %></label>
                         </fieldset>
                     </div>
                 </div>
@@ -283,7 +283,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 </p>
                 <p>
                     <%= follow %>&nbsp;
-                    <a href="http://twitter.com/loic_fontaine" target="_blank">Twitter</a>
+                    <a href="http://twitter.com/loic_fontaine" target="_blank">twitter</a>
                 </p>
                 <p>
                     <%= source %>&nbsp;

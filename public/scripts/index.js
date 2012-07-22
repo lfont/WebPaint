@@ -68,7 +68,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             .css("background-color",
                                 hexFromRgb(colorPicker.red.val(),
                                     colorPicker.green.val(),
-                                    colorPicker.blue.val())); 
+                                    colorPicker.blue.val()));
                     };
                 };
 
@@ -307,9 +307,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 setHistory: function (index) {
                     drawer.history(index);
                 },
-                setShape: function (kind) {
-                    settings.drawer.shape = kind;
-                    eventShapeDrawer.draw(kind);
+                setShape: function (shapeName) {
+                    settings.drawer.shape = shapeName;
+                    eventShapeDrawer.on(shapeName);
                 },
                 setLocale: function (locale) {
                     settings.locale = locale;
@@ -334,6 +334,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             },
             pageshow: function () {
                 if (drawer) {
+                    setTimeout(function () {
+                        eventShapeDrawer.on(settings.drawer.shape);
+                    }, 500);
                     return;
                 }
                 
@@ -368,6 +371,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     history: drawer.history(),
                     shape: settings.drawer.shape
                 });
+                eventShapeDrawer.off();
             },
             unload: function () {
                 var histories = drawer.histories(),
@@ -598,7 +602,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
     webPaint.controller("#about", (function () {
         var model = {
-                version: "WebPaint 0.4.3"
+                version: "WebPaint 0.4.4"
             },
             translate = function (model) {
                 model.title = l("%about.title");
@@ -619,7 +623,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         this.controller("#main").unload();
     });
 
-    $(document).bind("mobileinit", function () {
+    $(document).on("mobileinit", function () {
         $.mobile.defaultPageTransition = "none";
         $.mobile.defaultDialogTransition = "none";
         $.mobile.page.prototype.options.addBackBtn = true;

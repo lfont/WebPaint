@@ -25,7 +25,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     that = this,
                     $canvas = $(that.canvas()),
                     $body = $("body"),
-                    onDrawnCallback = [],
+                    onDrawnHandlers = [],
                     handlers = {
                         down: null,
                         up: null,
@@ -35,16 +35,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 triggerOnDrawnEvent = function (shape) {
                     var i, len;
                     
-                    for (i = 0, len = onDrawnCallback.length; i < len; i++) {
-                        onDrawnCallback[i](shape);
+                    for (i = 0, len = onDrawnHandlers.length; i < len; i++) {
+                        onDrawnHandlers[i](shape);
                     }
                 };
             
                 return {
-                    draw: function (kind) {
-                        var shapeDrawer = that.shapeDrawer(kind);
+                    on: function (shapeName) {
+                        var shapeDrawer = that.shapeDrawer(shapeName);
                             
-                        $canvas.unbind(opts.events.down, handlers.down);
+                        $canvas.off(opts.events.down, handlers.down);
                 
                         handlers.down = function (event) {
                             var offset = $canvas.offset();
@@ -60,21 +60,36 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             handlers.up = function (event) {
                                 var shape = shapeDrawer.end();
                                 
-                                event.preventDefault();    
-                                $canvas.unbind(opts.events.move, handlers.move);
-                                $body.unbind(opts.events.up, handlers.up);
+                                event.preventDefault();
+                                $canvas.off(opts.events.move, handlers.move);
+                                $body.off(opts.events.up, handlers.up);
                                 triggerOnDrawnEvent(shape);
                             };
                             
-                            $body.bind(opts.events.up, handlers.up);
-                            $canvas.bind(opts.events.move, handlers.move);
+                            $body.on(opts.events.up, handlers.up);
+                            $canvas.on(opts.events.move, handlers.move);
                         };
                     
-                        $canvas.bind(opts.events.down, handlers.down);
+                        $canvas.on(opts.events.down, handlers.down);
                     },
-                    onDrawn: function (callback) {
-                        if (callback && typeof callback === "function") {
-                            onDrawnCallback.push(callback);
+                    off: function () {
+                        $canvas.off(opts.events.down, handlers.down)
+                               .off(opts.events.move, handlers.move);
+                        $body.off(opts.events.up, handlers.up);
+                    },
+                    addDrawnHandler: function (handler) {
+                        if (handler && typeof handler === "function") {
+                            onDrawnHandlers.push(handler);
+                        }
+                    },
+                    removeDrawnHandler: function (handler) {
+                        var i, len;
+                    
+                        for (i = 0, len = onDrawnHandlers.length; i < len; i++) {
+                            if (onDrawnHandlers[i] === handler) {
+                                onDrawnHandlers.splite(i, 1);
+                                break;
+                            }
                         }
                     }
                 };

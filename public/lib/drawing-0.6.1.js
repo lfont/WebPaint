@@ -3,7 +3,7 @@ A simple canvas drawing library.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-(function ($) {
+(function (window, $) {
     "use strict";
     var defaultOptions = {
             backgroundColor: "transparent",
@@ -17,7 +17,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         ],
         
         restoreContextImage = function (context, imageDataURL) {
-            var image = new Image();
+            var image = new window.Image();
             
             image.onload = function () {
                 context.drawImage(image, 0, 0);
@@ -42,7 +42,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             var notDefined, i, len, property;
             
             for (i = 0, len = managedCanvasProperties.length; i < len; i++) {
-                property = managedCanvasProperties[i];      
+                property = managedCanvasProperties[i];
                 if (properties[property] !== notDefined) {
                     context[property] = properties[property];
                 }
@@ -57,7 +57,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             context.fillStyle = fillStyle;
         },
         
-        clearCanvas = function (canvas) {  
+        clearCanvas = function (canvas) {
             canvas.width = canvas.width;
         },
         
@@ -73,14 +73,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var lineContext,
                     line = {
                         begin: function (shapeContext) {
-                            lineContext = shapeContext; 
+                            lineContext = shapeContext;
                         },
                         draw: function (position) {
                             lineContext.restore();
                             drawLine(context, lineContext.origin, position);
                             lineContext.commands[0] = {
                                 name: "draw",
-                                position: position      
+                                position: position
                             };
                         }
                     };
@@ -102,7 +102,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var rectangleContext,
                     rectangle = {
                         begin: function (shapeContext) {
-                            rectangleContext = shapeContext;     
+                            rectangleContext = shapeContext;
                         },
                         draw: function (position) {
                             rectangleContext.restore();
@@ -110,7 +110,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                 position);
                             rectangleContext.commands[0] = {
                                 name: "draw",
-                                position: position      
+                                position: position
                             };
                         }
                     };
@@ -135,14 +135,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var circleContext,
                     circle = {
                         begin: function (shapeContext) {
-                            circleContext = shapeContext;       
+                            circleContext = shapeContext;
                         },
                         draw: function (position) {
                             circleContext.restore();
                             drawCircle(context, circleContext.origin, position);
                             circleContext.commands[0] = {
                                 name: "draw",
-                                position: position      
+                                position: position
                             };
                         }
                     };
@@ -167,10 +167,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             
             return function (context) {
                 var pencilContext,
+                    hasBegin,
                     hasDrawn,
                     pencil = {
                         begin: function (shapeContext) {
-                            pencilContext = shapeContext;       
+                            pencilContext = shapeContext;
+                            hasBegin = true;
                             hasDrawn = false;
                             context.beginPath();
                         },
@@ -179,10 +181,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             drawLine(context, position);
                             pencilContext.commands.push({
                                 name: "draw",
-                                position: position      
+                                position: position
                             });
                         },
                         end: function () {
+                            if (!hasBegin) return;
+                            
                             context.closePath();
                             if (!hasDrawn) {
                                 drawPoint(context, pencilContext.origin);
@@ -191,6 +195,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                     position: null
                                 });
                             }
+                            hasBegin = false;
                         }
                     };
                 
@@ -224,10 +229,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     }
                 }
                 
-                return histories;
+                return histories.slice(0);
             };
                 
-            this.history = function (index) {   
+            this.history = function (index) {
                 if (index || index === 0) {
                     historyIndex = index;
                     clearCanvas(canvas);
@@ -257,32 +262,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             this.newDrawing = function (backgroundColor) {
                 histories = [];
                 historyIndex = 0;
-                properties = getContextProperties(context);
                 clearCanvas(canvas);
-                setContextProperties(context, properties);
+                properties = getContextProperties(context);
                 background = backgroundColor || opts.backgroundColor;
                 drawCanvasBackground(canvas, context, background);
                 return this.store();
-            };
-            
-            this.draw = function (shape) {
-                var shapeDrawer = this.shapeDrawer(shape.kind),
-                    drawerProperties = properties,
-                    i, len, command;
-                
-                properties = shape.properties;     
-                setContextProperties(context, properties);
-                
-                shapeDrawer.begin(shape.origin);
-                for (i = 0, len = shape.commands.length; i < len; i++) {
-                    command = shape.commands[i];
-                    shapeDrawer[command.name](command.position);
-                }
-                
-                properties = drawerProperties;
-                setContextProperties(context, properties);
-                
-                return this;
             };
             
             this.newDrawing();
@@ -302,7 +286,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             return {
                 begin: function (position) {
-                    var image = context.getImageData(0, 0, canvas.width,
+                    var image = context.getImageData(
+                        0, 0,
+                        canvas.width,
                         canvas.height);
                         
                     shapeContext.commands = [];
@@ -327,11 +313,28 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     return {
                         kind: kind,
                         properties: that.properties(),
-                        origin: shapeContext.origin,       
-                        commands: shapeContext.commands 
+                        origin: shapeContext.origin,
+                        commands: shapeContext.commands
                     };
                 }
             };
+        },
+        draw: function (shape) {
+            var shapeDrawer = this.shapeDrawer(shape.kind),
+                properties = this.properties(),
+                i, len, command;
+            
+            this.properties(shape.properties);
+            
+            shapeDrawer.begin(shape.origin);
+            for (i = 0, len = shape.commands.length; i < len; i++) {
+                command = shape.commands[i];
+                shapeDrawer[command.name](command.position);
+            }
+            
+            this.properties(properties);
+            
+            return this;
         },
         undo: function () {
             var history = this.history(),
@@ -353,9 +356,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             return !isLast;
         },
-        saveAs: function () {
-            window.location.href = this.canvas().toDataURL()
-                .replace("image/png", "image/octet-stream");
+        save: function () {
+            window.location.href =
+                this.canvas()
+                    .toDataURL()
+                    .replace("image/png", "image/octet-stream");
             return this;
         }
     };
@@ -373,6 +378,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             }
         };
         
-        window.drawing.canvasDrawer.fn = CanvasDrawer.prototype;       
+        window.drawing.canvasDrawer.fn = CanvasDrawer.prototype;
     }
-}(window.jQuery));
+}(window, window.jQuery));
