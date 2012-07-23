@@ -30,7 +30,7 @@ input[type="number"] {
 
 #main canvas {
     border: 1px solid black;
-    background: transparent url("images/background.png") repeat 0 0;
+    background: transparent url("../images/background.png") repeat 0 0;
     cursor: pointer;
 }
 
@@ -81,7 +81,7 @@ input[type="number"] {
 }
 
 .colorpicker-predefined-color {
-    background: transparent url("images/background.png") repeat 0 0;
+    background: transparent url("../images/background.png") repeat 0 0;
     display: inline-block;
     margin: 0 0.5em 1em 0.5em;
 }
@@ -99,7 +99,7 @@ input[type="number"] {
 }
 
 .webpaint-history-image {
-    background: transparent url("images/background.png") repeat 0 0;
+    background: transparent url("../images/background.png") repeat 0 0;
     height: 115px;
     width: 115px;
 }
