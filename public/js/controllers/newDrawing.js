@@ -1,11 +1,16 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
-    "context"
-], function (context) {
+    "global"
+], function (global) {
     var actions,
         model = {},
         translate = function (m) {
-            m.title = context.l("%newDrawing.title");
-            m.background = context.l("%newDrawing.background");
+            m.title = global.l("%newDrawing.title");
+            m.background = global.l("%newDrawing.background");
         };
 
     return {
@@ -17,8 +22,8 @@ define([
             this.render("pagebeforecreate", model);
             this.component("cPicker").change(function () {
                 actions.newDrawing(this.value());
-                context.goBackTo("#main");
-            }).colors(context.colors());
+                global.goBackTo("#main");
+            }).colors(global.getColors());
         },
         pagebeforeshow: function (req) {
             actions = req.get("actions");

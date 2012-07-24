@@ -1,18 +1,23 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
-    "context"
-], function (context) {
+    "global"
+], function (global) {
     var actions,
         drawer,
         model = {},
         translate = function (m) {
-            m.title = context.l("%tools.title");
-            m.shapeLabel = context.l("%tools.shapeLabel");
-            m.widthLabel = context.l("%tools.widthLabel");
-            m.colorLabel = context.l("%tools.colorLabel");
-            m.pencilLabel = context.l("%tools.pencilLabel");
-            m.lineLabel = context.l("%tools.lineLabel");
-            m.rectangleLabel = context.l("%tools.rectangleLabel");
-            m.circleLabel = context.l("%tools.circleLabel");
+            m.title = global.l("%tools.title");
+            m.shapeLabel = global.l("%tools.shapeLabel");
+            m.widthLabel = global.l("%tools.widthLabel");
+            m.colorLabel = global.l("%tools.colorLabel");
+            m.pencilLabel = global.l("%tools.pencilLabel");
+            m.lineLabel = global.l("%tools.lineLabel");
+            m.rectangleLabel = global.l("%tools.rectangleLabel");
+            m.circleLabel = global.l("%tools.circleLabel");
         };
 
     return {
@@ -26,7 +31,7 @@ define([
             this.render("pagebeforecreate", model);
             this.component("cPicker").change(function () {
                 actions.setColor(this.value());
-            }).colors(context.colors().slice(1));
+            }).colors(global.getColors().slice(1));
         },
         pagebeforeshow: function (req) {
             actions = req.get("actions");

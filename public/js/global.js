@@ -1,3 +1,8 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
    "jquery",
    "lib/l10n"
@@ -5,7 +10,7 @@ define([
     "use strict";
 
     return {
-        colors: function () {
+        getColors: function () {
             return [
                 {
                     code: "transparent",

@@ -1,14 +1,19 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
    "jquery",
-   "context"
-], function ($, context) {
+   "global"
+], function ($, global) {
     var SELECTED_CLASS = "colorpicker-color-selected",
         translate = function (m) {
-            m.customColorHint = context.l("%colorPicker.customColorHint");
-            m.predefinedColorHint = context.l("%colorPicker.predefinedColorHint");
-            m.redLabel = context.l("%colorPicker.redLabel");
-            m.greenLabel = context.l("%colorPicker.greenLabel");
-            m.blueLabel = context.l("%colorPicker.blueLabel");
+            m.customColorHint = global.l("%colorPicker.customColorHint");
+            m.predefinedColorHint = global.l("%colorPicker.predefinedColorHint");
+            m.redLabel = global.l("%colorPicker.redLabel");
+            m.greenLabel = global.l("%colorPicker.greenLabel");
+            m.blueLabel = global.l("%colorPicker.blueLabel");
         },
         hexFromRgb = function (r, g, b) {
             var hex = [

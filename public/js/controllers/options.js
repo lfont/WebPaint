@@ -1,40 +1,45 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
-   "context"
-], function (context) {
+   "global"
+], function (global) {
     var data,
         model = {},
         translate = function (m) {
-            m.title = context.l("%options.title");
+            m.title = global.l("%options.title");
             m.options = [
                 {
                     link: "#newDrawing",
-                    name: context.l("%options.new")
+                    name: global.l("%options.new")
                 },
                 {
                     method: {
                         name: "callAction",
                         param: "saveAs"
                     },
-                    name: context.l("%options.saveAs")
+                    name: global.l("%options.saveAs")
                 },
                 {
                     method: {
                         name: "callAction",
                         param: "clear"
                     },
-                    name: context.l("%options.clear")
+                    name: global.l("%options.clear")
                 },
                 {
                     link: "#history",
-                    name: context.l("%options.history")
+                    name: global.l("%options.history")
                 },
                 {
                     link: "#language",
-                    name: context.l("%options.language")
+                    name: global.l("%options.language")
                 },
                 {
                     link: "#about",
-                    name: context.l("%options.about")
+                    name: global.l("%options.about")
                 }
             ];
         };
@@ -55,7 +60,7 @@ define([
         },
         callAction: function (req) {
             data.actions[req.get("name")]();
-            context.goBackTo("#main");
+            global.goBackTo("#main");
         }
     };
 });

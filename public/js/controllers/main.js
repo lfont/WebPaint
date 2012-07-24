@@ -1,58 +1,31 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
    "jquery",
    "drawing",
-   "context",
+   "global",
+   "settings",
    "lib/drawing.event"
-], function ($, drawing, context) {
+], function ($, drawing, global, settings) {
+    "use strict";
+
     var drawer,
         eventShapeDrawer,
         model = {},
+        appSettings,
         translate = function (m) {
-            m.title = context.l("%main.title");
-            m.undoButton = context.l("%main.undoButton");
-            m.redoButton = context.l("%main.redoButton");
-            m.toolsButton = context.l("%main.toolsButton");
-            m.optionsButton = context.l("%main.optionsButton");
-            m.lastUndo = context.l("%main.lastUndo");
-            m.lastRedo = context.l("%main.lastRedo");
+            m.title = global.l("%main.title");
+            m.undoButton = global.l("%main.undoButton");
+            m.redoButton = global.l("%main.redoButton");
+            m.toolsButton = global.l("%main.toolsButton");
+            m.optionsButton = global.l("%main.optionsButton");
+            m.lastUndo = global.l("%main.lastUndo");
+            m.lastRedo = global.l("%main.lastRedo");
 
-            $.mobile.page.prototype.options.backBtnText = context.l("%backButton");
-        },
-        // settings
-        SETTINGS_STORAGE_KEY = "settings",
-        defaultSettings = {
-            locale: "",
-            drawer: {
-                histories: [],
-                shape: "pencil",
-                properties: {
-                    strokeStyle: "#000000",
-                    fillStyle: "#000000",
-                    lineWidth: 1,
-                    lineCap: "round"
-                }
-            }
-        },
-        settings = {},
-        loadSettings = function () {
-            var settingsString = localStorage.getItem(SETTINGS_STORAGE_KEY),
-                userSettings;
-
-            if (settingsString) {
-                try {
-                    userSettings = JSON.parse(settingsString);
-                    $.extend(settings, defaultSettings, userSettings);
-                    return;
-                }
-                catch (error) {
-                    console.error(error.message);
-                }
-            }
-            settings = defaultSettings;
-        },
-        storeSettings = function () {
-            localStorage.setItem(SETTINGS_STORAGE_KEY,
-                JSON.stringify(settings));
+            $.mobile.page.prototype.options.backBtnText = global.l("%backButton");
         },
         // geometry
         fixContentGeometry = function ($header, $content) {
@@ -75,9 +48,9 @@ define([
                 drawer.clear().store();
             },
             newDrawing: function (backgroundColor) {
-                settings.drawer.backgroundColor = backgroundColor;
+                appSettings.drawer.backgroundColor = backgroundColor;
                 drawer.newDrawing(backgroundColor);
-                this.setShape(defaultSettings.drawer.shape);
+                this.setShape("pencil");
             },
             saveAs: function () {
                 $.mobile.download("/service/saveAs/drawing.png", "POST", {
@@ -99,10 +72,10 @@ define([
                 drawer.history(index);
             },
             setShape: function (shapeName) {
-                settings.drawer.shape = shapeName;
+                appSettings.drawer.shape = shapeName;
             },
             setLocale: function (locale) {
-                settings.locale = locale;
+                appSettings.locale = locale;
                 window.location.reload();
             }
         };
@@ -112,11 +85,9 @@ define([
         content: null,
         canvas: null,
         pagebeforecreate: function () {
-            console.log("Loading WebPaint...");
-
-            loadSettings();
-            if (settings.locale) {
-                String.locale = settings.locale;
+            appSettings = settings.get();
+            if (appSettings.locale) {
+                String.locale = appSettings.locale;
             }
 
             translate(model);
@@ -136,29 +107,29 @@ define([
                     }
                 });
 
-                if (settings.drawer.histories.length) {
-                    drawer.newDrawing(settings.drawer.backgroundColor);
-                    drawer.properties(settings.drawer.properties);
-                    drawer.histories(settings.drawer.histories);
-                    actions.setHistory(settings.drawer.history);
-                    actions.setShape(settings.drawer.shape);
+                if (appSettings.drawer.histories.length) {
+                    drawer.newDrawing(appSettings.drawer.backgroundColor);
+                    drawer.properties(appSettings.drawer.properties);
+                    drawer.histories(appSettings.drawer.histories);
+                    actions.setHistory(appSettings.drawer.history);
+                    actions.setShape(appSettings.drawer.shape);
                 } else {
                     actions.newDrawing();
                 }
             }
 
             setTimeout(function () {
-                eventShapeDrawer.on(settings.drawer.shape);
+                eventShapeDrawer.on(appSettings.drawer.shape);
             }, 500);
         },
         pagebeforehide: function (req, res) {
             res.send("actions", actions);
-            res.send("locale", settings.locale);
+            res.send("locale", appSettings.locale);
             res.send("drawer", {
                 properties: drawer.properties(),
                 histories: drawer.histories(),
                 history: drawer.history(),
-                shape: settings.drawer.shape
+                shape: appSettings.drawer.shape
             });
             eventShapeDrawer.off();
         },
@@ -166,16 +137,18 @@ define([
             var histories = drawer.histories(),
                 history = drawer.history();
 
-            console.log("Unloading WebPaint...");
-            settings.drawer.properties = drawer.properties();
-            settings.drawer.histories = (histories.length > 10) ?
+            appSettings.drawer.properties = drawer.properties();
+
+            appSettings.drawer.histories = (histories.length > 10) ?
                 histories.slice(histories.length - 10) :
                 histories;
-            settings.drawer.history = (history >=
-                settings.drawer.histories.length) ?
-                settings.drawer.histories.length - 1 :
+
+            appSettings.drawer.history = (history >=
+                appSettings.drawer.histories.length) ?
+                appSettings.drawer.histories.length - 1 :
                 history;
-            storeSettings();
+
+            settings.save(appSettings);
         },
         undo: function (req) {
             req.event.preventDefault();

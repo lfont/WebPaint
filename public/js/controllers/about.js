@@ -1,14 +1,19 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
-    "context"
-], function (context) {
+    "global"
+], function (global) {
     var model = {
-            version: "WebPaint 0.4.5"
+            version: "WebPaint 0.4.6"
         },
         translate = function (m) {
-            m.title = context.l("%about.title");
-            m.description = context.l("%about.description");
-            m.source = context.l("%about.source");
-            m.follow = context.l("%about.follow");
+            m.title = global.l("%about.title");
+            m.description = global.l("%about.description");
+            m.source = global.l("%about.source");
+            m.follow = global.l("%about.follow");
         };
 
     return {

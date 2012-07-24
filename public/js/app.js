@@ -56,6 +56,8 @@ define([
 
     var webPaint = mvc.application();
 
+    console.log("Loading WebPaint...");
+
     $.extend(mvc.components, {
         colorPicker: colorPickerComponent
     });
@@ -74,15 +76,18 @@ define([
     webPaint.controller("#language", languageController);
     webPaint.controller("#about", aboutController);
 
-    webPaint.start(function () {
-        require([
-            "lib/jquery.mobile",
-            "lib/jquery.mobile.download",
-            "lib/jquery.mobile.toast"
-        ]);
+    webPaint.stop(function () {
+        console.log("Unloading WebPaint...");
+        mainController.unload();
+        console.log("Bye");
     });
 
-    webPaint.stop(function () {
-        this.controller("#main").unload();
+    // jQuery.mobile must be loaded after the application code.
+    require([
+        "lib/jquery.mobile",
+        "lib/jquery.mobile.download",
+        "lib/jquery.mobile.toast"
+    ], function () {
+        console.log("WebPaint is ready.");
     });
 });

@@ -1,24 +1,29 @@
+/*
+A simple drawing application for touch devices.
+Loïc Fontaine - http://github.com/lfont - MIT Licensed
+*/
+
 define([
-   "context"
-], function (context) {
+   "global"
+], function (global) {
     var DEFAULT_LOCALE = "xx-XX",
         actions,
         model = {},
         translate = function (m) {
-            m.title = context.l("%language.title");
-            m.information = context.l("%language.information");
+            m.title = global.l("%language.title");
+            m.information = global.l("%language.information");
             m.languages = [
                 {
                     code: DEFAULT_LOCALE,
-                    name: context.l("%language.default")
+                    name: global.l("%language.default")
                 },
                 {
                     code: "en-US",
-                    name: context.l("%language.english")
+                    name: global.l("%language.english")
                 },
                 {
                     code: "fr-FR",
-                    name: context.l("%language.french")
+                    name: global.l("%language.french")
                 }
             ];
         };
@@ -40,7 +45,7 @@ define([
 
             locale = (locale === DEFAULT_LOCALE) ? "" : locale;
             actions.setLocale(locale);
-            context.goBackTo("#main");
+            global.goBackTo("#main");
         }
     };
 });
