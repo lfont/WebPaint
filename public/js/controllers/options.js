@@ -4,49 +4,48 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-   "global"
-], function (global) {
+   "global",
+   "i18n!controllers/nls/options"
+], function (global, options) {
     var data,
-        model = {},
-        translate = function (m) {
-            m.title = global.l("%options.title");
-            m.options = [
+        model = {
+            r: options,
+            options: [
                 {
                     link: "#newDrawing",
-                    name: global.l("%options.new")
+                    name: options["new"]
                 },
                 {
                     method: {
                         name: "callAction",
                         param: "saveAs"
                     },
-                    name: global.l("%options.saveAs")
+                    name: options.saveAs
                 },
                 {
                     method: {
                         name: "callAction",
                         param: "clear"
                     },
-                    name: global.l("%options.clear")
+                    name: options.clear
                 },
                 {
                     link: "#history",
-                    name: global.l("%options.history")
+                    name: options.history
                 },
                 {
                     link: "#language",
-                    name: global.l("%options.language")
+                    name: options.language
                 },
                 {
                     link: "#about",
-                    name: global.l("%options.about")
+                    name: options.about
                 }
-            ];
+            ]
         };
 
     return {
         pagebeforecreate: function () {
-            translate(model);
             this.render("pagebeforecreate", model);
         },
         pagebeforeshow: function (req) {

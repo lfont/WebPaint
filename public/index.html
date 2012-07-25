@@ -8,36 +8,35 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <title>WebPaint</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
         <meta charset="utf-8">
-        <link rel="localizations" href="l10n/index/localizations.json" type="application/vnd.oftn.l10n+json" />
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
         <link rel="stylesheet" href="css/app.css" />
-        <script data-main="js/app" src="js/lib/require.js"></script>
+        <script data-main="js/app" src="js/lib/requirejs/require.js"></script>
     </head>
     <body>
         <script type="text/template" data-mvc-view="{ name: colorPicker }">
             <div>
                 <div class="colorpicker-custom-colors">
-                    <p><%= customColorHint %></p>
+                    <p><%= r.customColorHint %></p>
                     <div class="colorpicker-custom-color"
                         data-mvc-binding="{ type: object, property: customColor }"
                         data-mvc-command="{ event: vclick, method: value, param-color: custom }">
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="red"><%= redLabel %></label>
+                        <label for="red"><%= r.redLabel %></label>
                         <input type="number" name="red"
                             data-type="range" data-theme="c" data-track-theme="b"
                             value="0" min="0" max="255"
                             data-mvc-binding="{ type: object, property: red }" />
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="green"><%= greenLabel %></label>
+                        <label for="green"><%= r.greenLabel %></label>
                         <input type="number" name="green"
                             data-type="range" data-theme="c" data-track-theme="b"
                             value="0" min="0" max="255"
                             data-mvc-binding="{ type: object, property: green }" />
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="blue"><%= blueLabel %></label>
+                        <label for="blue"><%= r.blueLabel %></label>
                         <input type="number" name="blue"
                             data-type="range" data-theme="c" data-track-theme="b"
                             value="0" min="0" max="255"
@@ -45,7 +44,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     </div>
                 </div>
                 <div>
-                    <p><%= predefinedColorHint %></p>
+                    <p><%= r.predefinedColorHint %></p>
                     <div data-mvc-view-anchor="cpPredefinedColors">
                     </div>
                 </div>
@@ -69,25 +68,25 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <script type="text/template" data-mvc-view="{ page: main, name: pagebeforecreate }">
             <div data-role="header" data-position="fixed"
                 data-mvc-binding="{ type: object, property: header }">
-                <h1 class="ui-title-left"><%= title %></h1>
+                <h1 class="ui-title-left"><%= r.title %></h1>
                 <div class="ui-btn-right">
                     <a href="#" data-role="button" data-icon="back"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: undo }">
-                        <%= undoButton %>
+                        <%= r.undoButton %>
                     </a>
                     <a href="#" data-role="button" data-icon="forward"
                         data-iconpos="notext" data-theme="b"
                         data-mvc-command="{ event: vclick, method: redo }">
-                        <%= redoButton %>
+                        <%= r.redoButton %>
                     </a>
                     <a href="#tools" data-role="button" data-icon="star"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= toolsButton %>
+                        <%= r.toolsButton %>
                     </a>
                     <a href="#options" data-role="button" data-icon="gear"
                         data-iconpos="notext" data-theme="b" data-rel="dialog">
-                        <%= optionsButton %>
+                        <%= r.optionsButton %>
                     </a>
                 </div>
             </div><!-- /header -->
@@ -101,12 +100,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="tools"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: tools, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d">
                 <div class="block">
-                    <label><%= shapeLabel %></label>
+                    <label><%= r.shapeLabel %></label>
                     
                     <div data-role="fieldcontain">
                         <fieldset data-role="controlgroup"
@@ -115,21 +114,21 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             <legend></legend>
                     
                             <input type="radio" name="shape" id="pencil" value="pencil" />
-                            <label for="pencil"><%= pencilLabel %></label>
+                            <label for="pencil"><%= r.pencilLabel %></label>
                             
                             <input type="radio" name="shape" id="line" value="line" />
-                            <label for="line"><%= lineLabel %></label>
+                            <label for="line"><%= r.lineLabel %></label>
                             
                             <input type="radio" name="shape" id="rectangle" value="rectangle" />
-                            <label for="rectangle"><%= rectangleLabel %></label>
+                            <label for="rectangle"><%= r.rectangleLabel %></label>
                             
                             <input type="radio" name="shape" id="circle" value="circle" />
-                            <label for="circle"><%= circleLabel %></label>
+                            <label for="circle"><%= r.circleLabel %></label>
                         </fieldset>
                     </div>
                 </div>
                 <div class="block">
-                    <label for="width"><%= widthLabel %></label>
+                    <label for="width"><%= r.widthLabel %></label>
                     
                     <div data-role="fieldcontain">
                         <input type="number" name="width" id="width"
@@ -139,7 +138,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     </div>
                 </div>
                 <div class="block">
-                    <label><%= colorLabel %></label>
+                    <label><%= r.colorLabel %></label>
                     
                     <div data-mvc-view-anchor="colorPicker:cPicker"></div>
                 </div>
@@ -153,7 +152,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="options"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: options, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d">
@@ -181,12 +180,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="newDrawing"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: newDrawing, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
                 <div class="block">
-                    <label><%= background %></label>
+                    <label><%= r.background %></label>
                     
                     <div data-mvc-view-anchor="colorPicker:cPicker"></div>
                 </div>
@@ -200,7 +199,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="history"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: history, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="d"
@@ -219,7 +218,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         <a href="#" data-mvc-command="{ event: vclick, method: setHistory, param-index: <%= i %> }">
                             <img src="<%= imageDataURL %>" alt="<%= i %>"
                                 class="webpaint-history-image" />
-                            <%= historyLabel + i %>
+                            <%= r.historyLabel + i %>
                             <% if (i === history) { %>
                                 <span class="ui-li-count">*</span>
                             <% } %>
@@ -232,11 +231,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="language"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: language, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
-                <p><%= information %></p>
+                <p><%= r.information %></p>
                 <div data-mvc-view-anchor="pagebeforeshow"></div>
             </div><!-- /content -->
 
@@ -265,20 +264,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         <div data-role="page" id="about"></div><!-- /page -->
         <script type="text/template" data-mvc-view="{ page: about, name: pagebeforecreate }">
             <div data-role="header">
-                <h1><%= title %></h1>
+                <h1><%= r.title %></h1>
             </div><!-- /header -->
 
             <div data-role="content" data-theme="b">
                 <h2><%= version %></h2>
                 <p>
-                    <%= description %>
+                    <%= r.description %>
                 </p>
                 <p>
-                    <%= follow %>&nbsp;
+                    <%= r.follow %>&nbsp;
                     <a href="http://twitter.com/loic_fontaine" target="_blank">twitter</a>
                 </p>
                 <p>
-                    <%= source %>&nbsp;
+                    <%= r.source %>&nbsp;
                     <a href="http://github.com/lfont/WebPaint" target="_blank">github</a>
                     <br />
                     &copy; 2011-2012 Loïc Fontaine

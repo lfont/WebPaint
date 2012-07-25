@@ -5,35 +5,26 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "jquery",
-   "drawing",
+   "lib/drawing",
    "global",
    "settings",
+   "i18n!controllers/nls/main",
    "lib/drawing.event"
-], function ($, drawing, global, settings) {
+], function ($, drawing, global, settings, main) {
     "use strict";
 
-    var drawer,
-        eventShapeDrawer,
-        model = {},
-        appSettings,
-        translate = function (m) {
-            m.title = global.l("%main.title");
-            m.undoButton = global.l("%main.undoButton");
-            m.redoButton = global.l("%main.redoButton");
-            m.toolsButton = global.l("%main.toolsButton");
-            m.optionsButton = global.l("%main.optionsButton");
-            m.lastUndo = global.l("%main.lastUndo");
-            m.lastRedo = global.l("%main.lastRedo");
-
-            $.mobile.page.prototype.options.backBtnText = global.l("%backButton");
+    var drawer, shapeDrawer, appSettings,
+        model = {
+            r: main
         },
-        // geometry
+
         fixContentGeometry = function ($header, $content) {
             var contentHeight = $(window).height() - $header.outerHeight();
 
             contentHeight -= ($content.outerHeight() - $content.height());
             $content.height(contentHeight);
         },
+
         fixCanvasGeometry = function ($content, $canvas) {
             var canvas = $canvas[0];
 
@@ -42,7 +33,7 @@ define([
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
         },
-        // actions
+
         actions = {
             clear: function () {
                 drawer.clear().store();
@@ -86,11 +77,6 @@ define([
         canvas: null,
         pagebeforecreate: function () {
             appSettings = settings.get();
-            if (appSettings.locale) {
-                String.locale = appSettings.locale;
-            }
-
-            translate(model);
             this.render("pagebeforecreate", model);
         },
         pageshow: function () {
@@ -99,7 +85,7 @@ define([
                 fixCanvasGeometry(this.content, this.canvas);
                 
                 drawer = drawing.canvasDrawer(this.canvas[0]);
-                eventShapeDrawer = drawer.eventShapeDrawer({
+                shapeDrawer = drawer.eventShapeDrawer({
                     events: {
                         down: "vmousedown",
                         up: "vmouseup",
@@ -119,8 +105,8 @@ define([
             }
 
             setTimeout(function () {
-                eventShapeDrawer.on(appSettings.drawer.shape);
-            }, 500);
+                shapeDrawer.on(appSettings.drawer.shape);
+            }, 250);
         },
         pagebeforehide: function (req, res) {
             res.send("actions", actions);
@@ -131,7 +117,7 @@ define([
                 history: drawer.history(),
                 shape: appSettings.drawer.shape
             });
-            eventShapeDrawer.off();
+            shapeDrawer.off();
         },
         unload: function () {
             var histories = drawer.histories(),

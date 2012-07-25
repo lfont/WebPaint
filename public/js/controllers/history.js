@@ -4,18 +4,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "global"
-], function (global) {
+    "global",
+    "i18n!controllers/nls/history"
+], function (global, history) {
     var actions,
-        model = {},
-        translate = function (m) {
-            m.title = global.l("%history.title");
-            m.historyLabel = global.l("%history.historyLabel");
+        model = {
+            r: history
         };
 
     return {
         pagebeforecreate: function () {
-            translate(model);
             this.render("pagebeforecreate", model);
         },
         pagebeforeshow: function (req) {

@@ -4,20 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "global"
-], function (global) {
+    "global",
+    "i18n!controllers/nls/tools"
+], function (global, tools) {
     var actions,
         drawer,
-        model = {},
-        translate = function (m) {
-            m.title = global.l("%tools.title");
-            m.shapeLabel = global.l("%tools.shapeLabel");
-            m.widthLabel = global.l("%tools.widthLabel");
-            m.colorLabel = global.l("%tools.colorLabel");
-            m.pencilLabel = global.l("%tools.pencilLabel");
-            m.lineLabel = global.l("%tools.lineLabel");
-            m.rectangleLabel = global.l("%tools.rectangleLabel");
-            m.circleLabel = global.l("%tools.circleLabel");
+        model = {
+            r: tools
         };
 
     return {
@@ -27,7 +20,6 @@ define([
             { name: "colorPicker", alias: "cPicker" }
         ],
         pagebeforecreate: function () {
-            translate(model);
             this.render("pagebeforecreate", model);
             this.component("cPicker").change(function () {
                 actions.setColor(this.value());

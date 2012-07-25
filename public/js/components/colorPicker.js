@@ -5,16 +5,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "jquery",
-   "global"
-], function ($, global) {
+   "global",
+   "i18n!components/nls/colorPicker"
+], function ($, global, colorPicker) {
     var SELECTED_CLASS = "colorpicker-color-selected",
-        translate = function (m) {
-            m.customColorHint = global.l("%colorPicker.customColorHint");
-            m.predefinedColorHint = global.l("%colorPicker.predefinedColorHint");
-            m.redLabel = global.l("%colorPicker.redLabel");
-            m.greenLabel = global.l("%colorPicker.greenLabel");
-            m.blueLabel = global.l("%colorPicker.blueLabel");
-        },
+
         hexFromRgb = function (r, g, b) {
             var hex = [
                     parseInt(r, 10).toString(16),
@@ -30,6 +25,7 @@ define([
 
             return "#" + hex.join("");
         },
+
         rgbFromHex = function (hex) {
             var match = /([\da-f]{2})([\da-f]{2})([\da-f]{2})/.exec(hex);
             
@@ -47,9 +43,10 @@ define([
     return function () {
         var hasPendingRendering = true,
             model = {
+                r: colorPicker,
                 selectedColor: null
             },
-            changeCallbacks = [];
+            changeHanlders = [];
 
         return {
             customColor: null,
@@ -68,7 +65,6 @@ define([
                                     that.blue.val()));
                     };
                 
-                translate(model);
                 this.render(this, model);
                 this.red.change(colorChangeHandler);
                 this.green.change(colorChangeHandler);
@@ -80,9 +76,9 @@ define([
                     hasPendingRendering = false;
                 }
             },
-            colors: function (colrs) {
-                if (colrs) {
-                    model.colors = colrs;
+            colors: function (colors) {
+                if (colors) {
+                    model.colors = colors;
                     hasPendingRendering = true;
                 }
                 return model.colors;
@@ -115,13 +111,14 @@ define([
                 hasPendingRendering = true;
                 return this;
             },
-            change: function (callback) {
-                if (callback && typeof(callback) === "function") {
-                    changeCallbacks.push(callback);
+            change: function (handler) {
+                var i, len;
+
+                if (handler && typeof handler === "function") {
+                    changeHanlders.push(handler);
                 } else {
-                    for (var i = 0; i < changeCallbacks.length;
-                        i += 1) {
-                        changeCallbacks[i].call(this);
+                    for (i = 0, len = changeHanlders.length; i < len; i++) {
+                        changeHanlders[i].call(this);
                     }
                 }
                 return this;

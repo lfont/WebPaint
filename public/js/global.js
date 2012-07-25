@@ -5,8 +5,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "jquery",
-   "lib/l10n"
-], function ($) {
+   "i18n!nls/colors"
+], function ($, colors) {
     "use strict";
 
     return {
@@ -14,56 +14,53 @@ define([
             return [
                 {
                     code: "transparent",
-                    name: this.l("%transparent")
+                    name: colors.transparent
                 },
                 {
                     code: "#000000",
-                    name: this.l("%black")
+                    name: colors.black
                 },
                 {
                     code: "#d2691e",
-                    name: this.l("%chocolate")
+                    name: colors.chocolate
                 },
                 {
                     code: "#ffffff",
-                    name: this.l("%white")
+                    name: colors.white
                 },
                 {
                     code: "#ffc0cb",
-                    name: this.l("%pink")
+                    name: colors.pink
                 },
                 {
                     code: "#ff0000",
-                    name: this.l("%red")
+                    name: colors.red
                 },
                 {
                     code: "#ffa500",
-                    name: this.l("%orange")
+                    name: colors.orange
                 },
                 {
                     code: "#ee82ee",
-                    name: this.l("%violet")
+                    name: colors.violet
                 },
                 {
                     code: "#0000ff",
-                    name: this.l("%blue")
+                    name: colors.blue
                 },
                 {
                     code: "#40e0d0",
-                    name: this.l("%turquoise")
+                    name: colors.turquoise
                 },
                 {
                     code: "#008000",
-                    name: this.l("%green")
+                    name: colors.green
                 },
                 {
                     code: "#ffff00",
-                    name: this.l("%yellow")
+                    name: colors.yellow
                 }
             ];
-        },
-        l: function (string) {
-            return string.toLocaleString();
         },
         goBackTo: function (pageName) {
             $.mobile.changePage(pageName, { reverse: true });

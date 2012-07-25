@@ -4,33 +4,31 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-   "global"
-], function (global) {
-    var DEFAULT_LOCALE = "xx-XX",
+   "global",
+   "i18n!controllers/nls/language"
+], function (global, language) {
+    var DEFAULT_LOCALE = "xx-xx",
         actions,
-        model = {},
-        translate = function (m) {
-            m.title = global.l("%language.title");
-            m.information = global.l("%language.information");
-            m.languages = [
+        model = {
+            r: language,
+            languages: [
                 {
                     code: DEFAULT_LOCALE,
-                    name: global.l("%language.default")
+                    name: language["default"]
                 },
                 {
-                    code: "en-US",
-                    name: global.l("%language.english")
+                    code: "en-us",
+                    name: language.english
                 },
                 {
-                    code: "fr-FR",
-                    name: global.l("%language.french")
+                    code: "fr-fr",
+                    name: language.french
                 }
-            ];
+            ]
         };
 
     return {
         pagebeforecreate: function () {
-            translate(model);
             this.render("pagebeforecreate", model);
         },
         pagebeforeshow: function (req) {

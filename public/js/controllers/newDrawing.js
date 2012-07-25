@@ -4,13 +4,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "global"
-], function (global) {
+    "global",
+    "i18n!controllers/nls/newDrawing"
+], function (global, newDrawing) {
     var actions,
-        model = {},
-        translate = function (m) {
-            m.title = global.l("%newDrawing.title");
-            m.background = global.l("%newDrawing.background");
+        model = {
+            r: newDrawing
         };
 
     return {
@@ -18,7 +17,6 @@ define([
             { name: "colorPicker", alias: "cPicker" }
         ],
         pagebeforecreate: function () {
-            translate(model);
             this.render("pagebeforecreate", model);
             this.component("cPicker").change(function () {
                 actions.newDrawing(this.value());
