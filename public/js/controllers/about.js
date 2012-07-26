@@ -9,7 +9,7 @@ define([
 ], function (global, about) {
     var model = {
             r: about,
-            version: "WebPaint 0.4.7"
+            version: "WebPaint 0.4.8"
         };
 
     return {

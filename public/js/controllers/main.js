@@ -139,13 +139,13 @@ define([
         undo: function (req) {
             req.event.preventDefault();
             if (!drawer.undo()) {
-                $.mobile.showToast(model.lastUndo);
+                $.mobile.showToast(main.lastUndo);
             }
         },
         redo: function (req) {
             req.event.preventDefault();
             if (!drawer.redo()) {
-                $.mobile.showToast(model.lastRedo);
+                $.mobile.showToast(main.lastRedo);
             }
         }
     };
