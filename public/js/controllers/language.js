@@ -5,45 +5,57 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "global",
+   "text!templates/language.html",
+   "text!templates/languageList.html",
    "i18n!controllers/nls/language"
-], function (global, language) {
+], function (global, languageTemplate, languageListTemplate, languageResources) {
+    "use strict";
+
     var DEFAULT_LOCALE = "xx-xx",
-        actions,
         model = {
-            r: language,
+            r: languageResources,
             languages: [
                 {
                     code: DEFAULT_LOCALE,
-                    name: language["default"]
+                    name: languageResources["default"]
                 },
                 {
                     code: "en-us",
-                    name: language.english
+                    name: languageResources.english
                 },
                 {
                     code: "fr-fr",
-                    name: language.french
+                    name: languageResources.french
                 }
             ]
+        },
+
+        messageHandlers = {
+            locale: function (locale) {
+                model.locale = locale === "" ? DEFAULT_LOCALE : locale;
+            }
         };
 
     return {
         pagebeforecreate: function () {
-            this.render("pagebeforecreate", model);
+            this.render(languageTemplate, model);
         },
-        pagebeforeshow: function (req) {
-            var appLocale = req.get("locale");
-
-            actions = req.get("actions");
-            model.locale = (appLocale === "") ? DEFAULT_LOCALE : appLocale;
-            this.render("pagebeforeshow", model).trigger("create");
+        pagebeforeshow: function () {
+            this.render(
+                    languageListTemplate,
+                    this.$el.find(".languageListAnchor"),
+                    model)
+                .trigger("create");
         },
-        setLocale: function (req) {
-            var locale = req.get("locale");
+        setLocale: function (context) {
+            var locale = context.get("locale");
 
             locale = (locale === DEFAULT_LOCALE) ? "" : locale;
-            actions.setLocale(locale);
-            global.goBackTo("#main");
+            this.send("main", "locale", locale);
+            global.goBackTo("main");
+        },
+        onMessage: function (message, data) {
+            messageHandlers[message.name](data);
         }
     };
 });

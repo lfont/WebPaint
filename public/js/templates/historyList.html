@@ -1,0 +1,14 @@
+<ul data-role="listview">
+    <% for (var i = histories.length - 1; i >= 0; i -= 1) { %>
+        <% var imageDataURL = histories[i]; %>
+        <li>
+            <a href="#" data-mvc-action="{ event: vclick, method: setHistory, param-index: <%= i %> }">
+                <img src="<%= imageDataURL %>" alt="<%= i %>" class="webpaint-history-image" />
+                <%= r.historyLabel + i %>
+                <% if (i === history) { %>
+                    <span class="ui-li-count">*</span>
+                <% } %>
+            </a>
+        </li>
+    <% } %>
+</ul>

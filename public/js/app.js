@@ -6,6 +6,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 require.config({
     paths: {
         "i18n": "lib/requirejs/i18n",
+        "text": "lib/requirejs/text",
         "jquery": "http://code.jquery.com/jquery-1.7.1.min",
         "lib/jquery.mobile": "http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min",
         "lib/jquery.mobile.download": "lib/jquery.mobile/jquery.mobile.download",
@@ -71,7 +72,6 @@ define([
 
     // Loads app code
     require([
-        "components/colorPicker",
         "controllers/main",
         "controllers/newDrawing",
         "controllers/options",
@@ -79,22 +79,18 @@ define([
         "controllers/history",
         "controllers/language",
         "controllers/about"
-    ], function (colorPickerComponent, mainController, newDrawingController,
-                 optionsController, toolsController, historyController,
-                 languageController, aboutController) {
+    ], function (mainController, newDrawingController, optionsController,
+                 toolsController, historyController, languageController,
+                 aboutController) {
         var webPaint = mvc.application();
 
-        $.extend(mvc.components, {
-            colorPicker: colorPickerComponent
-        });
-
-        webPaint.controller("#main", mainController);
-        webPaint.controller("#newDrawing", newDrawingController);
-        webPaint.controller("#options", optionsController);
-        webPaint.controller("#tools", toolsController);
-        webPaint.controller("#history", historyController);
-        webPaint.controller("#language", languageController);
-        webPaint.controller("#about", aboutController);
+        webPaint.controller("main", $("#main"), mainController);
+        webPaint.controller("newDrawing", $("#newDrawing"), newDrawingController);
+        webPaint.controller("options", $("#options"), optionsController);
+        webPaint.controller("tools", $("#tools"), toolsController);
+        webPaint.controller("history", $("#history"), historyController);
+        webPaint.controller("language", $("#language"), languageController);
+        webPaint.controller("about", $("#about"), aboutController);
 
         webPaint.stop(function () {
             console.log("Unloading WebPaint...");

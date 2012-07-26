@@ -5,61 +5,48 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "global",
+   "text!templates/options.html",
    "i18n!controllers/nls/options"
-], function (global, options) {
-    var data,
-        model = {
-            r: options,
+], function (global, optionsTemplate, optionsResources) {
+    "use strict";
+
+    var model = {
+            r: optionsResources,
             options: [
                 {
-                    link: "#newDrawing",
-                    name: options["new"]
+                    name: optionsResources["new"],
+                    link: "#newDrawing"
                 },
                 {
-                    method: {
-                        name: "callAction",
-                        param: "saveAs"
-                    },
-                    name: options.saveAs
+                    name: optionsResources.saveAs,
+                    message: "save"
                 },
                 {
-                    method: {
-                        name: "callAction",
-                        param: "clear"
-                    },
-                    name: options.clear
+                    name: optionsResources.clear,
+                    message: "clear"
                 },
                 {
-                    link: "#history",
-                    name: options.history
+                    name: optionsResources.history,
+                    link: "#history"
                 },
                 {
-                    link: "#language",
-                    name: options.language
+                    name: optionsResources.language,
+                    link: "#language"
                 },
                 {
-                    link: "#about",
-                    name: options.about
+                    name: optionsResources.about,
+                    link: "#about"
                 }
             ]
         };
 
     return {
         pagebeforecreate: function () {
-            this.render("pagebeforecreate", model);
+            this.render(optionsTemplate, model);
         },
-        pagebeforeshow: function (req) {
-            if (req.get("actions")) {
-                // the previous page was "#main"
-                data = req.get();
-            }
-        },
-        pagebeforehide: function (req, res) {
-            res.send(data);
-        },
-        callAction: function (req) {
-            data.actions[req.get("name")]();
-            global.goBackTo("#main");
+        sendMessage: function (context) {
+            this.send("main", context.get("message"));
+            global.goBackTo("main");
         }
     };
 });

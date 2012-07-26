@@ -8,14 +8,15 @@ define([
    "lib/drawing",
    "global",
    "settings",
+   "text!templates/main.html",
    "i18n!controllers/nls/main",
    "lib/drawing.event"
-], function ($, drawing, global, settings, main) {
+], function ($, drawing, global, settings, mainTemplate, mainResources) {
     "use strict";
 
     var drawer, shapeDrawer, appSettings,
         model = {
-            r: main
+            r: mainResources
         },
 
         fixContentGeometry = function ($header, $content) {
@@ -34,57 +35,77 @@ define([
                 ($canvas.outerWidth() - $canvas.width()));
         },
 
-        actions = {
+        messageHandlers = {
             clear: function () {
                 drawer.clear().store();
             },
-            newDrawing: function (backgroundColor) {
+            "new": function (backgroundColor) {
                 appSettings.drawer.backgroundColor = backgroundColor;
                 drawer.newDrawing(backgroundColor);
-                this.setShape("pencil");
+                this.shape("pencil");
             },
-            saveAs: function () {
+            save: function () {
                 $.mobile.download("/service/saveAs/drawing.png", "POST", {
                     dataURL: drawer.histories()[drawer.history()]
                 });
             },
-            setLineWidth: function (width) {
+            lineWidth: function (width) {
                 drawer.properties({
                     lineWidth: width
                 });
             },
-            setColor: function (color) {
+            color: function (color) {
                 drawer.properties({
                     strokeStyle: color,
                     fillStyle: color
                 });
             },
-            setHistory: function (index) {
+            history: function (index) {
                 drawer.history(index);
             },
-            setShape: function (shapeName) {
+            shape: function (shapeName) {
                 appSettings.drawer.shape = shapeName;
             },
-            setLocale: function (locale) {
+            locale: function (locale) {
                 appSettings.locale = locale;
                 window.location.reload();
+            },
+            unload: function () {
+                var histories = drawer.histories(),
+                    history = drawer.history();
+
+                appSettings.drawer.properties = drawer.properties();
+
+                appSettings.drawer.histories = (histories.length > 10) ?
+                    histories.slice(histories.length - 10) :
+                    histories;
+
+                appSettings.drawer.history = (history >=
+                    appSettings.drawer.histories.length) ?
+                    appSettings.drawer.histories.length - 1 :
+                    history;
+
+                settings.save(appSettings);
             }
         };
 
     return {
-        header: null,
-        content: null,
-        canvas: null,
         pagebeforecreate: function () {
             appSettings = settings.get();
-            this.render("pagebeforecreate", model);
+            this.render(mainTemplate, model);
         },
         pageshow: function () {
+            var $header, $content, $canvas;
+
             if (!drawer) {
-                fixContentGeometry(this.header, this.content);
-                fixCanvasGeometry(this.content, this.canvas);
+                $header = this.$el.find("[data-role='header']");
+                $content = this.$el.find("[data-role='content']");
+                $canvas = this.$el.find("canvas");
+
+                fixContentGeometry($header, $content);
+                fixCanvasGeometry($content, $canvas);
                 
-                drawer = drawing.canvasDrawer(this.canvas[0]);
+                drawer = drawing.canvasDrawer($canvas[0]);
                 shapeDrawer = drawer.eventShapeDrawer({
                     events: {
                         down: "vmousedown",
@@ -97,10 +118,10 @@ define([
                     drawer.newDrawing(appSettings.drawer.backgroundColor);
                     drawer.properties(appSettings.drawer.properties);
                     drawer.histories(appSettings.drawer.histories);
-                    actions.setHistory(appSettings.drawer.history);
-                    actions.setShape(appSettings.drawer.shape);
+                    messageHandlers.history(appSettings.drawer.history);
+                    messageHandlers.shape(appSettings.drawer.shape);
                 } else {
-                    actions.newDrawing();
+                    messageHandlers["new"]();
                 }
             }
 
@@ -108,45 +129,41 @@ define([
                 shapeDrawer.on(appSettings.drawer.shape);
             }, 250);
         },
-        pagebeforehide: function (req, res) {
-            res.send("actions", actions);
-            res.send("locale", appSettings.locale);
-            res.send("drawer", {
-                properties: drawer.properties(),
-                histories: drawer.histories(),
-                history: drawer.history(),
-                shape: appSettings.drawer.shape
+        pagebeforehide: function () {
+            this.send("language", "locale", appSettings.locale);
+
+            this.send("history", "history", {
+                items: drawer.histories(),
+                index: drawer.history()
             });
+
+            this.send("tools", "shape", {
+                properties: drawer.properties(),
+                name: appSettings.drawer.shape
+            });
+
             shapeDrawer.off();
         },
-        unload: function () {
-            var histories = drawer.histories(),
-                history = drawer.history();
-
-            appSettings.drawer.properties = drawer.properties();
-
-            appSettings.drawer.histories = (histories.length > 10) ?
-                histories.slice(histories.length - 10) :
-                histories;
-
-            appSettings.drawer.history = (history >=
-                appSettings.drawer.histories.length) ?
-                appSettings.drawer.histories.length - 1 :
-                history;
-
-            settings.save(appSettings);
-        },
-        undo: function (req) {
-            req.event.preventDefault();
+        undo: function (context) {
+            context.event.preventDefault();
             if (!drawer.undo()) {
-                $.mobile.showToast(main.lastUndo);
+                $.mobile.showToast(mainResources.lastUndo);
             }
         },
-        redo: function (req) {
-            req.event.preventDefault();
+        redo: function (context) {
+            context.event.preventDefault();
             if (!drawer.redo()) {
-                $.mobile.showToast(main.lastRedo);
+                $.mobile.showToast(mainResources.lastRedo);
             }
+        },
+        onMessage: function (message, data) {
+            if (message.name === "unload" &&
+                message.source !== "application") {
+                // Only the application can unload this controller.
+                return;
+            }
+
+            messageHandlers[message.name](data);
         }
     };
 });

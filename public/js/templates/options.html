@@ -1,0 +1,24 @@
+<div data-role="header">
+    <h1><%= r.title %></h1>
+</div>
+
+<div data-role="content" data-theme="d">
+    <ul data-role="listview">
+        <% for (var i = 0; i < options.length; i += 1) { %>
+            <% var option = options[i]; %>
+            <li>
+                <a href="<%= option.link %>" data-rel="dialog"
+                    <% if (option.message) { %>
+                        data-mvc-action="{ event: vclick, method: sendMessage, param-name: <%= option.message %> }"
+                    <% } %>
+                    >
+                    <%= option.name %>
+                </a>
+            </li>
+        <% } %>
+    </ul>
+</div>
+
+<div data-role="footer">
+    <h4></h4>
+</div>

@@ -1,0 +1,31 @@
+<div>
+    <div class="colorpicker-custom-colors">
+        <p><%= r.customColorHint %></p>
+        <div class="colorpicker-custom-color"
+            data-mvc-action="{ event: vclick, method: value, param-color: custom }">
+        </div>
+        <div data-role="fieldcontain">
+            <label for="red"><%= r.redLabel %></label>
+            <input type="number" name="red"
+                data-type="range" data-theme="c" data-track-theme="b"
+                value="0" min="0" max="255" />
+        </div>
+        <div data-role="fieldcontain">
+            <label for="green"><%= r.greenLabel %></label>
+            <input type="number" name="green"
+                data-type="range" data-theme="c" data-track-theme="b"
+                value="0" min="0" max="255" />
+        </div>
+        <div data-role="fieldcontain">
+            <label for="blue"><%= r.blueLabel %></label>
+            <input type="number" name="blue"
+                data-type="range" data-theme="c" data-track-theme="b"
+                value="0" min="0" max="255" />
+        </div>
+    </div>
+    <div>
+        <p><%= r.predefinedColorHint %></p>
+        <div class="predefinedColorsAnchor">
+        </div>
+    </div>
+</div>

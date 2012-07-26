@@ -1,0 +1,27 @@
+<div data-role="header" data-position="fixed">
+    <h1 class="ui-title-left"><%= r.title %></h1>
+    <div class="ui-btn-right">
+        <a href="#" data-role="button" data-icon="back"
+            data-iconpos="notext" data-theme="b"
+            data-mvc-action="{ event: vclick, method: undo }">
+            <%= r.undoButton %>
+        </a>
+        <a href="#" data-role="button" data-icon="forward"
+            data-iconpos="notext" data-theme="b"
+            data-mvc-action="{ event: vclick, method: redo }">
+            <%= r.redoButton %>
+        </a>
+        <a href="#tools" data-role="button" data-icon="star"
+            data-iconpos="notext" data-theme="b" data-rel="dialog">
+            <%= r.toolsButton %>
+        </a>
+        <a href="#options" data-role="button" data-icon="gear"
+            data-iconpos="notext" data-theme="b" data-rel="dialog">
+            <%= r.optionsButton %>
+        </a>
+    </div>
+</div>
+
+<div data-role="content">
+    <canvas />
+</div>

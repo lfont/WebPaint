@@ -5,16 +5,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     "global",
+    "text!templates/about.html",
     "i18n!controllers/nls/about"
-], function (global, about) {
+], function (global, aboutTemplate, aboutResources) {
+    "use strict";
+
     var model = {
-            r: about,
-            version: "WebPaint 0.4.8"
+            r: aboutResources,
+            version: "WebPaint 0.4.9"
         };
 
     return {
         pagebeforecreate: function () {
-            this.render("pagebeforecreate", model);
+            this.render(aboutTemplate, model);
         }
     };
 });

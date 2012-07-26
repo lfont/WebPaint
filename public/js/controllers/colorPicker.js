@@ -6,8 +6,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
    "jquery",
    "global",
-   "i18n!components/nls/colorPicker"
-], function ($, global, colorPicker) {
+   "text!templates/colorPicker.html",
+   "text!templates/predefinedColors.html",
+   "i18n!controllers/nls/colorPicker"
+], function ($, global, colorPickerTemplate, predefinedColorsTemplate, colorPickerResources) {
     var SELECTED_CLASS = "colorpicker-color-selected",
 
         hexFromRgb = function (r, g, b) {
@@ -40,48 +42,46 @@ define([
             return null;
         };
 
-    return function () {
+    return function (colors) {
         var hasPendingRendering = true,
             model = {
-                r: colorPicker,
+                r: colorPickerResources,
+                colors: colors,
                 selectedColor: null
             },
-            changeHanlders = [];
+            changeHanlders = [],
+            $custom, $red, $green, $blue;
 
         return {
-            customColor: null,
-            red: null,
-            green: null,
-            blue: null,
             pagebeforecreate: function () {
-                var that = this,
-                    colorChangeHandler = function () {
-                        that.customColor
-                            .removeClass(SELECTED_CLASS)
-                            .css("background-color",
-                                hexFromRgb(
-                                    that.red.val(),
-                                    that.green.val(),
-                                    that.blue.val()));
+                var colorChangeHandler = function () {
+                        $custom.removeClass(SELECTED_CLASS)
+                               .css("background-color", hexFromRgb(
+                                    $red.val(),
+                                    $green.val(),
+                                    $blue.val()));
                     };
                 
-                this.render(this, model);
-                this.red.change(colorChangeHandler);
-                this.green.change(colorChangeHandler);
-                this.blue.change(colorChangeHandler).change();
+                $custom = this.$el.find(".colorpicker-custom-color");
+                $red =  this.$el.find("input[name='red']");
+                $green =  this.$el.find("input[name='green']");
+                $blue =  this.$el.find("input[name='blue']");
+
+                this.render(colorPickerTemplate, model);
+
+                $red.change(colorChangeHandler);
+                $green.change(colorChangeHandler);
+                $blue.change(colorChangeHandler).change();
             },
             pagebeforeshow: function () {
                 if (hasPendingRendering) {
-                    this.render("cpPredefinedColors", model);
+                    this.render(
+                        predefinedColorsTemplate,
+                        this.$el.find(".predefinedColorsAnchor"),
+                        model);
+
                     hasPendingRendering = false;
                 }
-            },
-            colors: function (colors) {
-                if (colors) {
-                    model.colors = colors;
-                    hasPendingRendering = true;
-                }
-                return model.colors;
             },
             hasPredefinedColor: function (color) {
                 var contains = false;
@@ -100,15 +100,16 @@ define([
                 
                 model.selectedColor = color;
                 if (this.hasPredefinedColor(color)) {
-                    this.customColor.removeClass(SELECTED_CLASS);
+                    $custom.removeClass(SELECTED_CLASS);
                 } else {
                     rgb = rgbFromHex(color);
-                    this.red.val(rgb.r).slider("refresh");
-                    this.green.val(rgb.g).slider("refresh");
-                    this.blue.val(rgb.b).slider("refresh").change();
-                    this.customColor.addClass(SELECTED_CLASS);
+                    $red.val(rgb.r).slider("refresh");
+                    $green.val(rgb.g).slider("refresh");
+                    $blue.val(rgb.b).slider("refresh").change();
+                    $custom.addClass(SELECTED_CLASS);
                 }
                 hasPendingRendering = true;
+
                 return this;
             },
             change: function (handler) {
@@ -121,24 +122,32 @@ define([
                         changeHanlders[i].call(this);
                     }
                 }
+
                 return this;
             },
-            value: function (req) {
+            value: function (context) {
                 var color;
 
-                if (req) {
-                    color = req.get("color");
+                if (context) {
+                    color = context.get("color");
                     if (color === "custom") {
-                        color = hexFromRgb(this.red.val(),
-                            this.green.val(), this.blue.val());
-                        this.customColor.addClass(SELECTED_CLASS);
+                        color = hexFromRgb(
+                            $red.val(),
+                            $green.val(),
+                            $blue.val());
+
+                        $custom.addClass(SELECTED_CLASS);
                     } else {
-                        this.customColor.removeClass(SELECTED_CLASS);
+                        $custom.removeClass(SELECTED_CLASS);
                     }
                     model.selectedColor = color;
-                    this.render("cpPredefinedColors", model);
-                    this.change();
+                    this
+                        .render(predefinedColorsTemplate,
+                            this.$el.find(".predefinedColorsAnchor"),
+                            model)
+                        .change();
                 }
+
                 return model.selectedColor;
             }
         };
