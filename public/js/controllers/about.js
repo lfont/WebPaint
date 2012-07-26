@@ -10,9 +10,11 @@ define([
 ], function (global, aboutTemplate, aboutResources) {
     "use strict";
 
-    var model = {
+    var info = global.getInfo(),
+        model = {
             r: aboutResources,
-            version: "WebPaint 0.4.9"
+            name: info.name,
+            version: info.version
         };
 
     return {

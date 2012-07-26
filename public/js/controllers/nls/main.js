@@ -5,7 +5,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "root": {
-        "title": "WebPaint",
         "undoButton": "Undo",
         "redoButton": "Redo",
         "toolsButton": "Tools",

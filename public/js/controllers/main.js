@@ -14,10 +14,12 @@ define([
 ], function ($, drawing, global, settings, mainTemplate, mainResources) {
     "use strict";
 
-    var drawer, shapeDrawer, appSettings,
+    var info = global.getInfo(),
         model = {
-            r: mainResources
+            r: mainResources,
+            name: info.name
         },
+        drawer, shapeDrawer, appSettings,
 
         fixContentGeometry = function ($header, $content) {
             var contentHeight = $(window).height() - $header.outerHeight();

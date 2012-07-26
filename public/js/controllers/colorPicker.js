@@ -10,6 +10,8 @@ define([
    "text!templates/predefinedColors.html",
    "i18n!controllers/nls/colorPicker"
 ], function ($, global, colorPickerTemplate, predefinedColorsTemplate, colorPickerResources) {
+    "use strict";
+    
     var SELECTED_CLASS = "colorpicker-color-selected",
 
         hexFromRgb = function (r, g, b) {
@@ -50,28 +52,33 @@ define([
                 selectedColor: null
             },
             changeHanlders = [],
+            colorChangeHandler = function () {
+                $custom.removeClass(SELECTED_CLASS)
+                       .css("background-color", hexFromRgb(
+                            $red.val(),
+                            $green.val(),
+                            $blue.val()));
+            },
             $custom, $red, $green, $blue;
 
         return {
             pagebeforecreate: function () {
-                var colorChangeHandler = function () {
-                        $custom.removeClass(SELECTED_CLASS)
-                               .css("background-color", hexFromRgb(
-                                    $red.val(),
-                                    $green.val(),
-                                    $blue.val()));
-                    };
-                
-                $custom = this.$el.find(".colorpicker-custom-color");
-                $red =  this.$el.find("input[name='red']");
-                $green =  this.$el.find("input[name='green']");
-                $blue =  this.$el.find("input[name='blue']");
-
                 this.render(colorPickerTemplate, model);
 
-                $red.change(colorChangeHandler);
-                $green.change(colorChangeHandler);
-                $blue.change(colorChangeHandler).change();
+                $custom = this.$el.find(".colorpicker-custom-color");
+
+                $red =  this.$el
+                    .find("input[name='red']")
+                    .change(colorChangeHandler);
+
+                $green =  this.$el
+                    .find("input[name='green']")
+                    .change(colorChangeHandler);
+
+                $blue =  this.$el
+                    .find("input[name='blue']")
+                    .change(colorChangeHandler)
+                    .change();
             },
             pagebeforeshow: function () {
                 if (hasPendingRendering) {
@@ -141,8 +148,7 @@ define([
                         $custom.removeClass(SELECTED_CLASS);
                     }
                     model.selectedColor = color;
-                    this
-                        .render(predefinedColorsTemplate,
+                    this.render(predefinedColorsTemplate,
                             this.$el.find(".predefinedColorsAnchor"),
                             model)
                         .change();

@@ -94,7 +94,7 @@ define([
 
         webPaint.stop(function () {
             console.log("Unloading WebPaint...");
-            mainController.unload();
+            this.send("unload");
             console.log("Bye");
         });
 

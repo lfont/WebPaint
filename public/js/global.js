@@ -10,6 +10,12 @@ define([
     "use strict";
 
     return {
+        getInfo: function () {
+            return {
+                name: "WebPaint",
+                version: "0.4.9"
+            };
+        },
         getColors: function () {
             return [
                 {
