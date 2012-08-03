@@ -14,49 +14,48 @@ define([
     var model = {
             r: toolsResources
         },
-        colorPickerController, $shape, $width,
-
-        messageHandlers = {
-            shape: function (shape) {
-                colorPickerController.select(shape.properties.strokeStyle);
-
-                $shape
-                    .find("input[value='" + shape.name + "']")
-                    .attr("checked", true)
-                    .checkboxradio("refresh");
-
-                $width
-                    .val(shape.properties.lineWidth)
-                    .slider("refresh");
-            }
-        };
+        shapeColorPicker, $shape, $width;
 
     return {
+        initialize: function () {
+            this.on({
+                shapeChange: function (sender, shape) {
+                    shapeColorPicker.select(shape.properties.strokeStyle);
+
+                    $shape
+                        .find("input[value='" + shape.name + "']")
+                        .attr("checked", true)
+                        .checkboxradio("refresh");
+
+                    $width
+                        .val(shape.properties.lineWidth)
+                        .slider("refresh");
+                }
+            });
+        },
         pagebeforecreate: function () {
             var that = this;
 
             this.render(toolsTemplate, model);
 
-            $shape = this.$el.find(".shapeList");
-            $width = this.$el.find("input[name='width']");
+            $shape = this.find(".shapeList");
+            $width = this.find("input[name='width']");
 
-            colorPickerController = colorPicker(global.getColors().slice(1));
+            shapeColorPicker = colorPicker();
 
-            this.controller(
+            this.add(
                 "colorPicker",
-                this.$el.find(".colorPickerAnchor"),
-                colorPickerController);
+                ".colorPickerAnchor",
+                shapeColorPicker,
+                global.getColors().slice(1));
 
-            colorPickerController.change(function () {
-                that.send("main", "color", this.value());
+            shapeColorPicker.change(function () {
+                that.emit("color", this.value());
             });
         },
         pagebeforehide: function () {
-            this.send("main", "shape", $shape.find("input:checked").val());
-            this.send("main", "lineWidth", parseInt($width.val(), 10));
-        },
-        onMessage: function (message, data) {
-            messageHandlers[message.name](data);
+            this.emit("shape", $shape.find("input:checked").val());
+            this.emit("lineWidth", parseInt($width.val(), 10));
         }
     };
 });

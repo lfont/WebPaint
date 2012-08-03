@@ -44,47 +44,45 @@ define([
             return null;
         };
 
-    return function (colors) {
+    return function () {
         var hasPendingRendering = true,
             model = {
                 r: colorPickerResources,
-                colors: colors,
                 selectedColor: null
             },
             changeHanlders = [],
+            $custom, $red, $green, $blue,
+
             colorChangeHandler = function () {
                 $custom.removeClass(SELECTED_CLASS)
                        .css("background-color", hexFromRgb(
                             $red.val(),
                             $green.val(),
                             $blue.val()));
-            },
-            $custom, $red, $green, $blue;
+            };
 
         return {
-            pagebeforecreate: function () {
+            initialize: function (colors) {
+                model.colors = colors;
                 this.render(colorPickerTemplate, model);
 
-                $custom = this.$el.find(".colorpicker-custom-color");
+                $custom = this.find(".colorpicker-custom-color");
 
-                $red =  this.$el
-                    .find("input[name='red']")
-                    .change(colorChangeHandler);
+                $red = this.find("input[name='red']")
+                           .change(colorChangeHandler);
 
-                $green =  this.$el
-                    .find("input[name='green']")
-                    .change(colorChangeHandler);
+                $green = this.find("input[name='green']")
+                             .change(colorChangeHandler);
 
-                $blue =  this.$el
-                    .find("input[name='blue']")
-                    .change(colorChangeHandler)
-                    .change();
+                $blue = this.find("input[name='blue']")
+                            .change(colorChangeHandler)
+                            .change();
             },
             pagebeforeshow: function () {
                 if (hasPendingRendering) {
                     this.render(
                         predefinedColorsTemplate,
-                        this.$el.find(".predefinedColorsAnchor"),
+                        this.find(".predefinedColorsAnchor"),
                         model);
 
                     hasPendingRendering = false;
@@ -149,7 +147,7 @@ define([
                     }
                     model.selectedColor = color;
                     this.render(predefinedColorsTemplate,
-                            this.$el.find(".predefinedColorsAnchor"),
+                            this.find(".predefinedColorsAnchor"),
                             model)
                         .change();
                 }

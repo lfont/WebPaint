@@ -18,17 +18,18 @@ define([
     return {
         pagebeforecreate: function () {
             var that = this,
-                colorPickerController = colorPicker(global.getColors());
+                backgroundColorPicker = colorPicker();
 
             this.render(newDrawingTemplate, model);
 
-            this.controller(
+            this.add(
                 "colorPicker",
-                this.$el.find(".colorPickerAnchor"),
-                colorPickerController);
+                ".colorPickerAnchor",
+                backgroundColorPicker,
+                global.getColors());
 
-            colorPickerController.change(function () {
-                that.send("main", "new", this.value());
+            backgroundColorPicker.change(function () {
+                that.emit("new", this.value());
                 global.goBackTo("main");
             });
         }

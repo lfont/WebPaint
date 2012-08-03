@@ -2,13 +2,11 @@
     <h1 class="ui-title-left"><%= name %></h1>
     <div class="ui-btn-right">
         <a href="#" data-role="button" data-icon="back"
-            data-iconpos="notext" data-theme="b"
-            data-mvc-action="{ event: vclick, method: undo }">
+            data-iconpos="notext" data-theme="b" class="undo">
             <%= r.undoButton %>
         </a>
         <a href="#" data-role="button" data-icon="forward"
-            data-iconpos="notext" data-theme="b"
-            data-mvc-action="{ event: vclick, method: redo }">
+            data-iconpos="notext" data-theme="b" class="redo">
             <%= r.redoButton %>
         </a>
         <a href="#tools" data-role="button" data-icon="star"

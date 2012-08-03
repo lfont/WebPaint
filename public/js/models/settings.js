@@ -41,7 +41,8 @@ define([
 
             return settings;
         },
-        save: function (settings) {
+        
+        set: function (settings) {
             localStorage.setItem(
                 SETTINGS_STORAGE_KEY,
                 JSON.stringify(settings));

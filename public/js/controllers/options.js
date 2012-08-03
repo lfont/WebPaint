@@ -45,7 +45,7 @@ define([
             this.render(optionsTemplate, model);
         },
         sendMessage: function (context) {
-            this.send("main", context.get("message"));
+            this.emit(context.get("message"));
             global.goBackTo("main");
         }
     };

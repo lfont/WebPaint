@@ -28,22 +28,23 @@ define([
                     name: languageResources.french
                 }
             ]
-        },
-
-        messageHandlers = {
-            locale: function (locale) {
-                model.locale = locale === "" ? DEFAULT_LOCALE : locale;
-            }
         };
 
     return {
+        initialize: function () {
+            this.on({
+                localeChange: function (sender, locale) {
+                    model.locale = locale === "" ? DEFAULT_LOCALE : locale;
+                }
+            });
+        },
         pagebeforecreate: function () {
             this.render(languageTemplate, model);
         },
         pagebeforeshow: function () {
             this.render(
                     languageListTemplate,
-                    this.$el.find(".languageListAnchor"),
+                    this.find(".languageListAnchor"),
                     model)
                 .trigger("create");
         },
@@ -51,11 +52,8 @@ define([
             var locale = context.get("locale");
 
             locale = (locale === DEFAULT_LOCALE) ? "" : locale;
-            this.send("main", "locale", locale);
+            this.emit("locale", locale);
             global.goBackTo("main");
-        },
-        onMessage: function (message, data) {
-            messageHandlers[message.name](data);
         }
     };
 });

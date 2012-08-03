@@ -11,14 +11,14 @@ require.config({
         "lib/jquery.mobile": "http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min",
         "lib/jquery.mobile.download": "lib/jquery.mobile/jquery.mobile.download",
         "lib/jquery.mobile.toast": "lib/jquery.mobile/jquery.mobile.toast",
-        "lib/jquery.mobile.mvc": "lib/jquery.mobile/jquery.mobile.mvc-0.6.1",
+        "lib/coreMVC": "lib/coreMVC-0.7.0",
         "lib/drawing": "lib/drawing/drawing-0.6.1",
         "lib/drawing.event": "lib/drawing/drawing.event.jquery-0.6.1"
     },
     shim: {
-        "lib/jquery.mobile.mvc": {
+        "lib/coreMVC": {
             deps: [ "jquery" ],
-            exports: "jqmMvc"
+            exports: "coreMVC"
         },
         "lib/jquery.mobile": {
             deps: [ "jquery" ],
@@ -44,27 +44,31 @@ require.config({
 
 define([
     "jquery",
-    "lib/jquery.mobile.mvc",
-    "settings"
-], function ($, mvc, settings) {
+    "models/settings"
+], function ($, settingsModel) {
     "use strict";
 
-    var appSettings;
+    var locale;
 
     console.log("Loading WebPaint...");
+
+    locale = settingsModel.get("locale");
 
     $(document).on("mobileinit", function () {
         $.mobile.defaultPageTransition = "none";
         $.mobile.defaultDialogTransition = "none";
     });
 
+    settingsModel.on("change:locale", function () {
+        window.location.reload();
+    });
+
     // Set the UI language if it is defined by the user.
-    appSettings = settings.get();
-    if (appSettings.locale) {
+    if (locale) {
         require.config({
             config: {
                 i18n: {
-                    locale: appSettings.locale
+                    locale: locale
                 }
             }
         });
@@ -79,23 +83,17 @@ define([
         "controllers/history",
         "controllers/language",
         "controllers/about"
-    ], function (mainController, newDrawingController, optionsController,
-                 toolsController, historyController, languageController,
-                 aboutController) {
-        var webPaint = mvc.application();
+    ], function (Main, NewDrawing, Options, Tools, History, Language, About) {
+        var main, newDrawing, options, tools, history, language, about;
 
-        webPaint.controller("main", $("#main"), mainController);
-        webPaint.controller("newDrawing", $("#newDrawing"), newDrawingController);
-        webPaint.controller("options", $("#options"), optionsController);
-        webPaint.controller("tools", $("#tools"), toolsController);
-        webPaint.controller("history", $("#history"), historyController);
-        webPaint.controller("language", $("#language"), languageController);
-        webPaint.controller("about", $("#about"), aboutController);
-
-        webPaint.stop(function () {
-            console.log("Unloading WebPaint...");
-            this.send("unload");
-            console.log("Bye");
+        $(function () {
+            main = new Main("#main");
+            newDrawing = new NewDrawing("#newDrawing");
+            options = new Options("#options");
+            tools = new Tools("#tools");
+            history = new History("#history");
+            language = new Language("#language");
+            about = new About("#about");
         });
 
         // jQuery.mobile must be loaded after the application code.

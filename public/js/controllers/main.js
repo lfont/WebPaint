@@ -5,21 +5,18 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
    "jquery",
+   "backbone",
+   "underscore",
    "lib/drawing",
    "global",
-   "settings",
+   "models/settings",
    "text!templates/main.html",
    "i18n!controllers/nls/main",
    "lib/drawing.event"
-], function ($, drawing, global, settings, mainTemplate, mainResources) {
+], function ($, Backbone, _, drawing, global, settingsModel, mainTemplate, mainResources) {
     "use strict";
 
     var info = global.getInfo(),
-        model = {
-            r: mainResources,
-            name: info.name
-        },
-        drawer, shapeDrawer, appSettings,
 
         fixContentGeometry = function ($header, $content) {
             var contentHeight = $(window).height() - $header.outerHeight();
@@ -37,77 +34,8 @@ define([
                 ($canvas.outerWidth() - $canvas.width()));
         },
 
-        messageHandlers = {
-            clear: function () {
-                drawer.clear().store();
-            },
-            "new": function (backgroundColor) {
-                appSettings.drawer.backgroundColor = backgroundColor;
-                drawer.newDrawing(backgroundColor);
-                this.shape("pencil");
-            },
-            save: function () {
-                $.mobile.download("/service/saveAs/drawing.png", "POST", {
-                    dataURL: drawer.histories()[drawer.history()]
-                });
-            },
-            lineWidth: function (width) {
-                drawer.properties({
-                    lineWidth: width
-                });
-            },
-            color: function (color) {
-                drawer.properties({
-                    strokeStyle: color,
-                    fillStyle: color
-                });
-            },
-            history: function (index) {
-                drawer.history(index);
-            },
-            shape: function (shapeName) {
-                appSettings.drawer.shape = shapeName;
-            },
-            locale: function (locale) {
-                appSettings.locale = locale;
-                window.location.reload();
-            },
-            unload: function () {
-                var histories = drawer.histories(),
-                    history = drawer.history();
-
-                appSettings.drawer.properties = drawer.properties();
-
-                appSettings.drawer.histories = (histories.length > 10) ?
-                    histories.slice(histories.length - 10) :
-                    histories;
-
-                appSettings.drawer.history = (history >=
-                    appSettings.drawer.histories.length) ?
-                    appSettings.drawer.histories.length - 1 :
-                    history;
-
-                settings.save(appSettings);
-            }
-        };
-
-    return {
-        pagebeforecreate: function () {
-            appSettings = settings.get();
-            this.render(mainTemplate, model);
-        },
-        pageshow: function () {
-            var $header, $content, $canvas;
-
-            if (!drawer) {
-                $header = this.$el.find("[data-role='header']");
-                $content = this.$el.find("[data-role='content']");
-                $canvas = this.$el.find("canvas");
-
-                fixContentGeometry($header, $content);
-                fixCanvasGeometry($content, $canvas);
-                
-                drawer = drawing.canvasDrawer($canvas[0]);
+        DrawerManager = function (canvas) {
+            var drawer = drawing.canvasDrawer(canvas),
                 shapeDrawer = drawer.eventShapeDrawer({
                     events: {
                         down: "vmousedown",
@@ -116,56 +44,149 @@ define([
                     }
                 });
 
-                if (appSettings.drawer.histories.length) {
-                    drawer.newDrawing(appSettings.drawer.backgroundColor);
-                    drawer.properties(appSettings.drawer.properties);
-                    drawer.histories(appSettings.drawer.histories);
-                    messageHandlers.history(appSettings.drawer.history);
-                    messageHandlers.shape(appSettings.drawer.shape);
-                } else {
-                    messageHandlers["new"]();
+            this.undo = function () {
+                if (!drawer.undo()) {
+                    $.mobile.showToast(mainResources.lastUndo);
                 }
+
+                return this;
+            };
+
+            this.redo = function () {
+                if (!drawer.redo()) {
+                    $.mobile.showToast(mainResources.lastRedo);
+                }
+
+                return this;
+            };
+
+            this.on = function () {
+                drawer.history(settingsModel.get("history"));
+                drawer.properties(settingsModel.get("properties"));
+
+                window.setTimeout(function () {
+                    shapeDrawer.on(settingsModel.get("shape"));
+                }, 250);
+
+                return this;
+            };
+
+            this.off = function () {
+                settingsModel.set({
+                    histories: drawer.histories(),
+                    history: drawer.history(),
+                    properties: drawer.properties()
+                });
+
+                shapeDrawer.off();
+
+                return this;
+            };
+
+            this.unload = function () {
+                var histories = drawer.histories(),
+                    history = drawer.history();
+
+                settingsModel.set({
+                    properties: drawer.properties(),
+                    histories: (histories.length > 10) ?
+                        histories.slice(histories.length - 10) :
+                        histories,
+                    history: (history >= histories.length) ?
+                        histories.length - 1 :
+                        history
+                });
+
+                return this;
+            };
+
+            settingsModel.on("change:clear", function () {
+                drawer.clear().store();
+            });
+
+            settingsModel.on("change:save", function () {
+                $.mobile.download(
+                    "/service/saveAs/drawing.png",
+                    "POST",
+                    {
+                        dataURL: drawer.histories()[drawer.history()]
+                    });
+            });
+
+            settingsModel.on("change:background", function (color) {
+                settingsModel.set({ shape: "pencil" });
+                drawer.newDrawing(color);
+            });
+
+            if (settingsModel.get("histories").length) {
+                drawer.newDrawing(settingsModel.get("background"));
+                drawer.properties(settingsModel.get("properties"));
+                drawer.histories(settingsModel.get("histories"));
+                drawer.history(settingsModel.get("history"));
+            } else {
+                drawer.newDrawing();
+            }
+        };
+
+    return Backbone.View.extend({
+        events: {
+            "pagebeforecreate": this.pagebeforecreate,
+            "pageshow": this.pageshow,
+            "pagebeforehide": this.pagebeforehide,
+            "vclick .undo": this.undo,
+            "vclick .redo": this.redo
+        },
+
+        template: _.template(mainTemplate),
+
+        render: function () {
+            this.$el.html(this.template({
+                r: mainResources,
+                name: info.name
+            }));
+
+            return this;
+        },
+
+        pagebeforecreate: function () {
+            this.render();
+        },
+
+        pageshow: function () {
+            var $header, $content, $canvas;
+
+            if (!this.drawer) {
+                $header = this.$el.find("[data-role='header']");
+                $content = this.$el.find("[data-role='content']");
+                $canvas = this.$el.find("canvas");
+
+                fixContentGeometry($header, $content);
+                fixCanvasGeometry($content, $canvas);
+                
+                this.drawer = new DrawerManager($canvas[0]);
             }
 
-            setTimeout(function () {
-                shapeDrawer.on(appSettings.drawer.shape);
-            }, 250);
+            this.drawer.on();
         },
+
         pagebeforehide: function () {
-            this.send("language", "locale", appSettings.locale);
-
-            this.send("history", "history", {
-                items: drawer.histories(),
-                index: drawer.history()
-            });
-
-            this.send("tools", "shape", {
-                properties: drawer.properties(),
-                name: appSettings.drawer.shape
-            });
-
-            shapeDrawer.off();
+            this.drawer.off();
         },
+
         undo: function (context) {
             context.event.preventDefault();
-            if (!drawer.undo()) {
-                $.mobile.showToast(mainResources.lastUndo);
-            }
+            this.drawer.undo();
         },
+
         redo: function (context) {
             context.event.preventDefault();
-            if (!drawer.redo()) {
-                $.mobile.showToast(mainResources.lastRedo);
-            }
+            this.drawer.redo();
         },
-        onMessage: function (message, data) {
-            if (message.name === "unload" &&
-                message.source !== "application") {
-                // Only the application can unload this controller.
-                return;
-            }
 
-            messageHandlers[message.name](data);
+        unload: function () {
+            this.drawer.unload();
+
+            return this;
         }
-    };
+    });
 });

@@ -13,34 +13,31 @@ define([
 
     var model = {
             r: historyResources
-        },
-
-        messageHandlers = {
-            history: function (history) {
-                model.histories = history.items;
-                model.history = history.index;
-            }
         };
 
     return {
+        initialize: function () {
+            this.on({
+                historicChange: function (sender, historic) {
+                    model.histories = historic.items;
+                    model.history = historic.index;
+                }
+            });
+        },
         pagebeforecreate: function () {
             this.render(historyTemplate, model);
         },
         pagebeforeshow: function () {
             this.render(
                     historyListTemplate,
-                    this.$el.find(".historyListAnchor"),
+                    this.find(".historyListAnchor"),
                     model)
                 .trigger("create");
         },
         setHistory: function (context) {
             var index = context.get("index");
-
-            this.send("main", "history", parseInt(index, 10));
+            this.emit("history", parseInt(index, 10));
             global.goBackTo("main");
-        },
-        onMessage: function (message, data) {
-            messageHandlers[message.name](data);
         }
     };
 });
