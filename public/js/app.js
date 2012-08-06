@@ -8,17 +8,21 @@ require.config({
         "i18n": "lib/requirejs/i18n",
         "text": "lib/requirejs/text",
         "jquery": "http://code.jquery.com/jquery-1.7.1.min",
+        "underscore": "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min",
+        "backbone": "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min",
         "lib/jquery.mobile": "http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min",
         "lib/jquery.mobile.download": "lib/jquery.mobile/jquery.mobile.download",
         "lib/jquery.mobile.toast": "lib/jquery.mobile/jquery.mobile.toast",
-        "lib/coreMVC": "lib/coreMVC-0.7.0",
         "lib/drawing": "lib/drawing/drawing-0.6.1",
         "lib/drawing.event": "lib/drawing/drawing.event.jquery-0.6.1"
     },
     shim: {
-        "lib/coreMVC": {
-            deps: [ "jquery" ],
-            exports: "coreMVC"
+        "underscore": {
+            exports: "_"
+        },
+        "backbone": {
+            deps: ["underscore", "jquery"],
+            exports: "Backbone"
         },
         "lib/jquery.mobile": {
             deps: [ "jquery" ],
@@ -52,18 +56,13 @@ define([
 
     console.log("Loading WebPaint...");
 
-    locale = settingsModel.get("locale");
-
     $(document).on("mobileinit", function () {
         $.mobile.defaultPageTransition = "none";
         $.mobile.defaultDialogTransition = "none";
     });
 
-    settingsModel.on("change:locale", function () {
-        window.location.reload();
-    });
-
     // Set the UI language if it is defined by the user.
+    locale = settingsModel.get("locale");
     if (locale) {
         require.config({
             config: {
@@ -74,35 +73,30 @@ define([
         });
     }
 
-    // Loads app code
-    require([
-        "controllers/main",
-        "controllers/newDrawing",
-        "controllers/options",
-        "controllers/tools",
-        "controllers/history",
-        "controllers/language",
-        "controllers/about"
-    ], function (Main, NewDrawing, Options, Tools, History, Language, About) {
-        var main, newDrawing, options, tools, history, language, about;
-
-        $(function () {
-            main = new Main("#main");
-            newDrawing = new NewDrawing("#newDrawing");
-            options = new Options("#options");
-            tools = new Tools("#tools");
-            history = new History("#history");
-            language = new Language("#language");
-            about = new About("#about");
-        });
-
-        // jQuery.mobile must be loaded after the application code.
+    $(function () {
         require([
-            "lib/jquery.mobile",
-            "lib/jquery.mobile.download",
-            "lib/jquery.mobile.toast"
-        ], function () {
-            console.log("WebPaint is ready.");
+            "views/main",
+            "views/newDrawing",
+            "views/options",
+            "views/tools",
+            "views/history",
+            "views/language",
+            "views/about"
+        ], function (main) {
+            $(window).unload(function () {
+                console.log("Unloading WebPaint...");
+                main.unload();
+                settingsModel.save();
+            });
+
+            // jQuery.mobile must be loaded after the application code.
+            require([
+                "lib/jquery.mobile",
+                "lib/jquery.mobile.download",
+                "lib/jquery.mobile.toast"
+            ], function () {
+                console.log("WebPaint is ready.");
+            });
         });
     });
 });

@@ -1,8 +1,7 @@
 WebPaint
 ========
 A simple drawing application for fun.  
-Powered by jQuery Mobile and jQuery Mobile MVC 
-(http://github.com/lfont/jquery.mobile.mvc).  
+Powered by jQuery Mobile, Backbone and drawing (http://github.com/lfont/drawing).  
 Watch this application running at http://lfont.webpaint.nodejitsu.com/
 
 About Us

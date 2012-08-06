@@ -2,12 +2,10 @@
     <% for (var i = 0; i < languages.length; i += 1) { %>
         <% var language = languages[i]; %>
         <li>
-            <a href="#" data-mvc-action="{ event: vclick, method: setLocale, param-locale: <%= language.code %> }">
+            <a href="#" class="language" data-value="<%= language.code %>">
                 <img src="img/<%= language.code %>.png" alt="<%= language.name %>" class="ui-li-icon" />
                 <%= language.name %>
-                <% if (language.code === locale) { %>
-                    <span class="ui-li-count">*</span>
-                <% } %>
+                <span class="ui-li-count" style="display: none;">*</span>
             </a>
         </li>
     <% } %>

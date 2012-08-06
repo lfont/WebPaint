@@ -1,31 +1,38 @@
 <div>
     <div class="colorpicker-custom-colors">
         <p><%= r.customColorHint %></p>
-        <div class="colorpicker-custom-color"
-            data-mvc-action="{ event: vclick, method: value, param-color: custom }">
+        <div class="colorpicker-custom-color">
         </div>
         <div data-role="fieldcontain">
             <label for="red"><%= r.redLabel %></label>
             <input type="number" name="red"
                 data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" />
+                value="0" min="0" max="255" class="colorpicker-red" />
         </div>
         <div data-role="fieldcontain">
             <label for="green"><%= r.greenLabel %></label>
             <input type="number" name="green"
                 data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" />
+                value="0" min="0" max="255" class="colorpicker-green" />
         </div>
         <div data-role="fieldcontain">
             <label for="blue"><%= r.blueLabel %></label>
             <input type="number" name="blue"
                 data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" />
+                value="0" min="0" max="255" class="colorpicker-blue" />
         </div>
     </div>
     <div>
         <p><%= r.predefinedColorHint %></p>
-        <div class="predefinedColorsAnchor">
+        <div class="colorpicker-predefined-colors">
+            <% _.each(colors, function (color) { %>
+                <div class="colorpicker-predefined-color-wrapper" title="<%= color.name %>">
+                    <div class="colorpicker-predefined-color"
+                        style="background-color: <%= color.code %>"
+                        data-value="<%= color.code %>">
+                    </div>
+                </div>
+            <% }); %>
         </div>
     </div>
 </div>

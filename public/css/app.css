@@ -63,15 +63,15 @@ input[type="number"] {
 }
 
 .colorpicker-custom-color,
-.colorpicker-predefined-color div {
+.colorpicker-predefined-color {
     border: 1px solid gray;
     height: 30px;
     width: 92px;
 }
 
 .colorpicker-custom-color,
-.colorpicker-predefined-color,
-.colorpicker-predefined-color div {
+.colorpicker-predefined-color-wrapper,
+.colorpicker-predefined-color {
     -webkit-border-radius: 4px;
     border-radius: 4px;
 }
@@ -80,14 +80,14 @@ input[type="number"] {
     margin: 0.5em auto;
 }
 
-.colorpicker-predefined-color {
+.colorpicker-predefined-color-wrapper {
     background: transparent url("../img/background.png") repeat 0 0;
     display: inline-block;
     margin: 0 0.5em 1em 0.5em;
 }
 
 .colorpicker-custom-color:hover,
-.colorpicker-predefined-color div:hover,
+.colorpicker-predefined-color:hover,
 .colorpicker-color-selected {
     cursor: pointer;
     box-shadow: 0 0 0 3px gray;

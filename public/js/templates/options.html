@@ -8,8 +8,9 @@
             <% var option = options[i]; %>
             <li>
                 <a href="<%= option.link %>" data-rel="dialog"
-                    <% if (option.message) { %>
-                        data-mvc-action="{ event: vclick, method: sendMessage, param-name: <%= option.message %> }"
+                    <% if (option.action) { %>
+                        class="action"
+                        data-value="<%= option.action %>"
                     <% } %>
                     >
                     <%= option.name %>
