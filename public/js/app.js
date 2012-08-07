@@ -75,13 +75,7 @@ define([
 
     $(function () {
         require([
-            "views/main",
-            "views/newDrawing",
-            "views/options",
-            "views/tools",
-            "views/history",
-            "views/language",
-            "views/about"
+            "views/main"
         ], function (main) {
             $(window).unload(function () {
                 console.log("Unloading WebPaint...");

@@ -4,8 +4,7 @@
 
 <div data-role="content" data-theme="d">
     <ul data-role="listview">
-        <% for (var i = 0; i < options.length; i += 1) { %>
-            <% var option = options[i]; %>
+        <% _.each(options, function (option) { %>
             <li>
                 <a href="<%= option.link %>" data-rel="dialog"
                     <% if (option.action) { %>
@@ -16,7 +15,7 @@
                     <%= option.name %>
                 </a>
             </li>
-        <% } %>
+        <% }); %>
     </ul>
 </div>
 

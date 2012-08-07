@@ -18,6 +18,7 @@ define([
     var History = Backbone.View.extend({
         events: {
             "pagebeforecreate": "pagebeforecreate",
+            "pagecreate": "pagecreate",
             "vclick .history": "historySelected"
         },
 
@@ -36,21 +37,23 @@ define([
         initialize: function () {
             var that = this;
 
-            settingsModel.on("change:history", function (index) {
+            settingsModel.on("change:history", function (settings) {
                 that.$el.find(".history")
                         .find(".ui-li-count")
                         .hide()
                         .end()
-                        .filter("[data-value='" + index + "']")
+                        .filter("[data-value='" + settings.get("history") + "']")
                         .find(".ui-li-count")
                         .show();
             });
 
-            settingsModel.on("change:histories", function (items) {
+            settingsModel.on("change:histories", function (settings) {
                 that.$el.find(".history-list")
                         .html(that.listTemplate({
-                            histories: items
-                        }));
+                            r: historyResources,
+                            histories: settings.get("histories")
+                        }))
+                        .trigger("create");
             });
         },
 
@@ -58,12 +61,16 @@ define([
             this.render();
         },
 
+        pagecreate: function () {
+            settingsModel.trigger("change:histories", settingsModel);
+            settingsModel.trigger("change:history", settingsModel);
+        },
+
         historySelected: function (event) {
             var $this = $(event.target),
                 index = $this.attr("data-value");
 
             event.preventDefault();
-
             this.trigger("history", parseInt(index, 10));
         }
     });

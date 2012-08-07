@@ -7,13 +7,14 @@ define([
     "jquery",
     "backbone",
     "underscore",
-    "views/language",
     "views/newDrawing",
     "views/history",
+    "views/language",
+    "views/about",
     "text!templates/options.html",
     "i18n!views/nls/options"
-], function ($, Backbone, _, languageView, newDrawingView, historyView,
-             optionsTemplate, optionsResources) {
+], function ($, Backbone, _, newDrawingView, historyView, languageView,
+             aboutView, optionsTemplate, optionsResources) {
     "use strict";
 
     var Options =  Backbone.View.extend({
@@ -34,10 +35,12 @@ define([
                         },
                         {
                             name: optionsResources.saveAs,
+                            link: "#",
                             action: "save"
                         },
                         {
                             name: optionsResources.clear,
+                            link: "#",
                             action: "clear"
                         },
                         {
@@ -86,9 +89,7 @@ define([
                     action = $this.attr("data-value");
 
                 event.preventDefault();
-
                 this.trigger(action);
-
                 $.mobile.changePage("#main", { reverse: true });
             }
         });

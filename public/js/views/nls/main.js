@@ -8,9 +8,7 @@ define({
         "undoButton": "Undo",
         "redoButton": "Redo",
         "toolsButton": "Tools",
-        "optionsButton": "Options",
-        "lastUndo": "Nothing to undo",
-        "lastRedo": "Nothing to redo"
+        "optionsButton": "Options"
     },
     "fr-fr": true
 });

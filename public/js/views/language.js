@@ -21,7 +21,7 @@ define([
         Language = Backbone.View.extend({
             events: {
                 "pagebeforecreate": "pagebeforecreate",
-                "pagebeforeshow": "pagebeforeshow",
+                "pagecreate": "pagecreate",
                 "vclick .language": "languageSelected"
             },
 
@@ -42,21 +42,29 @@ define([
                 return this;
             },
 
-            pagebeforecreate: function () {
-                this.render();
-            },
+            initialize: function () {
+                var that = this;
 
-            pagebeforeshow: function () {
-                var locale = settingsModel.get("locale"),
-                    language = locale === "" ? DEFAULT_LOCALE : locale;
+                settingsModel.on("change:locale", function (settings) {
+                    var locale = settingsModel.get("locale"),
+                        language = locale === "" ? DEFAULT_LOCALE : locale;
 
-                this.$el.find(".language")
+                    that.$el.find(".language")
                         .find(".ui-li-count")
                         .hide()
                         .end()
                         .filter("[data-value='" + language + "']")
                         .find(".ui-li-count")
                         .show();
+                });
+            },
+
+            pagebeforecreate: function () {
+                this.render();
+            },
+
+            pagecreate: function () {
+                settingsModel.trigger("change:locale", settingsModel);
             },
 
             languageSelected: function (event) {
@@ -65,7 +73,6 @@ define([
                     locale = (value === DEFAULT_LOCALE) ? "" : value;
 
                 event.preventDefault();
-
                 this.trigger("language", locale);
             }
         });

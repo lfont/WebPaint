@@ -4,7 +4,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define({
-    "undoButton": "Défaire",
-    "redoButton": "Refaire",
-    "toolsButton": "Outils"
+    "root": {
+        "lastUndo": "Nothing to undo",
+        "lastRedo": "Nothing to redo"
+    },
+    "fr-fr": true
 });

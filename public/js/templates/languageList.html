@@ -1,6 +1,5 @@
 <ul data-role="listview" data-theme="d">
-    <% for (var i = 0; i < languages.length; i += 1) { %>
-        <% var language = languages[i]; %>
+    <% _.each(languages, function (language) { %>
         <li>
             <a href="#" class="language" data-value="<%= language.code %>">
                 <img src="img/<%= language.code %>.png" alt="<%= language.name %>" class="ui-li-icon" />
@@ -8,5 +7,5 @@
                 <span class="ui-li-count" style="display: none;">*</span>
             </a>
         </li>
-    <% } %>
+    <% }); %>
 </ul>

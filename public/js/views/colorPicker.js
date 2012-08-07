@@ -23,9 +23,9 @@ define([
                     parseInt(b, 10).toString(16)
                 ];
 
-            $.each(hex, function (nr, val) {
-                if (val.length === 1) {
-                    hex[nr] = "0" + val;
+            _.each(hex, function (number, index) {
+                if (number.length === 1) {
+                    hex[index] = "0" + number;
                 }
             });
 
@@ -48,9 +48,9 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "change .colorpicker-red": "updateCustomColor",
-            "change .colorpicker-green": "updateCustomColor",
-            "change .colorpicker-blue": "updateCustomColor",
+            "change .colorpicker-red": "customColorUpdated",
+            "change .colorpicker-green": "customColorUpdated",
+            "change .colorpicker-blue": "customColorUpdated",
             "vclick .colorpicker-custom-color": "colorSelected",
             "vclick .colorpicker-predefined-color": "colorSelected"
         },
@@ -63,7 +63,7 @@ define([
                 colors: this.options.colors.toJSON()
             }));
 
-            this.updateCustomColor();
+            this.customColorUpdated();
 
             return this;
         },
@@ -72,7 +72,7 @@ define([
             this.render();
         },
 
-        updateCustomColor: function () {
+        customColorUpdated: function () {
             var $customColor = this.$el.find(".colorpicker-custom-color"),
                 $red = this.$el.find(".colorpicker-red"),
                 $green = this.$el.find(".colorpicker-green"),
@@ -92,7 +92,6 @@ define([
 
             $customColor.removeClass(SELECTED_CLASS);
             $predefinedColors.removeClass(SELECTED_CLASS);
-
             $this.addClass(SELECTED_CLASS);
 
             this.trigger("color", hex);
@@ -106,23 +105,28 @@ define([
 
         value: function (hex) {
             var $customColor = this.$el.find(".colorpicker-custom-color"),
-                $predefinedColors = this.$el.find(".colorpicker-predefined-color"),
-                $red = this.$el.find(".colorpicker-red"),
-                $green = this.$el.find(".colorpicker-green"),
-                $blue = this.$el.find(".colorpicker-blue"),
-                rgb;
+                $predefinedColors, $red, $green, $blue, rgb;
             
             if (this.hasPredefinedColor(hex)) {
                 $customColor.removeClass(SELECTED_CLASS);
+
+                $predefinedColors = this.$el.find(".colorpicker-predefined-color");
                 $predefinedColors.find("[data-value='" + hex + "']")
                                  .addClass(SELECTED_CLASS);
             } else {
-                rgb = rgbFromHex(hex);
-                $red.val(rgb.r).slider("refresh");
-                $green.val(rgb.g).slider("refresh");
-                $blue.val(rgb.b).slider("refresh");
                 $customColor.addClass(SELECTED_CLASS)
                             .css("background-color", hex);
+
+                rgb = rgbFromHex(hex);
+
+                $red = this.$el.find(".colorpicker-red");
+                $red.val(rgb.r).slider("refresh");
+
+                $green = this.$el.find(".colorpicker-green");
+                $green.val(rgb.g).slider("refresh");
+
+                $blue = this.$el.find(".colorpicker-blue");
+                $blue.val(rgb.b).slider("refresh");
             }
 
             return this;
