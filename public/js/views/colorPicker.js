@@ -111,12 +111,9 @@ define([
                 $customColor.removeClass(SELECTED_CLASS);
 
                 $predefinedColors = this.$el.find(".colorpicker-predefined-color");
-                $predefinedColors.find("[data-value='" + hex + "']")
+                $predefinedColors.filter("[data-value='" + hex + "']")
                                  .addClass(SELECTED_CLASS);
             } else {
-                $customColor.addClass(SELECTED_CLASS)
-                            .css("background-color", hex);
-
                 rgb = rgbFromHex(hex);
 
                 $red = this.$el.find(".colorpicker-red");
@@ -127,6 +124,8 @@ define([
 
                 $blue = this.$el.find(".colorpicker-blue");
                 $blue.val(rgb.b).slider("refresh");
+
+                $customColor.addClass(SELECTED_CLASS);
             }
 
             return this;

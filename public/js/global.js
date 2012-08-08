@@ -10,7 +10,7 @@ define(function () {
         getInfo: function () {
             return {
                 name: "WebPaint",
-                version: "0.4.9"
+                version: "0.4.10"
             };
         }
     };
