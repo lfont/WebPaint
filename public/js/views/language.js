@@ -77,5 +77,5 @@ define([
             }
         });
 
-    return new Language({ el: $("#language")[0] });
+    return new Language({ el: $("#language") });
 });

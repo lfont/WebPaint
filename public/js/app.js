@@ -7,10 +7,10 @@ require.config({
     paths: {
         "i18n": "lib/requirejs/i18n",
         "text": "lib/requirejs/text",
-        "jquery": "http://code.jquery.com/jquery-1.7.1.min",
+        "jquery": "http://code.jquery.com/jquery-1.7.2.min",
         "underscore": "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min",
         "backbone": "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min",
-        "lib/jquery.mobile": "http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min",
+        "lib/jquery.mobile": "http://code.jquery.com/mobile/1.2.0-alpha.1/jquery.mobile-1.2.0-alpha.1.min",
         "lib/jquery.mobile.download": "lib/jquery.mobile/jquery.mobile.download",
         "lib/jquery.mobile.toast": "lib/jquery.mobile/jquery.mobile.toast",
         "lib/drawing": "lib/drawing/drawing-0.6.1",

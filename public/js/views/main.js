@@ -14,8 +14,8 @@ define([
    "views/options",
    "text!templates/main.html",
    "i18n!views/nls/main"
-], function ($, Backbone, _, DrawerManager, global, settingsModel, toolsView,
-             optionsView, mainTemplate, mainResources) {
+], function ($, Backbone, _, DrawerManager, global, settingsModel, ToolsView,
+             OptionsView, mainTemplate, mainResources) {
     "use strict";
 
     var info = global.getInfo(),
@@ -38,7 +38,6 @@ define([
 
         Main = Backbone.View.extend({
             events: {
-                "pagebeforecreate": "pagebeforecreate",
                 "pageshow": "pageshow",
                 "pagebeforehide": "pagebeforehide",
                 "vclick .undo": "undo",
@@ -57,23 +56,49 @@ define([
             },
 
             initialize: function () {
-                toolsView.on("shape", function (name) {
-                    settingsModel.set({
-                        shape: name
-                    });
+                var that = this;
+
+                this.render();
+
+                this.toolsView = new ToolsView({ el: $("#tools") });
+
+                this.toolsView.on("shape", function (name) {
+                    that.drawer.setShape(name);
                 });
-                            
-                optionsView.on("language", function (locale) {
+                
+                this.toolsView.on("color", function (hex) {
+                    that.drawer.setColor(hex);
+                });
+
+                this.toolsView.on("lineWidth", function (value) {
+                    that.drawer.setLineWidth(value);
+                });
+
+                this.optionsView = new OptionsView({ el: $("#options") });
+
+                this.optionsView.on("newDrawing", function (hex) {
+                    that.drawer.newDrawing(hex);
+                });
+
+                this.optionsView.on("clear", function () {
+                    that.drawer.clear();
+                });
+
+                this.optionsView.on("history", function (value) {
+                    that.drawer.setHistory(value);
+                });
+
+                this.optionsView.on("save", function () {
+                    that.drawer.save();
+                });
+
+                this.optionsView.on("language", function (locale) {
                     settingsModel.set({
                         locale: locale
                     });
                         
                     window.location.reload();
                 });
-            },
-
-            pagebeforecreate: function () {
-                this.render();
             },
 
             pageshow: function () {
@@ -113,5 +138,5 @@ define([
             }
         });
 
-    return new Main({ el: $("#main")[0] });
+    return new Main({ el: $("#main") });
 });

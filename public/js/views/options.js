@@ -17,82 +17,77 @@ define([
              aboutView, optionsTemplate, optionsResources) {
     "use strict";
 
-    var Options =  Backbone.View.extend({
-            events: {
-                "pagebeforecreate": "pagebeforecreate",
-                "vclick .action": "actionSelected"
-            },
+    return Backbone.View.extend({
+        events: {
+            "vclick .action": "actionSelected"
+        },
 
-            template: _.template(optionsTemplate),
+        template: _.template(optionsTemplate),
 
-            render: function () {
-                this.$el.html(this.template({
-                    r: optionsResources,
-                    options: [
-                        {
-                            name: optionsResources["new"],
-                            link: "#newDrawing"
-                        },
-                        {
-                            name: optionsResources.saveAs,
-                            link: "#",
-                            action: "save"
-                        },
-                        {
-                            name: optionsResources.clear,
-                            link: "#",
-                            action: "clear"
-                        },
-                        {
-                            name: optionsResources.history,
-                            link: "#history"
-                        },
-                        {
-                            name: optionsResources.language,
-                            link: "#language"
-                        },
-                        {
-                            name: optionsResources.about,
-                            link: "#about"
-                        }
-                    ]
-                }));
+        render: function () {
+            this.$el.html(this.template({
+                r: optionsResources,
+                options: [
+                    {
+                        name: optionsResources["new"],
+                        link: "#newDrawing"
+                    },
+                    {
+                        name: optionsResources.saveAs,
+                        link: "#",
+                        action: "save"
+                    },
+                    {
+                        name: optionsResources.clear,
+                        link: "#",
+                        action: "clear"
+                    },
+                    {
+                        name: optionsResources.history,
+                        link: "#history"
+                    },
+                    {
+                        name: optionsResources.language,
+                        link: "#language"
+                    },
+                    {
+                        name: optionsResources.about,
+                        link: "#about"
+                    }
+                ]
+            }));
 
-                return this;
-            },
+            return this;
+        },
 
-            initialize: function () {
-                var that = this;
+        initialize: function () {
+            var that = this;
 
-                languageView.on("language", function (locale) {
-                    that.trigger("language", locale);
-                    $.mobile.changePage("#main", { reverse: true });
-                });
+            this.render();
 
-                newDrawingView.on("newDrawing", function (background) {
-                    that.trigger("newDrawing", background);
-                    $.mobile.changePage("#main", { reverse: true });
-                });
-
-                historyView.on("history", function (index) {
-                    that.trigger("history", index);
-                    $.mobile.changePage("#main", { reverse: true });
-                });
-            },
-
-            pagebeforecreate: function () {
-                this.render();
-            },
-
-            actionSelected: function (event) {
-                var $this = $(event.target),
-                    action = $this.attr("data-value");
-
-                event.preventDefault();
-                this.trigger(action);
+            languageView.on("language", function (locale) {
+                that.trigger("language", locale);
                 $.mobile.changePage("#main", { reverse: true });
-            }
-        });
+            });
 
-    return new Options({ el: $("#options")[0] });
+            newDrawingView.on("newDrawing", function (background) {
+                that.trigger("newDrawing", background);
+                $.mobile.changePage("#main", { reverse: true });
+            });
+
+            historyView.on("history", function (index) {
+                that.trigger("history", index);
+                $.mobile.changePage("#main", { reverse: true });
+            });
+        },
+
+        actionSelected: function (event) {
+            var $this = $(event.target),
+                action = $this.attr("data-value");
+
+            event.preventDefault();
+            this.trigger(action);
+            $.mobile.changePage("#main", { reverse: true });
+        }
+    });
 });

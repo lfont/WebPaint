@@ -9,12 +9,9 @@ define([
    "underscore",
    "lib/drawing",
    "models/settings",
-   "views/tools",
-   "views/options",
    "i18n!nls/drawerManager",
    "lib/drawing.event"
-], function ($, Backbone, _, drawing, settingsModel, toolsView,
-             optionsView, drawerManagerResources) {
+], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     "use strict";
 
     return function (canvas) {
@@ -77,6 +74,54 @@ define([
             return this;
         };
 
+        this.setShape = function (name) {
+            settingsModel.set({
+                shape: name
+            });
+        };
+
+        this.setColor = function (hex) {
+            var properties = {
+                strokeStyle: hex,
+                fillStyle: hex
+            };
+            settingsModel.set(properties);
+            drawer.properties(properties);
+        };
+
+        this.setLineWidth = function (value) {
+            var properties = {
+                lineWidth: value
+            };
+            settingsModel.set(properties);
+            drawer.properties(properties);
+        };
+
+        this.setHistory = function (value) {
+            drawer.history(value);
+        };
+
+        this.newDrawing = function (hex) {
+            settingsModel.set({
+                background: hex,
+                shape: "pencil"
+            });
+            drawer.newDrawing(hex);
+        };
+
+        this.clear = function () {
+            drawer.clear().store();
+        };
+
+        this.save = function () {
+            $.mobile.download(
+                "/service/saveAs/drawing.png",
+                "POST",
+                {
+                    dataURL: drawer.histories()[drawer.history()]
+                });
+        };
+
         this.unload = function () {
             var histories = drawer.histories(),
                 history = drawer.history();
@@ -92,48 +137,6 @@ define([
 
             return this;
         };
-
-        toolsView.on("color", function (name) {
-            var properties = {
-                strokeStyle: name,
-                fillStyle: name
-            };
-            settingsModel.set(properties);
-            drawer.properties(properties);
-        });
-
-        toolsView.on("lineWidth", function (width) {
-            var properties = {
-                lineWidth: width
-            };
-            settingsModel.set(properties);
-            drawer.properties(properties);
-        });
-
-        optionsView.on("newDrawing", function (color) {
-            settingsModel.set({
-                background: color,
-                shape: "pencil"
-            });
-            drawer.newDrawing(color);
-        });
-
-        optionsView.on("clear", function () {
-            drawer.clear().store();
-        });
-
-        optionsView.on("history", function (index) {
-            drawer.history(index);
-        });
-
-        optionsView.on("save", function () {
-            $.mobile.download(
-                "/service/saveAs/drawing.png",
-                "POST",
-                {
-                    dataURL: drawer.histories()[drawer.history()]
-                });
-        });
 
         initialize();
     };

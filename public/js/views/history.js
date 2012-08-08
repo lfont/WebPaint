@@ -75,5 +75,5 @@ define([
         }
     });
 
-    return new History({ el: $("#history")[0] });
+    return new History({ el: $("#history") });
 });

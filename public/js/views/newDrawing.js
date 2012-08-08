@@ -36,7 +36,7 @@ define([
             this.render();
 
             this.backgroundColorPicker = new ColorPickerView({
-                el: this.$el.find(".color-picker")[0],
+                el: this.$el.find(".color-picker"),
                 colors: colorsCollection
             });
 
@@ -46,5 +46,5 @@ define([
         }
     });
 
-    return new NewDrawing({ el: $("#newDrawing")[0] });
+    return new NewDrawing({ el: $("#newDrawing") });
 });

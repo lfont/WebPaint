@@ -1,23 +1,23 @@
 <div data-role="header" data-position="fixed">
     <h1 class="ui-title-left"><%= name %></h1>
-    <div class="ui-btn-right">
-        <a href="#" data-role="button" data-icon="back"
+    <span class="ui-btn-right">
+        <a href="#" data-role="button" data-inline="true" data-icon="back"
             data-iconpos="notext" data-theme="b" class="undo">
             <%= r.undoButton %>
         </a>
-        <a href="#" data-role="button" data-icon="forward"
+        <a href="#" data-role="button" data-inline="true" data-icon="forward"
             data-iconpos="notext" data-theme="b" class="redo">
             <%= r.redoButton %>
         </a>
-        <a href="#tools" data-role="button" data-icon="star"
+        <a href="#tools" data-role="button" data-inline="true" data-icon="star"
             data-iconpos="notext" data-theme="b" data-rel="dialog">
             <%= r.toolsButton %>
         </a>
-        <a href="#options" data-role="button" data-icon="gear"
+        <a href="#options" data-role="button" data-inline="true" data-icon="gear"
             data-iconpos="notext" data-theme="b" data-rel="dialog">
             <%= r.optionsButton %>
         </a>
-    </div>
+    <span>
 </div>
 
 <div data-role="content">

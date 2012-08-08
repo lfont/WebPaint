@@ -37,5 +37,5 @@ define([
             }
         });
 
-    return new About({ el: $("#about")[0] });
+    return new About({ el: $("#about") });
 });

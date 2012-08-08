@@ -17,9 +17,8 @@ define([
              ColorPickerView, toolsTemplate, toolsResources) {
     "use strict";
 
-    var Tools = Backbone.View.extend({
+    return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate",
             "pagebeforeshow": "pagebeforeshow",
             "pagebeforehide": "pagebeforehide"
         },
@@ -34,13 +33,13 @@ define([
             return this;
         },
 
-        pagebeforecreate: function () {
+        initialize: function () {
             var that = this;
 
             this.render();
 
             this.shapeColorPicker = new ColorPickerView({
-                el: this.$el.find(".color-picker")[0],
+                el: this.$el.find(".color-picker"),
                 colors: colorsCollection.getColors()
             });
 
@@ -71,6 +70,4 @@ define([
             this.trigger("lineWidth", parseInt($width.val(), 10));
         }
     });
-
-    return new Tools({ el: $("#tools")[0] });
 });

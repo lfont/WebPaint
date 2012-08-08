@@ -15,6 +15,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     }
 }
 
+[data-role="header"] .ui-btn {
+    margin-top: -2px;
+}
+
 [data-role="content"] {
     text-align: center;
 }
