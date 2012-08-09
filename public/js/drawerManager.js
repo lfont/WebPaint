@@ -28,6 +28,8 @@ define([
             }),
             
             initialize = function () {
+                var histories = settingsModel.has("histories");
+
                 drawer.newDrawing(settingsModel.get("background"));
                 drawer.properties({
                     lineWidth: settingsModel.get("lineWidth"),
@@ -36,8 +38,8 @@ define([
                     lineCap: settingsModel.get("lineCap")
                 });
 
-                if (settingsModel.has("histories")) {
-                    drawer.histories(settingsModel.get("histories"));
+                if (histories.length > 0) {
+                    drawer.histories(histories);
                     drawer.history(settingsModel.get("history"));
                 }
             };
