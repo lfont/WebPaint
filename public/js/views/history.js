@@ -15,7 +15,7 @@ define([
              historyListTemplate, historyResources) {
     "use strict";
 
-    var History = Backbone.View.extend({
+    return Backbone.View.extend({
         events: {
             "pagebeforecreate": "pagebeforecreate",
             "pagecreate": "pagecreate",
@@ -74,6 +74,4 @@ define([
             this.trigger("history", parseInt(index, 10));
         }
     });
-
-    return new History({ el: $("#history") });
 });

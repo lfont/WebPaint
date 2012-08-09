@@ -76,7 +76,9 @@ define([
     $(function () {
         require([
             "views/main"
-        ], function (main) {
+        ], function (Main) {
+            var main = new Main({ el: $("#main") });
+
             $(window).unload(function () {
                 console.log("Unloading WebPaint...");
                 main.unload();

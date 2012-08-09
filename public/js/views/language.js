@@ -16,66 +16,64 @@ define([
              languageTemplate, languageListTemplate, languageResources) {
     "use strict";
 
-    var DEFAULT_LOCALE = "xx-xx",
+    var DEFAULT_LOCALE = "xx-xx";
 
-        Language = Backbone.View.extend({
-            events: {
-                "pagebeforecreate": "pagebeforecreate",
-                "pagecreate": "pagecreate",
-                "vclick .language": "languageSelected"
-            },
+    return Backbone.View.extend({
+        events: {
+            "pagebeforecreate": "pagebeforecreate",
+            "pagecreate": "pagecreate",
+            "vclick .language": "languageSelected"
+        },
 
-            template: _.template(languageTemplate),
-            
-            listTemplate: _.template(languageListTemplate),
+        template: _.template(languageTemplate),
+        
+        listTemplate: _.template(languageListTemplate),
 
-            render: function () {
-                this.$el.html(this.template({
-                    r: languageResources
-                }));
+        render: function () {
+            this.$el.html(this.template({
+                r: languageResources
+            }));
 
-                this.$el.find(".language-list")
-                        .html(this.listTemplate({
-                            languages: languagesCollection.toJSON()
-                        }));
+            this.$el.find(".language-list")
+                    .html(this.listTemplate({
+                        languages: languagesCollection.toJSON()
+                    }));
 
-                return this;
-            },
+            return this;
+        },
 
-            initialize: function () {
-                var that = this;
+        initialize: function () {
+            var that = this;
 
-                settingsModel.on("change:locale", function (settings) {
-                    var locale = settingsModel.get("locale"),
-                        language = locale === "" ? DEFAULT_LOCALE : locale;
+            settingsModel.on("change:locale", function (settings) {
+                var locale = settingsModel.get("locale"),
+                    language = locale === "" ? DEFAULT_LOCALE : locale;
 
-                    that.$el.find(".language")
-                        .find(".ui-li-count")
-                        .hide()
-                        .end()
-                        .filter("[data-value='" + language + "']")
-                        .find(".ui-li-count")
-                        .show();
-                });
-            },
+                that.$el.find(".language")
+                    .find(".ui-li-count")
+                    .hide()
+                    .end()
+                    .filter("[data-value='" + language + "']")
+                    .find(".ui-li-count")
+                    .show();
+            });
+        },
 
-            pagebeforecreate: function () {
-                this.render();
-            },
+        pagebeforecreate: function () {
+            this.render();
+        },
 
-            pagecreate: function () {
-                settingsModel.trigger("change:locale", settingsModel);
-            },
+        pagecreate: function () {
+            settingsModel.trigger("change:locale", settingsModel);
+        },
 
-            languageSelected: function (event) {
-                var $this = $(event.target),
-                    value = $this.attr("data-value"),
-                    locale = (value === DEFAULT_LOCALE) ? "" : value;
+        languageSelected: function (event) {
+            var $this = $(event.target),
+                value = $this.attr("data-value"),
+                locale = (value === DEFAULT_LOCALE) ? "" : value;
 
-                event.preventDefault();
-                this.trigger("language", locale);
-            }
-        });
-
-    return new Language({ el: $("#language") });
+            event.preventDefault();
+            this.trigger("language", locale);
+        }
+    });
 });

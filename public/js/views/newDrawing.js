@@ -15,7 +15,7 @@ define([
              newDrawingTemplate, newDrawingResources) {
     "use strict";
 
-    var NewDrawing = Backbone.View.extend({
+    return Backbone.View.extend({
         events: {
             "pagebeforecreate": "pagebeforecreate"
         },
@@ -45,6 +45,4 @@ define([
             });
         }
     });
-
-    return new NewDrawing({ el: $("#newDrawing") });
 });

@@ -34,109 +34,107 @@ define([
                 ($canvas.outerHeight() - $canvas.height()));
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
+        };
+
+    return Backbone.View.extend({
+        events: {
+            "pageshow": "pageshow",
+            "pagebeforehide": "pagebeforehide",
+            "vclick .undo": "undo",
+            "vclick .redo": "redo"
         },
 
-        Main = Backbone.View.extend({
-            events: {
-                "pageshow": "pageshow",
-                "pagebeforehide": "pagebeforehide",
-                "vclick .undo": "undo",
-                "vclick .redo": "redo"
-            },
+        template: _.template(mainTemplate),
 
-            template: _.template(mainTemplate),
+        render: function () {
+            this.$el.html(this.template({
+                r: mainResources,
+                name: info.name
+            }));
 
-            render: function () {
-                this.$el.html(this.template({
-                    r: mainResources,
-                    name: info.name
-                }));
+            return this;
+        },
 
-                return this;
-            },
+        initialize: function () {
+            var that = this;
 
-            initialize: function () {
-                var that = this;
+            this.render();
 
-                this.render();
+            this.toolsView = new ToolsView({ el: $("#tools") });
 
-                this.toolsView = new ToolsView({ el: $("#tools") });
+            this.toolsView.on("shape", function (name) {
+                that.drawer.setShape(name);
+            });
+            
+            this.toolsView.on("color", function (hex) {
+                that.drawer.setColor(hex);
+            });
 
-                this.toolsView.on("shape", function (name) {
-                    that.drawer.setShape(name);
+            this.toolsView.on("lineWidth", function (value) {
+                that.drawer.setLineWidth(value);
+            });
+
+            this.optionsView = new OptionsView({ el: $("#options") });
+
+            this.optionsView.on("newDrawing", function (hex) {
+                that.drawer.newDrawing(hex);
+            });
+
+            this.optionsView.on("clear", function () {
+                that.drawer.clear();
+            });
+
+            this.optionsView.on("history", function (value) {
+                that.drawer.setHistory(value);
+            });
+
+            this.optionsView.on("save", function () {
+                that.drawer.save();
+            });
+
+            this.optionsView.on("language", function (locale) {
+                settingsModel.set({
+                    locale: locale
                 });
-                
-                this.toolsView.on("color", function (hex) {
-                    that.drawer.setColor(hex);
-                });
-
-                this.toolsView.on("lineWidth", function (value) {
-                    that.drawer.setLineWidth(value);
-                });
-
-                this.optionsView = new OptionsView({ el: $("#options") });
-
-                this.optionsView.on("newDrawing", function (hex) {
-                    that.drawer.newDrawing(hex);
-                });
-
-                this.optionsView.on("clear", function () {
-                    that.drawer.clear();
-                });
-
-                this.optionsView.on("history", function (value) {
-                    that.drawer.setHistory(value);
-                });
-
-                this.optionsView.on("save", function () {
-                    that.drawer.save();
-                });
-
-                this.optionsView.on("language", function (locale) {
-                    settingsModel.set({
-                        locale: locale
-                    });
-                        
-                    window.location.reload();
-                });
-            },
-
-            pageshow: function () {
-                var $header, $content, $canvas;
-
-                if (!this.drawer) {
-                    $header = this.$el.find("[data-role='header']");
-                    $content = this.$el.find("[data-role='content']");
-                    $canvas = this.$el.find("canvas");
-
-                    fixContentGeometry($header, $content);
-                    fixCanvasGeometry($content, $canvas);
                     
-                    this.drawer = new DrawerManager($canvas[0]);
-                }
+                window.location.reload();
+            });
+        },
 
-                this.drawer.on();
-            },
+        pageshow: function () {
+            var $header, $content, $canvas;
 
-            pagebeforehide: function () {
-                this.drawer.off();
-            },
+            if (!this.drawer) {
+                $header = this.$el.find("[data-role='header']");
+                $content = this.$el.find("[data-role='content']");
+                $canvas = this.$el.find("canvas");
 
-            undo: function (event) {
-                event.preventDefault();
-                this.drawer.undo();
-            },
-
-            redo: function (event) {
-                event.preventDefault();
-                this.drawer.redo();
-            },
-
-            unload: function () {
-                this.drawer.unload();
-                return this;
+                fixContentGeometry($header, $content);
+                fixCanvasGeometry($content, $canvas);
+                
+                this.drawer = new DrawerManager($canvas[0]);
             }
-        });
 
-    return new Main({ el: $("#main") });
+            this.drawer.on();
+        },
+
+        pagebeforehide: function () {
+            this.drawer.off();
+        },
+
+        undo: function (event) {
+            event.preventDefault();
+            this.drawer.undo();
+        },
+
+        redo: function (event) {
+            event.preventDefault();
+            this.drawer.redo();
+        },
+
+        unload: function () {
+            this.drawer.unload();
+            return this;
+        }
+    });
 });

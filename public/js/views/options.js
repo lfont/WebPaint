@@ -13,8 +13,8 @@ define([
     "views/about",
     "text!templates/options.html",
     "i18n!views/nls/options"
-], function ($, Backbone, _, newDrawingView, historyView, languageView,
-             aboutView, optionsTemplate, optionsResources) {
+], function ($, Backbone, _, NewDrawingView, HistoryView, LanguageView,
+             AboutView, optionsTemplate, optionsResources) {
     "use strict";
 
     return Backbone.View.extend({
@@ -65,20 +65,28 @@ define([
 
             this.render();
 
-            languageView.on("language", function (locale) {
+            this.languageView = new LanguageView({ el: $("#language") });
+
+            this.languageView.on("language", function (locale) {
                 that.trigger("language", locale);
                 $.mobile.changePage("#main", { reverse: true });
             });
 
-            newDrawingView.on("newDrawing", function (background) {
+            this.newDrawingView = new NewDrawingView({ el: $("#newDrawing") });
+
+            this.newDrawingView.on("newDrawing", function (background) {
                 that.trigger("newDrawing", background);
                 $.mobile.changePage("#main", { reverse: true });
             });
 
-            historyView.on("history", function (index) {
+            this.historyView = new HistoryView({ el: $("#history") });
+
+            this.historyView.on("history", function (index) {
                 that.trigger("history", index);
                 $.mobile.changePage("#main", { reverse: true });
             });
+
+            this.aboutView = new AboutView({ el: $("#about") });
         },
 
         actionSelected: function (event) {

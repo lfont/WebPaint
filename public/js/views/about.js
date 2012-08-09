@@ -13,29 +13,27 @@ define([
 ], function ($, Backbone, _, global, aboutTemplate, aboutResources) {
     "use strict";
 
-    var info = global.getInfo(),
+    var info = global.getInfo();
 
-        About = Backbone.View.extend({
-            events: {
-                "pagebeforecreate": "pagebeforecreate"
-            },
+    return Backbone.View.extend({
+        events: {
+            "pagebeforecreate": "pagebeforecreate"
+        },
 
-            template: _.template(aboutTemplate),
+        template: _.template(aboutTemplate),
 
-            render: function () {
-                this.$el.html(this.template({
-                    r: aboutResources,
-                    name: info.name,
-                    version: info.version
-                }));
+        render: function () {
+            this.$el.html(this.template({
+                r: aboutResources,
+                name: info.name,
+                version: info.version
+            }));
 
-                return this;
-            },
+            return this;
+        },
 
-            pagebeforecreate: function () {
-                this.render();
-            }
-        });
-
-    return new About({ el: $("#about") });
+        pagebeforecreate: function () {
+            this.render();
+        }
+    });
 });
