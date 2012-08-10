@@ -1,38 +1,36 @@
-<div>
-    <div class="colorpicker-custom-colors">
-        <p><%= r.customColorHint %></p>
-        <div class="colorpicker-custom-color">
-        </div>
-        <div data-role="fieldcontain">
-            <label for="red"><%= r.redLabel %></label>
-            <input type="number" name="red"
-                data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" class="colorpicker-red" />
-        </div>
-        <div data-role="fieldcontain">
-            <label for="green"><%= r.greenLabel %></label>
-            <input type="number" name="green"
-                data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" class="colorpicker-green" />
-        </div>
-        <div data-role="fieldcontain">
-            <label for="blue"><%= r.blueLabel %></label>
-            <input type="number" name="blue"
-                data-type="range" data-theme="c" data-track-theme="b"
-                value="0" min="0" max="255" class="colorpicker-blue" />
-        </div>
+<div class="colorpicker-custom-colors">
+    <p><%= r.customColorHint %></p>
+    <div class="colorpicker-custom-color">
     </div>
+    <div data-role="fieldcontain">
+        <label for="red"><%= r.redLabel %></label>
+        <input type="number" name="red" value="0" min="0" max="255"
+            data-type="range" data-highlight="true" 
+            class="colorpicker-red" />
+    </div>
+    <div data-role="fieldcontain">
+        <label for="green"><%= r.greenLabel %></label>
+        <input type="number" name="green" value="0" min="0" max="255"
+            data-type="range" data-highlight="true"
+            class="colorpicker-green" />
+    </div>
+    <div data-role="fieldcontain">
+        <label for="blue"><%= r.blueLabel %></label>
+        <input type="number" name="blue" value="0" min="0" max="255"
+            data-type="range" data-highlight="true"
+            class="colorpicker-blue" />
+    </div>
+</div>
+<div class="colorpicker-predefined-colors">
+    <p><%= r.predefinedColorHint %></p>
     <div>
-        <p><%= r.predefinedColorHint %></p>
-        <div class="colorpicker-predefined-colors">
-            <% _.each(colors, function (color) { %>
-                <div class="colorpicker-predefined-color-wrapper" title="<%= color.name %>">
-                    <div class="colorpicker-predefined-color"
-                        style="background-color: <%= color.code %>"
-                        data-value="<%= color.code %>">
-                    </div>
+        <% _.each(colors, function (color) { %>
+            <div title="<%= color.name %>" class="colorpicker-predefined-color-wrapper">
+                <div style="background-color: <%= color.code %>"
+                    data-value="<%= color.code %>"
+                    class="colorpicker-predefined-color">
                 </div>
-            <% }); %>
-        </div>
+            </div>
+        <% }); %>
     </div>
 </div>

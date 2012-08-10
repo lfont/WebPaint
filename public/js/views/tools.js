@@ -19,8 +19,8 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "pagebeforeshow": "pagebeforeshow",
-            "pagebeforehide": "pagebeforehide"
+            "popupbeforeposition": "popupbeforeposition",
+            "popupafterclose": "popupafterclose"
         },
 
         template: _.template(toolsTemplate),
@@ -48,7 +48,7 @@ define([
             });
         },
 
-        pagebeforeshow: function () {
+        popupbeforeposition: function () {
             var $shapes = this.$el.find(".shape"),
                 $width = this.$el.find(".width");
 
@@ -62,7 +62,7 @@ define([
             this.shapeColorPicker.value(settingsModel.get("strokeStyle"));
         },
 
-        pagebeforehide: function () {
+        popupafterclose: function () {
             var $shape = this.$el.find(".shape:checked"),
                 $width = this.$el.find(".width");
 

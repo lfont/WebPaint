@@ -34,10 +34,51 @@ define([
                 ($canvas.outerHeight() - $canvas.height()));
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
+        },
+
+        bindToolsViewEventsHandlers = function (toolsView, drawer) {
+            toolsView.on("shape", function (name) {
+                drawer.setShape(name);
+            });
+            
+            toolsView.on("color", function (hex) {
+                drawer.setColor(hex);
+            });
+
+            toolsView.on("lineWidth", function (value) {
+                drawer.setLineWidth(value);
+            });
+        },
+
+        bindOptionsViewEventsHandlers = function (optionsView, drawer) {
+            optionsView.on("newDrawing", function (hex) {
+                drawer.newDrawing(hex);
+            });
+
+            optionsView.on("clear", function () {
+                drawer.clear();
+            });
+
+            optionsView.on("history", function (value) {
+                drawer.setHistory(value);
+            });
+
+            optionsView.on("save", function () {
+                drawer.save();
+            });
+
+            optionsView.on("language", function (locale) {
+                settingsModel.set({
+                    locale: locale
+                });
+                    
+                window.location.reload();
+            });
         };
 
     return Backbone.View.extend({
         events: {
+            "pagebeforecreate": "pagebeforecreate",
             "pageshow": "pageshow",
             "pagebeforehide": "pagebeforehide",
             "vclick .undo": "undo",
@@ -52,53 +93,63 @@ define([
                 name: info.name
             }));
 
+            $("#network-status-tooltip").popup();
+
             return this;
         },
 
-        initialize: function () {
-            var that = this;
+        pagebeforecreate: function () {
+            var that = this,
+                $window = $(window),
+
+                windowOnLineEventHandler = function () {
+                    var $el = that.$el,
+                        $title = $el.find(".title"),
+                        $networkStatusTooltip = $("#network-status-tooltip");
+
+                    $title.removeClass("offline")
+                          .addClass("online");
+
+                    /*$networkStatusTooltip.find(".message")
+                                         .text("online");
+
+                    $networkStatusTooltip.popup("open");
+
+                     window.setTimeout(function () {
+                        $networkStatusTooltip.popup("close");
+                     }, 3000);*/
+                },
+
+                windowOffLineEventHandler = function () {
+                    var $el = that.$el,
+                        $title = $el.find(".title"),
+                        $networkStatusTooltip = $("#network-status-tooltip");
+
+                    $title.removeClass("online")
+                          .addClass("offline");
+
+                    /*$networkStatusTooltip.find(".message")
+                                         .text("offline")
+                                         .end()
+                                         .popup("open");
+
+                     window.setTimeout(function () {
+                        $networkStatusTooltip.popup("close");
+                     }, 3000);*/
+                };
 
             this.render();
-
             this.toolsView = new ToolsView({ el: $("#tools") });
-
-            this.toolsView.on("shape", function (name) {
-                that.drawer.setShape(name);
-            });
-            
-            this.toolsView.on("color", function (hex) {
-                that.drawer.setColor(hex);
-            });
-
-            this.toolsView.on("lineWidth", function (value) {
-                that.drawer.setLineWidth(value);
-            });
-
             this.optionsView = new OptionsView({ el: $("#options") });
 
-            this.optionsView.on("newDrawing", function (hex) {
-                that.drawer.newDrawing(hex);
-            });
+            $window.on("online", windowOnLineEventHandler);
+            $window.on("offline", windowOffLineEventHandler);
 
-            this.optionsView.on("clear", function () {
-                that.drawer.clear();
-            });
-
-            this.optionsView.on("history", function (value) {
-                that.drawer.setHistory(value);
-            });
-
-            this.optionsView.on("save", function () {
-                that.drawer.save();
-            });
-
-            this.optionsView.on("language", function (locale) {
-                settingsModel.set({
-                    locale: locale
-                });
-                    
-                window.location.reload();
-            });
+            if (window.navigator.onLine) {
+                windowOnLineEventHandler();
+            } else {
+                windowOffLineEventHandler();
+            }
         },
 
         pageshow: function () {
@@ -113,6 +164,9 @@ define([
                 fixCanvasGeometry($content, $canvas);
                 
                 this.drawer = new DrawerManager($canvas[0]);
+
+                bindToolsViewEventsHandlers(this.toolsView, this.drawer);
+                bindOptionsViewEventsHandlers(this.optionsView, this.drawer);
             }
 
             this.drawer.on();

@@ -1,25 +1,31 @@
 <div data-role="header" data-position="fixed">
-    <h1 class="ui-title-left"><%= name %></h1>
+    <h1 class="title"><%= name %></h1>
     <span class="ui-btn-right">
-        <a href="#" data-role="button" data-inline="true" data-icon="back"
-            data-iconpos="notext" data-theme="b" class="undo">
-            <%= r.undoButton %>
-        </a>
-        <a href="#" data-role="button" data-inline="true" data-icon="forward"
-            data-iconpos="notext" data-theme="b" class="redo">
-            <%= r.redoButton %>
-        </a>
-        <a href="#tools" data-role="button" data-inline="true" data-icon="star"
-            data-iconpos="notext" data-theme="b" data-rel="dialog">
-            <%= r.toolsButton %>
-        </a>
-        <a href="#options" data-role="button" data-inline="true" data-icon="gear"
-            data-iconpos="notext" data-theme="b" data-rel="dialog">
-            <%= r.optionsButton %>
-        </a>
+        <a href="#"
+            data-role="button" data-inline="true" data-icon="back"
+            data-iconpos="notext" data-theme="b"
+            class="undo"><%= r.undoButton %></a>
+        <a href="#"
+            data-role="button" data-inline="true" data-icon="forward"
+            data-iconpos="notext" data-theme="b"
+            class="redo"><%= r.redoButton %></a>
+        <a href="#tools"
+            data-role="button" data-inline="true" data-icon="star"
+            data-iconpos="notext" data-theme="b" data-rel="popup"><%= r.toolsButton %></a>
+        <a href="#options"
+            data-role="button" data-inline="true" data-icon="gear"
+            data-iconpos="notext" data-theme="b" data-rel="popup"><%= r.optionsButton %></a>
     <span>
 </div>
 
 <div data-role="content">
     <canvas />
+</div>
+
+<div data-role="popup" id="tools" class="toolsView"></div>
+
+<div data-role="popup" id="options" class="optionsView"></div>
+
+<div data-role="popup" id="network-status-tooltip" data-theme="e" class="ui-content">
+    <p class="message"></p>
 </div>
