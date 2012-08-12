@@ -15,10 +15,15 @@ Loïc Fontaine - http://jsfiddle.net/loic_fontaine/kapWz/
                 delay = 1000;
             }
 
-            $.mobile.showPageLoadingMsg("b", message, true);
+            $.mobile.loading("show", {
+                theme: "b",
+                text: message,
+                textonly: true,
+                textVisible: true
+            });
 
             setTimeout(function () {
-                $.mobile.hidePageLoadingMsg();
+                $.mobile.loading("hide");
                 if (callback) {
                     callback();
                 }

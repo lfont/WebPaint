@@ -120,8 +120,8 @@ define([
                                  .end()
                                  .popup("open", {
                                     x: 0,
-                                    y: 0
-                                 });
+                                    y: 82
+                                });
 
              window.setTimeout(function () {
                 $networkStatusTooltip.popup("close");

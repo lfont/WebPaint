@@ -57,7 +57,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 .tools-view {
-    width: 400px;
+    width: 300px;
 }
 
 .tools-view [data-role="content"] {
@@ -97,7 +97,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 .colorpicker-custom-colors label {
     display: inline-block;
     text-align: left;
-    width: 5em;
+    width: 4em;
 }
     
 .colorpicker-predefined-colors>div {
@@ -108,7 +108,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 .colorpicker-predefined-color {
     border: 1px solid gray;
     height: 30px;
-    width: 92px;
+    width: 30px;
 }
 
 .colorpicker-custom-color,

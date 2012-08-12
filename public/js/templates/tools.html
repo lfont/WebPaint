@@ -9,18 +9,22 @@
         <div data-role="controlgroup" data-type="horizontal" class="block-content">
             <label for="pencil"><%= r.pencilLabel %></label>
             <input type="radio" id="pencil" name="shape" value="pencil"
+                data-mini="true"
                 class="shape" />
             
             <label for="line"><%= r.lineLabel %></label>
             <input type="radio" id="line" name="shape" value="line"
+                data-mini="true"
                 class="shape" />
             
             <label for="rectangle"><%= r.rectangleLabel %></label>
             <input type="radio" id="rectangle" name="shape" value="rectangle"
+                data-mini="true"
                 class="shape" />
             
             <label for="circle"><%= r.circleLabel %></label>
             <input type="radio" id="circle" name="shape" value="circle"
+                data-mini="true"
                 class="shape" />
         </div>
     </div>
@@ -28,7 +32,7 @@
         <label for="width" class="block-title"><%= r.widthLabel %></label>
 
         <input type="number" name="width" value="1" min="1" max="100"
-            data-type="range" data-highlight="true"
+            data-type="range" data-highlight="true" data-mini="true"
             class="width" />
     </div>
     <div class="block">
