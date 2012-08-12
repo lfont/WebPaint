@@ -37,6 +37,14 @@ define([
         },
 
         bindToolsViewEventsHandlers = function (toolsView, drawer) {
+            toolsView.on("open", function () {
+                drawer.off();
+            });
+
+            toolsView.on("close", function () {
+                drawer.on();
+            });
+
             toolsView.on("shape", function (name) {
                 drawer.setShape(name);
             });
@@ -51,6 +59,14 @@ define([
         },
 
         bindOptionsViewEventsHandlers = function (optionsView, drawer) {
+            optionsView.on("open", function () {
+                drawer.off();
+            });
+
+            optionsView.on("close", function () {
+                drawer.on();
+            });
+            
             optionsView.on("newDrawing", function (hex) {
                 drawer.newDrawing(hex);
             });
@@ -72,8 +88,44 @@ define([
                     locale: locale
                 });
                     
-                window.location.reload();
+                window.location = "/";
             });
+        },
+
+        showNetworkStatus = function (isOnline) {
+            var $el = this.$el,
+                isVisible = $.mobile.activePage.attr("id") === $el.attr("id"),
+                $networkStatusTooltip, removedClass, addedClass, message;
+
+            if (!isVisible) {
+                return;
+            }
+
+            if (isOnline) {
+                removedClass = "title-offline";
+                addedClass = "title-online";
+                message = mainResources.onlineMessage;
+            } else {
+                removedClass = "title-online";
+                addedClass = "title-offline";
+                message = mainResources.offlineMessage;
+            }
+
+            $el.find(".title").removeClass(removedClass)
+                              .addClass(addedClass);
+
+            $networkStatusTooltip = $("#networkStatusTooltip");
+            $networkStatusTooltip.find(".message")
+                                 .text(message)
+                                 .end()
+                                 .popup("open", {
+                                    x: 0,
+                                    y: 0
+                                 });
+
+             window.setTimeout(function () {
+                $networkStatusTooltip.popup("close");
+             }, 2000);
         };
 
     return Backbone.View.extend({
@@ -93,63 +145,18 @@ define([
                 name: info.name
             }));
 
-            $("#network-status-tooltip").popup();
-
             return this;
         },
 
         pagebeforecreate: function () {
-            var that = this,
-                $window = $(window),
-
-                windowOnLineEventHandler = function () {
-                    var $el = that.$el,
-                        $title = $el.find(".title"),
-                        $networkStatusTooltip = $("#network-status-tooltip");
-
-                    $title.removeClass("offline")
-                          .addClass("online");
-
-                    /*$networkStatusTooltip.find(".message")
-                                         .text("online");
-
-                    $networkStatusTooltip.popup("open");
-
-                     window.setTimeout(function () {
-                        $networkStatusTooltip.popup("close");
-                     }, 3000);*/
-                },
-
-                windowOffLineEventHandler = function () {
-                    var $el = that.$el,
-                        $title = $el.find(".title"),
-                        $networkStatusTooltip = $("#network-status-tooltip");
-
-                    $title.removeClass("online")
-                          .addClass("offline");
-
-                    /*$networkStatusTooltip.find(".message")
-                                         .text("offline")
-                                         .end()
-                                         .popup("open");
-
-                     window.setTimeout(function () {
-                        $networkStatusTooltip.popup("close");
-                     }, 3000);*/
-                };
+            var $window = $(window);
 
             this.render();
             this.toolsView = new ToolsView({ el: $("#tools") });
             this.optionsView = new OptionsView({ el: $("#options") });
 
-            $window.on("online", windowOnLineEventHandler);
-            $window.on("offline", windowOffLineEventHandler);
-
-            if (window.navigator.onLine) {
-                windowOnLineEventHandler();
-            } else {
-                windowOffLineEventHandler();
-            }
+            $window.on("online", _.bind(showNetworkStatus, this, true));
+            $window.on("offline", _.bind(showNetworkStatus, this, false));
         },
 
         pageshow: function () {
@@ -167,6 +174,8 @@ define([
 
                 bindToolsViewEventsHandlers(this.toolsView, this.drawer);
                 bindOptionsViewEventsHandlers(this.optionsView, this.drawer);
+
+                showNetworkStatus.call(this, window.navigator.onLine);
             }
 
             this.drawer.on();

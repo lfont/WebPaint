@@ -28,48 +28,48 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
-.mainView {
+.main-view {
     -webkit-user-select: none;
     user-select: none;
 }
 
-.mainView .ui-header .ui-title {
+.main-view .ui-header .ui-title {
     margin-left: 15px;
     text-align: left;
 }
 
-.mainView canvas {
+.main-view canvas {
     border: 1px solid black;
     background: transparent url("../img/background.png") repeat 0 0;
     cursor: pointer;
 }
 
-.mainView canvas:active {
+.main-view canvas:active {
     cursor: crosshair;
 }
 
-.mainView .title.online {
+.main-view .title-online {
     color: white;
 }
 
-.mainView .title.offline {
+.main-view .title-offline {
     color: red;
 }
 
-.toolsView {
+.tools-view {
     width: 400px;
 }
 
-.toolsView [data-role="content"] {
+.tools-view [data-role="content"] {
     overflow: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
-.optionsView .menu {
+.options-view .menu {
     min-width: 210px;
 }
 
-.optionsView .menu .menu-title {
+.options-view .menu .menu-title {
     font-size: 16px;
 }
 

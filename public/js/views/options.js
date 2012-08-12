@@ -19,6 +19,8 @@ define([
 
     return Backbone.View.extend({
         events: {
+            "popupbeforeposition": "popupbeforeposition",
+            "popupafterclose": "popupafterclose",
             "vclick .action": "actionSelected"
         },
 
@@ -87,6 +89,15 @@ define([
             });
 
             this.aboutView = new AboutView({ el: $("#about") });
+        },
+
+        popupbeforeposition: function () {
+            this.trigger("open");
+        },
+
+        popupafterclose: function () {
+            // This is not the right to trigger this event.
+            this.trigger("close");
         },
 
         actionSelected: function (event) {

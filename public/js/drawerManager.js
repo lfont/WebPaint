@@ -25,7 +25,7 @@ define([
             }),
             
             initialize = function () {
-                var histories = settingsModel.has("histories");
+                var histories = settingsModel.get("histories");
 
                 drawer.newDrawing(settingsModel.get("background"));
                 drawer.properties({

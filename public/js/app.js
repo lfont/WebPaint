@@ -91,6 +91,7 @@ define([
                 "lib/jquery.mobile.download",
                 "lib/jquery.mobile.toast"
             ], function () {
+                $("#appLoadingMessage").hide();
                 console.log("WebPaint is ready.");
             });
         });

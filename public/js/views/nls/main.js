@@ -8,7 +8,9 @@ define({
         "undoButton": "Undo",
         "redoButton": "Redo",
         "toolsButton": "Tools",
-        "optionsButton": "Options"
+        "optionsButton": "Options",
+        "onlineMessage": "WebPaint is online.",
+        "offlineMessage": "WebPaint is offline."
     },
     "fr-fr": true
 });

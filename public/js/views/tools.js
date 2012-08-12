@@ -60,6 +60,7 @@ define([
                   .slider("refresh");
 
             this.shapeColorPicker.value(settingsModel.get("strokeStyle"));
+            this.trigger("open");
         },
 
         popupafterclose: function () {
@@ -68,6 +69,7 @@ define([
 
             this.trigger("shape", $shape.val());
             this.trigger("lineWidth", parseInt($width.val(), 10));
+            this.trigger("close");
         }
     });
 });
