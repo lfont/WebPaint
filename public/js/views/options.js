@@ -35,7 +35,7 @@ define([
                         link: "#newDrawing"
                     },
                     {
-                        name: optionsResources.saveAs,
+                        name: optionsResources.save,
                         link: "#",
                         action: "save"
                     },
