@@ -23,7 +23,7 @@ define([
                     move: "vmousemove"
                 }
             }),
-            
+
             initialize = function () {
                 var histories = settingsModel.get("histories");
 
@@ -40,6 +40,8 @@ define([
                     drawer.history(settingsModel.get("history"));
                 }
             };
+
+        initialize();
 
         this.undo = function () {
             if (!drawer.undo()) {
@@ -76,39 +78,67 @@ define([
             return this;
         };
 
-        this.setShape = function (name) {
-            settingsModel.set({
-                shape: name
-            });
+        this.shape = function (name) {
+            if (_.isString(name)) {
+                settingsModel.set({
+                    shape: name
+                });
+            }
+
+            return settingsModel.get("shape");
         };
 
-        this.setColor = function (hex) {
-            var properties = {
-                strokeStyle: hex,
-                fillStyle: hex
-            };
-            settingsModel.set(properties);
-            drawer.properties(properties);
+        this.color = function (hex) {
+            var properties;
+
+            if (_.isString(hex)) {
+                properties = {
+                    strokeStyle: hex,
+                    fillStyle: hex
+                };
+                settingsModel.set(properties);
+                drawer.properties(properties);
+            }
+
+            return settingsModel.get("strokeStyle");
         };
 
-        this.setLineWidth = function (value) {
-            var properties = {
-                lineWidth: value
-            };
-            settingsModel.set(properties);
-            drawer.properties(properties);
+        this.lineWidth = function (value) {
+            var properties;
+
+            if (_.isNumber(value)) {
+                properties = {
+                    lineWidth: value
+                };
+                settingsModel.set(properties);
+                drawer.properties(properties);
+            }
+
+            return settingsModel.get("lineWidth");
         };
 
-        this.setHistory = function (value) {
-            drawer.history(value);
+        this.history = function (value) {
+            if (_.isNumber(value)) {
+                drawer.history(value);
+            }
+
+            return drawer.history();
         };
 
         this.newDrawing = function (hex) {
             settingsModel.set({
-                background: hex,
-                shape: "pencil"
-            });
+                histories: null,
+                history: null
+            }, { silent: true });
+
             drawer.newDrawing(hex);
+
+            settingsModel.set({
+                background: hex,
+                shape: "pencil",
+                histories: drawer.histories(),
+                history: drawer.history()
+            });
         };
 
         this.clear = function () {
@@ -139,7 +169,5 @@ define([
 
             return this;
         };
-
-        initialize();
     };
 });

@@ -22,6 +22,8 @@ define([
         events: {
             "pagebeforecreate": "pagebeforecreate",
             "pagecreate": "pagecreate",
+            "pagebeforeshow": "pagebeforeshow",
+            "pagehide": "pagehide",
             "vclick .language": "languageSelected"
         },
 
@@ -43,20 +45,9 @@ define([
         },
 
         initialize: function () {
-            var that = this;
-
-            settingsModel.on("change:locale", function (settings) {
-                var locale = settingsModel.get("locale"),
-                    language = locale === "" ? DEFAULT_LOCALE : locale;
-
-                that.$el.find(".language")
-                    .find(".ui-li-count")
-                    .hide()
-                    .end()
-                    .filter("[data-value='" + language + "']")
-                    .find(".ui-li-count")
-                    .show();
-            });
+            settingsModel.on(
+                "change:locale",
+                _.bind(this.refreshLanguage, this));
         },
 
         pagebeforecreate: function () {
@@ -64,7 +55,15 @@ define([
         },
 
         pagecreate: function () {
-            settingsModel.trigger("change:locale", settingsModel);
+            this.refreshLanguage();
+        },
+
+        pagebeforeshow: function () {
+            this.trigger("open");
+        },
+
+        pagehide: function () {
+            this.trigger("close");
         },
 
         languageSelected: function (event) {
@@ -73,7 +72,23 @@ define([
                 locale = (value === DEFAULT_LOCALE) ? "" : value;
 
             event.preventDefault();
-            this.trigger("language", locale);
+            settingsModel.set("locale", locale);
+            window.location = "/";
+        },
+
+        refreshLanguage: function () {
+            var locale = settingsModel.get("locale"),
+                language = locale === "" ? DEFAULT_LOCALE : locale;
+
+            this.$el.find(".language")
+                .find(".ui-li-count")
+                .hide()
+                .end()
+                .filter("[data-value='" + language + "']")
+                .find(".ui-li-count")
+                .show();
+
+            return this;
         }
     });
 });

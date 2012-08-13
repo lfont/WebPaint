@@ -20,7 +20,6 @@ define([
     return Backbone.View.extend({
         events: {
             "popupbeforeposition": "popupbeforeposition",
-            "popupafterclose": "popupafterclose",
             "vclick .action": "actionSelected"
         },
 
@@ -59,45 +58,38 @@ define([
                 ]
             }));
 
+            this.$el.trigger("create");
+
             return this;
         },
 
         initialize: function () {
             var that = this;
 
+            this.drawer = this.options.drawer;
             this.render();
 
+            this.newDrawingView = new NewDrawingView({
+                el: $("#newDrawing"),
+                drawer: this.drawer
+            });
+            this.newDrawingView.on("close", _.bind(this.trigger, this, "close"));
+
+            this.historyView = new HistoryView({
+                el: $("#history"),
+                drawer: this.drawer
+            });
+            this.historyView.on("close", _.bind(this.trigger, this, "close"));
+
             this.languageView = new LanguageView({ el: $("#language") });
-
-            this.languageView.on("language", function (locale) {
-                that.trigger("language", locale);
-                $.mobile.changePage("#main", { reverse: true });
-            });
-
-            this.newDrawingView = new NewDrawingView({ el: $("#newDrawing") });
-
-            this.newDrawingView.on("newDrawing", function (background) {
-                that.trigger("newDrawing", background);
-                $.mobile.changePage("#main", { reverse: true });
-            });
-
-            this.historyView = new HistoryView({ el: $("#history") });
-
-            this.historyView.on("history", function (index) {
-                that.trigger("history", index);
-                $.mobile.changePage("#main", { reverse: true });
-            });
+            this.languageView.on("close", _.bind(this.trigger, this, "close"));
 
             this.aboutView = new AboutView({ el: $("#about") });
+            this.aboutView.on("close", _.bind(this.trigger, this, "close"));
         },
 
         popupbeforeposition: function () {
             this.trigger("open");
-        },
-
-        popupafterclose: function () {
-            // This is not the right to trigger this event.
-            this.trigger("close");
         },
 
         actionSelected: function (event) {
@@ -105,8 +97,9 @@ define([
                 action = $this.attr("data-value");
 
             event.preventDefault();
-            this.trigger(action);
+            this.drawer[action]();
             $.mobile.changePage("#main", { reverse: true });
+            this.trigger("close");
         }
     });
 });

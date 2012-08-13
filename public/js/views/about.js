@@ -17,7 +17,9 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate"
+            "pagebeforecreate": "pagebeforecreate",
+            "pagebeforeshow": "pagebeforeshow",
+            "pagehide": "pagehide"
         },
 
         template: _.template(aboutTemplate),
@@ -34,6 +36,14 @@ define([
 
         pagebeforecreate: function () {
             this.render();
+        },
+
+        pagebeforeshow: function () {
+            this.trigger("open");
+        },
+
+        pagehide: function () {
+            this.trigger("close");
         }
     });
 });

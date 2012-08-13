@@ -20,11 +20,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     width: auto;
 }
 
-[data-role="header"] .ui-btn {
+.ui-header .ui-btn {
     margin-top: -2px;
 }
 
-[data-role="content"] {
+.ui-content {
     text-align: center;
 }
 
@@ -60,16 +60,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     width: 300px;
 }
 
-.tools-view [data-role="content"] {
+.tools-view .ui-content {
     overflow: hidden;
     overflow-y: auto;
 }
 
-.options-view .menu {
+.options-view .ui-listview {
     min-width: 210px;
 }
 
-.options-view .menu .menu-title {
+.options-view .ui-listview .ui-li-divider {
     font-size: 16px;
 }
 

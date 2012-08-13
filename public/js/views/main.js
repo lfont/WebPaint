@@ -4,17 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-   "jquery",
-   "backbone",
-   "underscore",
-   "drawerManager",
-   "global",
-   "models/settings",
-   "views/tools",
-   "views/options",
-   "text!templates/main.html",
-   "i18n!views/nls/main"
-], function ($, Backbone, _, DrawerManager, global, settingsModel, ToolsView,
+    "jquery",
+    "backbone",
+    "underscore",
+    "global",
+    "drawerManager",
+    "models/settings",
+    "views/tools",
+    "views/options",
+    "text!templates/main.html",
+    "i18n!views/nls/main"
+], function ($, Backbone, _, global, DrawerManager, settingsModel, ToolsView,
              OptionsView, mainTemplate, mainResources) {
     "use strict";
 
@@ -34,105 +34,12 @@ define([
                 ($canvas.outerHeight() - $canvas.height()));
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
-        },
-
-        bindToolsViewEventsHandlers = function (toolsView, drawer) {
-            toolsView.on("open", function () {
-                drawer.off();
-            });
-
-            toolsView.on("close", function () {
-                drawer.on();
-            });
-
-            toolsView.on("shape", function (name) {
-                drawer.setShape(name);
-            });
-            
-            toolsView.on("color", function (hex) {
-                drawer.setColor(hex);
-            });
-
-            toolsView.on("lineWidth", function (value) {
-                drawer.setLineWidth(value);
-            });
-        },
-
-        bindOptionsViewEventsHandlers = function (optionsView, drawer) {
-            optionsView.on("open", function () {
-                drawer.off();
-            });
-
-            optionsView.on("close", function () {
-                drawer.on();
-            });
-            
-            optionsView.on("newDrawing", function (hex) {
-                drawer.newDrawing(hex);
-            });
-
-            optionsView.on("clear", function () {
-                drawer.clear();
-            });
-
-            optionsView.on("history", function (value) {
-                drawer.setHistory(value);
-            });
-
-            optionsView.on("save", function () {
-                drawer.save();
-            });
-
-            optionsView.on("language", function (locale) {
-                settingsModel.set({
-                    locale: locale
-                });
-                    
-                window.location = "/";
-            });
-        },
-
-        showNetworkStatus = function (isOnline) {
-            var $el = this.$el,
-                isVisible = $.mobile.activePage.attr("id") === $el.attr("id"),
-                $networkStatusTooltip, removedClass, addedClass, message;
-
-            if (!isVisible) {
-                return;
-            }
-
-            if (isOnline) {
-                removedClass = "title-offline";
-                addedClass = "title-online";
-                message = mainResources.onlineMessage;
-            } else {
-                removedClass = "title-online";
-                addedClass = "title-offline";
-                message = mainResources.offlineMessage;
-            }
-
-            $el.find(".title").removeClass(removedClass)
-                              .addClass(addedClass);
-
-            $networkStatusTooltip = $("#networkStatusTooltip");
-            $networkStatusTooltip.find(".message")
-                                 .text(message)
-                                 .end()
-                                 .popup("open", {
-                                    x: 0,
-                                    y: 82
-                                });
-
-             window.setTimeout(function () {
-                $networkStatusTooltip.popup("close");
-             }, 2000);
         };
 
     return Backbone.View.extend({
         events: {
             "pagebeforecreate": "pagebeforecreate",
             "pageshow": "pageshow",
-            "pagebeforehide": "pagebeforehide",
             "vclick .undo": "undo",
             "vclick .redo": "redo"
         },
@@ -152,37 +59,44 @@ define([
             var $window = $(window);
 
             this.render();
-            this.toolsView = new ToolsView({ el: $("#tools") });
-            this.optionsView = new OptionsView({ el: $("#options") });
 
-            $window.on("online", _.bind(showNetworkStatus, this, true));
-            $window.on("offline", _.bind(showNetworkStatus, this, false));
+            $window.on("online", _.bind(this.showNetworkStatus, this, true));
+            $window.on("offline", _.bind(this.showNetworkStatus, this, false));
         },
 
         pageshow: function () {
-            var $header, $content, $canvas;
+            var that = this,
+                $header, $content, $canvas;
 
-            if (!this.drawer) {
-                $header = this.$el.find("[data-role='header']");
-                $content = this.$el.find("[data-role='content']");
-                $canvas = this.$el.find("canvas");
-
-                fixContentGeometry($header, $content);
-                fixCanvasGeometry($content, $canvas);
-                
-                this.drawer = new DrawerManager($canvas[0]);
-
-                bindToolsViewEventsHandlers(this.toolsView, this.drawer);
-                bindOptionsViewEventsHandlers(this.optionsView, this.drawer);
-
-                showNetworkStatus.call(this, window.navigator.onLine);
+            if (this.drawer) {
+                return;
             }
+            
+            $header = this.$el.find("[data-role='header']");
+            $content = this.$el.find("[data-role='content']");
+            $canvas = this.$el.find("canvas");
 
-            this.drawer.on();
-        },
+            fixContentGeometry($header, $content);
+            fixCanvasGeometry($content, $canvas);
 
-        pagebeforehide: function () {
-            this.drawer.off();
+            this.drawer = new DrawerManager(this.$el.find("canvas")[0]);
+
+            this.toolsView = new ToolsView({
+                el: $("#tools"),
+                drawer: this.drawer
+            });
+            this.toolsView.on("open", _.bind(this.drawer.off, this.drawer));
+            this.toolsView.on("close", _.bind(this.drawer.on, this.drawer));
+            
+            this.optionsView = new OptionsView({
+                el: $("#options"),
+                drawer: this.drawer
+            });
+            this.optionsView.on("open", _.bind(this.drawer.off, this.drawer));
+            this.optionsView.on("close", _.bind(this.drawer.on, this.drawer));
+
+            this.showNetworkStatus(window.navigator.onLine)
+                .drawer.on();
         },
 
         undo: function (event) {
@@ -193,6 +107,46 @@ define([
         redo: function (event) {
             event.preventDefault();
             this.drawer.redo();
+        },
+
+        isVisible: function () {
+            return $.mobile.activePage.attr("id") === this.$el.attr("id");
+        },
+
+        showNetworkStatus: function (isOnline) {
+            var $networkStatusTooltip, removedClass, addedClass, message;
+
+            if (!this.isVisible()) {
+                return;
+            }
+
+            if (isOnline) {
+                removedClass = "title-offline";
+                addedClass = "title-online";
+                message = mainResources.onlineMessage;
+            } else {
+                removedClass = "title-online";
+                addedClass = "title-offline";
+                message = mainResources.offlineMessage;
+            }
+
+            this.$el.find(".title").removeClass(removedClass)
+                                   .addClass(addedClass);
+
+            $networkStatusTooltip = $("#networkStatusTooltip");
+            $networkStatusTooltip.find(".message")
+                                 .text(message)
+                                 .end()
+                                 .popup("open", {
+                                    x: 0,
+                                    y: 82
+                                });
+
+             window.setTimeout(function () {
+                $networkStatusTooltip.popup("close");
+             }, 1500);
+
+             return this;
         },
 
         unload: function () {
