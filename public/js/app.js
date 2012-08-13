@@ -54,11 +54,11 @@ define([
 
     var locale;
 
-    console.log("Loading WebPaint...");
+    console.log("Loading...");
 
     $(document).on("mobileinit", function () {
-        $.mobile.defaultPageTransition = "none";
-        $.mobile.defaultDialogTransition = "none";
+        $.mobile.defaultPageTransition = "slide";
+        $.mobile.defaultDialogTransition = "slide";
     });
 
     // Set the UI language if it is defined by the user.
@@ -73,26 +73,25 @@ define([
         });
     }
 
-    $(function () {
-        require([
-            "views/main"
-        ], function (Main) {
+    require([
+        "views/main"
+    ], function (Main) {
+        $(function () {
             var main = new Main({ el: $("#main") });
 
             $(window).unload(function () {
-                console.log("Unloading WebPaint...");
+                console.log("Unloading...");
                 main.unload();
                 settingsModel.save();
             });
 
-            // jQuery.mobile must be loaded after the application code.
+            // jQuery Mobile must be loaded after the application code.
             require([
                 "lib/jquery.mobile",
                 "lib/jquery.mobile.download",
                 "lib/jquery.mobile.toast"
             ], function () {
                 $("#appLoadingMessage").hide();
-                console.log("WebPaint is ready.");
             });
         });
     });

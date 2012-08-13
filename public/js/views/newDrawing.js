@@ -17,7 +17,9 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate"
+            "pagebeforecreate": "pagebeforecreate",
+            "pagebeforeshow": "pagebeforeshow",
+            "pagehide": "pagehide"
         },
 
         template: _.template(newDrawingTemplate),
@@ -30,6 +32,10 @@ define([
             return this;
         },
 
+        initialize: function () {
+            this.drawer = this.options.drawer;
+        },
+
         pagebeforecreate: function () {
             var that = this;
 
@@ -40,9 +46,18 @@ define([
                 colors: colorsCollection
             });
 
-            this.backgroundColorPicker.on("color", function (code) {
-                that.trigger("newDrawing", code);
+            this.backgroundColorPicker.on("color", function (hex) {
+                that.drawer.newDrawing(hex);
+                $.mobile.changePage("#main", { reverse: true });
             });
+        },
+
+        pagebeforeshow: function () {
+            this.trigger("open");
+        },
+
+        pagehide: function () {
+            this.trigger("close");
         }
     });
 });

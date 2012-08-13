@@ -63,6 +63,8 @@ define([
                 colors: this.options.colors.toJSON()
             }));
 
+            this.$el.trigger("create");
+
             this.customColorUpdated();
 
             return this;

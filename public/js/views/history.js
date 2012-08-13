@@ -19,6 +19,8 @@ define([
         events: {
             "pagebeforecreate": "pagebeforecreate",
             "pagecreate": "pagecreate",
+            "pagebeforeshow": "pagebeforeshow",
+            "pagehide": "pagehide",
             "vclick .history": "historySelected"
         },
 
@@ -35,26 +37,15 @@ define([
         },
 
         initialize: function () {
-            var that = this;
+            this.drawer = this.options.drawer;
 
-            settingsModel.on("change:history", function (settings) {
-                that.$el.find(".history")
-                        .find(".ui-li-count")
-                        .hide()
-                        .end()
-                        .filter("[data-value='" + settings.get("history") + "']")
-                        .find(".ui-li-count")
-                        .show();
-            });
+            settingsModel.on(
+                "change:history",
+                _.bind(this.refreshHistory, this));
 
-            settingsModel.on("change:histories", function (settings) {
-                that.$el.find(".history-list")
-                        .html(that.listTemplate({
-                            r: historyResources,
-                            histories: settings.get("histories")
-                        }))
-                        .trigger("create");
-            });
+            settingsModel.on(
+                "change:histories",
+                _.bind(this.refreshHistories, this));
         },
 
         pagebeforecreate: function () {
@@ -62,8 +53,16 @@ define([
         },
 
         pagecreate: function () {
-            settingsModel.trigger("change:histories", settingsModel);
-            settingsModel.trigger("change:history", settingsModel);
+            this.refreshHistories()
+                .refreshHistory();
+        },
+
+        pagebeforeshow: function () {
+            this.trigger("open");
+        },
+
+        pagehide: function () {
+            this.trigger("close");
         },
 
         historySelected: function (event) {
@@ -71,7 +70,31 @@ define([
                 index = $this.attr("data-value");
 
             event.preventDefault();
-            this.trigger("history", parseInt(index, 10));
+            this.drawer.history(parseInt(index, 10));
+            $.mobile.changePage("#main", { reverse: true });
+        },
+
+        refreshHistory: function () {
+            this.$el.find(".history")
+                    .find(".ui-li-count")
+                    .hide()
+                    .end()
+                    .filter("[data-value='" + settingsModel.get("history") + "']")
+                    .find(".ui-li-count")
+                    .show();
+
+            return this;
+        },
+
+        refreshHistories: function () {
+            this.$el.find(".history-list")
+                    .html(this.listTemplate({
+                        r: historyResources,
+                        histories: settingsModel.get("histories")
+                    }))
+                    .trigger("create");
+
+            return this;
         }
     });
 });

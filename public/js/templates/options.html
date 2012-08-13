@@ -1,18 +1,16 @@
-<ul data-role="listview" data-inset="true" data-divider-theme="a" class="menu">
-    <li data-role="list-divider" class="menu-title">
+<ul data-role="listview" data-inset="true" data-divider-theme="a">
+    <li data-role="list-divider">
         <%= r.title %>
     </li>
 
     <% _.each(options, function (option) { %>
         <li>
-            <a href="<%= option.link %>" data-rel="dialog"
+            <a href="<%= option.link %>"
+               data-rel="dialog"
                 <% if (option.action) { %>
-                    class="action"
                     data-value="<%= option.action %>"
-                <% } %>
-                >
-                <%= option.name %>
-            </a>
+                    class="action"
+                <% } %>><%= option.name %></a>
         </li>
     <% }); %>
 </ul>

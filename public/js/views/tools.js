@@ -7,14 +7,12 @@ define([
     "jquery",
     "backbone",
     "underscore",
-    "global",
-    "models/settings",
     "collections/colors",
     "views/colorPicker",
     "text!templates/tools.html",
     "i18n!views/nls/tools"
-], function ($, Backbone, _, global, settingsModel, colorsCollection,
-             ColorPickerView, toolsTemplate, toolsResources) {
+], function ($, Backbone, _, colorsCollection, ColorPickerView, toolsTemplate,
+             toolsResources) {
     "use strict";
 
     return Backbone.View.extend({
@@ -30,12 +28,15 @@ define([
                 r: toolsResources
             }));
 
+            this.$el.trigger("create");
+
             return this;
         },
 
         initialize: function () {
             var that = this;
 
+            this.drawer = this.options.drawer;
             this.render();
 
             this.shapeColorPicker = new ColorPickerView({
@@ -43,8 +44,8 @@ define([
                 colors: colorsCollection.getColors()
             });
 
-            this.shapeColorPicker.on("color", function (code) {
-                that.trigger("color", code);
+            this.shapeColorPicker.on("color", function (hex) {
+                that.drawer.color(hex);
             });
         },
 
@@ -52,14 +53,14 @@ define([
             var $shapes = this.$el.find(".shape"),
                 $width = this.$el.find(".width");
 
-            $shapes.filter("[value='" + settingsModel.get("shape") + "']")
+            $shapes.filter("[value='" + this.drawer.shape() + "']")
                    .attr("checked", true)
                    .checkboxradio("refresh");
 
-            $width.val(settingsModel.get("lineWidth"))
+            $width.val(this.drawer.lineWidth())
                   .slider("refresh");
 
-            this.shapeColorPicker.value(settingsModel.get("strokeStyle"));
+            this.shapeColorPicker.value(this.drawer.color());
             this.trigger("open");
         },
 
@@ -67,8 +68,8 @@ define([
             var $shape = this.$el.find(".shape:checked"),
                 $width = this.$el.find(".width");
 
-            this.trigger("shape", $shape.val());
-            this.trigger("lineWidth", parseInt($width.val(), 10));
+            this.drawer.shape($shape.val());
+            this.drawer.lineWidth(parseInt($width.val(), 10));
             this.trigger("close");
         }
     });
