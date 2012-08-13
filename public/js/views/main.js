@@ -65,8 +65,7 @@ define([
         },
 
         pageshow: function () {
-            var that = this,
-                $header, $content, $canvas;
+            var $header, $content, $canvas;
 
             if (this.drawer) {
                 return;
