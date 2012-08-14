@@ -57,8 +57,8 @@ define([
     console.log("Loading...");
 
     $(document).on("mobileinit", function () {
-        $.mobile.defaultPageTransition = "slide";
-        $.mobile.defaultDialogTransition = "slide";
+        $.mobile.defaultPageTransition = "fade";
+        $.mobile.defaultDialogTransition = "fade";
     });
 
     // Set the UI language if it is defined by the user.

@@ -17,6 +17,8 @@ define([
 
     return Backbone.View.extend({
         events: {
+            "pagebeforeshow": "pagebeforeshow",
+            "pagehide": "pagehide",
             "popupbeforeposition": "popupbeforeposition",
             "popupafterclose": "popupafterclose"
         },
@@ -41,7 +43,7 @@ define([
 
             this.shapeColorPicker = new ColorPickerView({
                 el: this.$el.find(".color-picker"),
-                colors: colorsCollection.getColors()
+                colors: colorsCollection.withoutTransparent()
             });
 
             this.shapeColorPicker.on("color", function (hex) {
@@ -49,7 +51,7 @@ define([
             });
         },
 
-        popupbeforeposition: function () {
+        pagebeforeshow: function () {
             var $shapes = this.$el.find(".shape"),
                 $width = this.$el.find(".width");
 
@@ -64,13 +66,21 @@ define([
             this.trigger("open");
         },
 
-        popupafterclose: function () {
+        pagehide: function () {
             var $shape = this.$el.find(".shape:checked"),
                 $width = this.$el.find(".width");
 
             this.drawer.shape($shape.val());
             this.drawer.lineWidth(parseInt($width.val(), 10));
             this.trigger("close");
+        },
+
+        popupbeforeposition: function () {
+            this.pagebeforeshow();
+        },
+
+        popupafterclose: function () {
+            this.pagehide();
         }
     });
 });

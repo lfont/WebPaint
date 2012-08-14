@@ -1,11 +1,11 @@
 <!-- The data-role="header" and data-role="footer" classes are applied manually
 because these widgets are not standard widgets and they connot be initialized
-by triggering the "create" event.  -->
-<div class="ui-corner-top ui-header ui-bar-a">
+by triggering the "create" event (inside a popup). -->
+<div data-role="header" class="ui-corner-top ui-header ui-bar-a">
     <h1 class="ui-title"><%= r.title %></h1>
 </div>
 
-<div class="ui-corner-bottom ui-content ui-body-c">
+<div data-role="content" class="ui-corner-bottom ui-content ui-body-c">
     <div class="block">
         <label class="block-title"><%= r.shapeLabel %></label>
         

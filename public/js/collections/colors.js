@@ -12,7 +12,7 @@ define([
     var Colors = Backbone.Collection.extend({
         model: ColorModel,
 
-        getColors: function () {
+        withoutTransparent: function () {
             var colors = this.reject(function (color) {
                 return color.get("code") === "transparent";
             });
