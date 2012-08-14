@@ -36,17 +36,23 @@ define([
                 ($canvas.outerWidth() - $canvas.width()));
         },
 
-        getToolsViewInfo = function ($window) {
-            if ($window.height() <= 720) {
+        getEnvironmentInfo = function () {
+            if ($(window).height() <= 720) {
                 return {
-                    id: "#toolsDialog",
-                    type: "dialog"
+                    defaultTransition: "none",
+                    toolsView: {
+                        id: "#toolsDialog",
+                        type: "dialog"
+                    }
                 };
             }
 
             return {
-                id: "#toolsPopup",
-                type: "popup"
+                defaultTransition: "fade",
+                toolsView: {
+                    id: "#toolsPopup",
+                    type: "popup"
+                }
             };
         };
 
@@ -64,16 +70,27 @@ define([
             this.$el.html(this.template({
                 r: mainResources,
                 name: info.name,
-                toolsView: this.toolsViewInfo
+                toolsView: this.environmentInfo.toolsView
             }));
 
             return this;
         },
+        
+        initialize: function () {
+            var that = this;
+            
+            this.environmentInfo = getEnvironmentInfo();
+            
+            $(document).on("mobileinit", function () {
+                $.mobile.defaultPageTransition =
+                    $.mobile.defaultDialogTransition =
+                        that.environmentInfo.defaultTransition;
+            });
+        },
 
         pagebeforecreate: function () {
             var $window = $(window);
-
-            this.toolsViewInfo = getToolsViewInfo($window);
+            
             this.render();
 
             $window.on("online", _.bind(this.showNetworkStatus, this, true));
@@ -97,7 +114,7 @@ define([
             this.drawer = new DrawerManager(this.$el.find("canvas")[0]);
 
             this.toolsView = new ToolsView({
-                el: $(this.toolsViewInfo.id),
+                el: $(this.environmentInfo.toolsView.id),
                 drawer: this.drawer
             });
             this.toolsView.on("open", _.bind(this.drawer.off, this.drawer));

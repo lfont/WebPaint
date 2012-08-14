@@ -56,11 +56,6 @@ define([
 
     console.log("Loading...");
 
-    $(document).on("mobileinit", function () {
-        $.mobile.defaultPageTransition = "fade";
-        $.mobile.defaultDialogTransition = "fade";
-    });
-
     // Set the UI language if it is defined by the user.
     locale = settingsModel.get("locale");
     if (locale) {
