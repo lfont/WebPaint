@@ -34,6 +34,20 @@ define([
                 ($canvas.outerHeight() - $canvas.height()));
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
+        },
+
+        getToolsViewInfo = function ($window) {
+            if ($window.height() <= 720) {
+                return {
+                    id: "#toolsDialog",
+                    type: "dialog"
+                };
+            }
+
+            return {
+                id: "#toolsPopup",
+                type: "popup"
+            };
         };
 
     return Backbone.View.extend({
@@ -49,7 +63,8 @@ define([
         render: function () {
             this.$el.html(this.template({
                 r: mainResources,
-                name: info.name
+                name: info.name,
+                toolsView: this.toolsViewInfo
             }));
 
             return this;
@@ -58,6 +73,7 @@ define([
         pagebeforecreate: function () {
             var $window = $(window);
 
+            this.toolsViewInfo = getToolsViewInfo($window);
             this.render();
 
             $window.on("online", _.bind(this.showNetworkStatus, this, true));
@@ -81,7 +97,7 @@ define([
             this.drawer = new DrawerManager(this.$el.find("canvas")[0]);
 
             this.toolsView = new ToolsView({
-                el: $("#tools"),
+                el: $(this.toolsViewInfo.id),
                 drawer: this.drawer
             });
             this.toolsView.on("open", _.bind(this.drawer.off, this.drawer));
@@ -129,8 +145,9 @@ define([
                 message = mainResources.offlineMessage;
             }
 
-            this.$el.find(".title").removeClass(removedClass)
-                                   .addClass(addedClass);
+            this.$el.find(".title")
+                    .removeClass(removedClass)
+                    .addClass(addedClass);
 
             $networkStatusTooltip = $("#networkStatusTooltip");
             $networkStatusTooltip.find(".message")
@@ -143,7 +160,7 @@ define([
 
              window.setTimeout(function () {
                 $networkStatusTooltip.popup("close");
-             }, 1500);
+             }, 2000);
 
              return this;
         },

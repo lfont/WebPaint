@@ -9,9 +9,9 @@
             data-role="button" data-inline="true" data-icon="forward"
             data-iconpos="notext" data-theme="b"
             class="redo"><%= r.redoButton %></a>
-        <a href="#tools"
+        <a href="<%= toolsView.id %>"
             data-role="button" data-inline="true" data-icon="gear"
-            data-iconpos="notext" data-theme="b" data-rel="popup"><%= r.toolsButton %></a>
+            data-iconpos="notext" data-theme="b" data-rel="<%= toolsView.type %>"><%= r.toolsButton %></a>
         <a href="#options"
             data-role="button" data-inline="true" data-icon="grid"
             data-iconpos="notext" data-theme="b" data-rel="popup"><%= r.optionsButton %></a>
@@ -22,10 +22,10 @@
     <canvas />
 </div>
 
-<div data-role="popup" id="tools" class="tools-view"></div>
-
-<div data-role="popup" id="options" class="options-view"></div>
-
-<div data-role="popup" id="networkStatusTooltip" data-theme="e" class="ui-content">
+<div data-role="popup" id="networkStatusTooltip" data-theme="b" class="ui-content">
     <p class="message"></p>
 </div>
+
+<div data-role="popup" id="toolsPopup" class="tools-view"></div>
+
+<div data-role="popup" id="options" class="options-view"></div>
