@@ -1,0 +1,9 @@
+<ul data-role="listview">
+    <% _.each(users, function(user) { %>
+        <li>
+            <a href="#" class="user" data-value="<%= user.id %>">
+                <%= r.userLabel + user.id %>
+            </a>
+        </li>
+    <% }); %>
+</ul>

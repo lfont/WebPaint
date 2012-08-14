@@ -8,6 +8,7 @@ define({
     "save": "Enregistrer",
     "clear": "Effacer",
     "history": "Historique",
+    "invite": "Inviter",
     "language": "Langues",
     "about": "A propos"
 });

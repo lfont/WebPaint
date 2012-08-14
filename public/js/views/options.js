@@ -9,12 +9,13 @@ define([
     "underscore",
     "views/newDrawing",
     "views/history",
+    "views/invite",
     "views/language",
     "views/about",
     "text!templates/options.html",
     "i18n!views/nls/options"
-], function ($, Backbone, _, NewDrawingView, HistoryView, LanguageView,
-             AboutView, optionsTemplate, optionsResources) {
+], function ($, Backbone, _, NewDrawingView, HistoryView, InviteView,
+             LanguageView, AboutView, optionsTemplate, optionsResources) {
     "use strict";
 
     return Backbone.View.extend({
@@ -46,6 +47,10 @@ define([
                     {
                         name: optionsResources.history,
                         link: "#history"
+                    },
+                    {
+                        name: optionsResources.invite,
+                        link: "#invite"
                     },
                     {
                         name: optionsResources.language,
@@ -80,6 +85,9 @@ define([
                 drawer: this.drawer
             });
             this.historyView.on("close", _.bind(this.trigger, this, "close"));
+
+            this.inviteView = new InviteView({ el: $("#invite") });
+            this.inviteView.on("close", _.bind(this.trigger, this, "close"));
 
             this.languageView = new LanguageView({ el: $("#language") });
             this.languageView.on("close", _.bind(this.trigger, this, "close"));

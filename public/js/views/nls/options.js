@@ -10,6 +10,7 @@ define({
         "save": "Save",
         "clear": "Clear",
         "history": "History",
+        "invite": "Invite",
         "language": "Languages",
         "about": "About"
     },
