@@ -7,6 +7,7 @@ define({
     "undoButton": "Défaire",
     "redoButton": "Refaire",
     "toolsButton": "Outils",
-    "onlineMessage": "WebPaint est en ligne.",
-    "offlineMessage": "WebPaint est hors ligne."
+    "onlineMessage": "Tu es l'utilisateur n°",
+    "offlineMessage": "Tu es hors ligne.",
+    "inviteTitle": "Invitation"
 });

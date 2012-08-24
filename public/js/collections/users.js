@@ -13,7 +13,5 @@ define([
         model: UserModel
     });
 
-    return new Users([
-    
-    ]);
+    return new Users();
 });

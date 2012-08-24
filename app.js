@@ -4,7 +4,11 @@
 
 var express = require("express"),
     app = module.exports = express.createServer(),
-    qs = require("querystring");
+    qs = require("querystring"),
+    io = require("socket.io"),
+    users = [],
+    lastUserId = 0,
+    sio;
 
 
 // Configuration
@@ -56,3 +60,40 @@ app.listen(process.env.PORT, process.env.IP, function () {
     console.log("Express server listening on port %d in %s mode",
         app.address().port, app.settings.env);
 });
+
+
+// Socket.IO
+
+sio = io.listen(app);
+
+sio.of("/users")
+    .on("connection", function (socket) {
+        socket.emit("users", users);
+
+        socket.on("set user", function (user) {
+            user.id = lastUserId++;
+            users.push(user);
+
+            socket.set("user", user, function () {
+                socket.emit("ready", user.id);
+            });
+
+            socket.broadcast.emit("users", users);
+        });
+
+        socket.on("invite", function (userId) {
+            setTimeout(3000, function () {
+                socket.emit("response", true);
+            });
+        });
+
+        socket.on("disconnect", function () {
+            socket.get("user", function (err, user) {
+                users = users.filter(function (val) {
+                    return val.id !== user.id;
+                });
+
+                socket.broadcast.emit("users", users);
+            });
+        });
+    });

@@ -71,28 +71,34 @@ define([
         initialize: function () {
             var that = this;
 
-            this.drawer = this.options.drawer;
             this.render();
 
             this.newDrawingView = new NewDrawingView({
                 el: $("#newDrawing"),
-                drawer: this.drawer
+                drawer: this.options.drawer
             });
             this.newDrawingView.on("close", _.bind(this.trigger, this, "close"));
 
             this.historyView = new HistoryView({
                 el: $("#history"),
-                drawer: this.drawer
+                drawer: this.options.drawer
             });
             this.historyView.on("close", _.bind(this.trigger, this, "close"));
 
-            this.inviteView = new InviteView({ el: $("#invite") });
+            this.inviteView = new InviteView({
+                el: $("#invite"),
+                socket: this.options.socket
+            });
             this.inviteView.on("close", _.bind(this.trigger, this, "close"));
 
-            this.languageView = new LanguageView({ el: $("#language") });
+            this.languageView = new LanguageView({
+                el: $("#language")
+            });
             this.languageView.on("close", _.bind(this.trigger, this, "close"));
 
-            this.aboutView = new AboutView({ el: $("#about") });
+            this.aboutView = new AboutView({
+                el: $("#about")
+            });
             this.aboutView.on("close", _.bind(this.trigger, this, "close"));
         },
 
@@ -105,7 +111,7 @@ define([
                 action = $this.attr("data-value");
 
             event.preventDefault();
-            this.drawer[action]();
+            this.options.drawer[action]();
             $.mobile.changePage("#main", { reverse: true });
             this.trigger("close");
         }

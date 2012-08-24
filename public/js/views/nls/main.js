@@ -9,8 +9,9 @@ define({
         "redoButton": "Redo",
         "toolsButton": "Tools",
         "optionsButton": "Options",
-        "onlineMessage": "WebPaint is online.",
-        "offlineMessage": "WebPaint is offline."
+        "onlineMessage": "You are the user #",
+        "offlineMessage": "You are offline.",
+        "inviteTitle": "Invite"
     },
     "fr-fr": true
 });

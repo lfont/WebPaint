@@ -9,13 +9,16 @@ define([
     "underscore",
     "global",
     "drawerManager",
+    "socketManager",
     "models/settings",
+    "models/user",
     "views/tools",
     "views/options",
     "text!templates/main.html",
     "i18n!views/nls/main"
-], function ($, Backbone, _, global, DrawerManager, settingsModel, ToolsView,
-             OptionsView, mainTemplate, mainResources) {
+], function ($, Backbone, _, global, DrawerManager, SocketManager,
+             settingsModel, UserModel, ToolsView, OptionsView, mainTemplate,
+             mainResources) {
     "use strict";
 
     var info = global.getInfo(),
@@ -98,7 +101,8 @@ define([
         },
 
         pageshow: function () {
-            var $header, $content, $canvas;
+            var that = this,
+                $header, $content, $canvas, socket;
 
             if (this.drawer) {
                 return;
@@ -111,6 +115,25 @@ define([
             fixContentGeometry($header, $content);
             fixCanvasGeometry($content, $canvas);
 
+            socket = new SocketManager();
+            socket.on("ready", function (user) {
+                        that.user = user;
+                        that.showNetworkStatus(true);
+                  })
+                  .on("invite", function (userId) {
+                        $("#invitationStatus").find(".message")
+                                              .text("An invitation has been sent to the user: " + userId)
+                                              .end()
+                                              .popup("open");
+                  })
+                  .on("response", function (accept) {
+                        $("#invitationStatus").find(".message")
+                                              .text(accept ? "Your invitation has been accepted" : "Your invitation was rejected.")
+                                              .end()
+                                              .popup("close");
+                  })
+                  .connect(new UserModel());
+
             this.drawer = new DrawerManager(this.$el.find("canvas")[0]);
 
             this.toolsView = new ToolsView({
@@ -122,13 +145,13 @@ define([
             
             this.optionsView = new OptionsView({
                 el: $("#options"),
-                drawer: this.drawer
+                drawer: this.drawer,
+                socket: socket
             });
             this.optionsView.on("open", _.bind(this.drawer.off, this.drawer));
             this.optionsView.on("close", _.bind(this.drawer.on, this.drawer));
 
-            this.showNetworkStatus(window.navigator.onLine)
-                .drawer.on();
+            this.drawer.on();
         },
 
         undo: function (event) {
@@ -155,7 +178,8 @@ define([
             if (isOnline) {
                 removedClass = "title-offline";
                 addedClass = "title-online";
-                message = mainResources.onlineMessage;
+                // TODO: Format the message cleanly.
+                message = mainResources.onlineMessage + this.user.get("id");
             } else {
                 removedClass = "title-online";
                 addedClass = "title-offline";

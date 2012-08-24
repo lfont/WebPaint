@@ -38,7 +38,7 @@ define([
 
         initialize: function () {
             usersCollection.on(
-                "change",
+                "change reset",
                 _.bind(this.refreshUsers, this));
         },
 
@@ -63,6 +63,9 @@ define([
                 userId = $this.attr("data-value");
 
             event.preventDefault();
+
+            this.options.socket.invite(userId);
+            $.mobile.changePage("#main", { reverse: true });
         },
 
         refreshUsers: function () {
