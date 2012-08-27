@@ -9,9 +9,15 @@ define({
         "redoButton": "Redo",
         "toolsButton": "Tools",
         "optionsButton": "Options",
-        "onlineMessage": "You are the user #",
+        "onlineMessage": "You are: ",
         "offlineMessage": "You are offline.",
-        "inviteTitle": "Invite"
+        "inviteTitle": "Invite",
+        "invitePending": "An invite has been sent to: ",
+        "inviteAccepted": "Your invite has been accepted.",
+        "inviteRejected": "Your invite was rejected.",
+        "inviteRequest": "You have received an invite from: ",
+        "acceptButton": "Accept",
+        "rejectButton": "Reject"
     },
     "fr-fr": true
 });

@@ -60,12 +60,18 @@ define([
 
         userSelected: function (event) {
             var $this = $(event.target),
-                userId = $this.attr("data-value");
+                nickname = $this.attr("data-value");
 
             event.preventDefault();
 
-            this.options.socket.invite(userId);
             $.mobile.changePage("#main", { reverse: true });
+            
+            // We set a little timeout because we need to be sure that the
+            // mainView is visible.
+            setTimeout(_.bind(this.options.socket.invite,
+                              this.options.socket,
+                              nickname),
+                        250);
         },
 
         refreshUsers: function () {

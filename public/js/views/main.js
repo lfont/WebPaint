@@ -57,6 +57,58 @@ define([
                     type: "popup"
                 }
             };
+        },
+
+        createSocketManager = function (mainView) {
+            var socket = new SocketManager(),
+                user = new UserModel({
+                    // TODO: allow the user to set a nickname
+                    nickname: Math.floor(Math.random() * (1000 - 1)) + ""
+                });
+
+            mainView.user = user;
+            socket.on("connected", function () {
+                        mainView.showNetworkStatus(true);
+                  })
+                  .on("invite", function (user) {
+                        var $popup = $("#invitePending");
+
+                        $popup.find(".message")
+                              // TODO: Format the message cleanly.
+                              .text(mainResources.invitePending +
+                                    user.get("nickname"))
+                              .end()
+                              .popup("open");
+                  })
+                  .on("invite-response", function (response) {
+                        var $popup = $("#invitePending");
+
+                        $popup.find(".message")
+                              .text(response.accepted ?
+                                    mainResources.inviteAccepted :
+                                    mainResources.inviteRejected);
+
+                        setTimeout(function () {
+                            $popup.popup("close");
+                        }, 2000);
+                  })
+                  .on("invite-request", function (user) {
+                        var $popup = $("#inviteRequest");
+
+                        // TODO: manage a request queue.
+                        $popup.find(".message")
+                              // TODO: Format the message cleanly.
+                              .text(mainResources.inviteRequest +
+                                    user.get("nickname"))
+                              .end()
+                              .find(".accept, .reject")
+                              .attr("data-value", user.get("nickname"))
+                              .end()
+                              .popup("open");
+                  })
+                  .connect(user);
+
+            return socket;
         };
 
     return Backbone.View.extend({
@@ -64,7 +116,9 @@ define([
             "pagebeforecreate": "pagebeforecreate",
             "pageshow": "pageshow",
             "vclick .undo": "undo",
-            "vclick .redo": "redo"
+            "vclick .redo": "redo",
+            "vclick .accept": "accept",
+            "vclick .reject": "reject"
         },
 
         template: _.template(mainTemplate),
@@ -101,8 +155,7 @@ define([
         },
 
         pageshow: function () {
-            var that = this,
-                $header, $content, $canvas, socket;
+            var $header, $content, $canvas;
 
             if (this.drawer) {
                 return;
@@ -115,26 +168,9 @@ define([
             fixContentGeometry($header, $content);
             fixCanvasGeometry($content, $canvas);
 
-            socket = new SocketManager();
-            socket.on("ready", function (user) {
-                        that.user = user;
-                        that.showNetworkStatus(true);
-                  })
-                  .on("invite", function (userId) {
-                        $("#invitationStatus").find(".message")
-                                              .text("An invitation has been sent to the user: " + userId)
-                                              .end()
-                                              .popup("open");
-                  })
-                  .on("response", function (accept) {
-                        $("#invitationStatus").find(".message")
-                                              .text(accept ? "Your invitation has been accepted" : "Your invitation was rejected.")
-                                              .end()
-                                              .popup("close");
-                  })
-                  .connect(new UserModel());
-
-            this.drawer = new DrawerManager(this.$el.find("canvas")[0]);
+            this.socket = createSocketManager(this);
+            this.drawer = new DrawerManager(this.$el.find("canvas")[0],
+                                            this.socket);
 
             this.toolsView = new ToolsView({
                 el: $(this.environmentInfo.toolsView.id),
@@ -146,7 +182,7 @@ define([
             this.optionsView = new OptionsView({
                 el: $("#options"),
                 drawer: this.drawer,
-                socket: socket
+                socket: this.socket
             });
             this.optionsView.on("open", _.bind(this.drawer.off, this.drawer));
             this.optionsView.on("close", _.bind(this.drawer.on, this.drawer));
@@ -164,6 +200,24 @@ define([
             this.drawer.redo();
         },
 
+        accept: function (event) {
+            var $this = this.$el.find(".accept"),
+                nickname = $this.attr("data-value");
+
+            event.preventDefault();
+            this.socket.acceptInvite(nickname);
+            $("#inviteRequest").popup("close");
+        },
+
+        reject: function (event) {
+            var $this = this.$el.find(".reject"),
+                nickname = $this.attr("data-value");
+
+            event.preventDefault();
+            this.socket.rejectInvite(nickname);
+            $("#inviteRequest").popup("close");
+        },
+
         isVisible: function () {
             return $.mobile.activePage.attr("id") === this.$el.attr("id");
         },
@@ -179,7 +233,8 @@ define([
                 removedClass = "title-offline";
                 addedClass = "title-online";
                 // TODO: Format the message cleanly.
-                message = mainResources.onlineMessage + this.user.get("id");
+                message = mainResources.onlineMessage +
+                          this.user.get("nickname");
             } else {
                 removedClass = "title-online";
                 addedClass = "title-offline";

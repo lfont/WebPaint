@@ -7,7 +7,13 @@ define({
     "undoButton": "Défaire",
     "redoButton": "Refaire",
     "toolsButton": "Outils",
-    "onlineMessage": "Tu es l'utilisateur n°",
+    "onlineMessage": "Tu es : ",
     "offlineMessage": "Tu es hors ligne.",
-    "inviteTitle": "Invitation"
+    "inviteTitle": "Invitation",
+    "invitePending": "Une invitation a été envoyée à : ",
+    "inviteAccepted": "Ton invitation a été acceptée.",
+    "inviteRejected": "Ton invitation a été refusée.",
+    "inviteRequest": "Tu as reçu une invitation de : ",
+    "acceptButton": "Accepter",
+    "rejectButton": "Refuser"
 });

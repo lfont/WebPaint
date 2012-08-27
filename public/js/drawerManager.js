@@ -14,7 +14,7 @@ define([
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     "use strict";
 
-    return function (canvas) {
+    return function (canvas, socket) {
         var drawer = drawing.canvasDrawer(canvas),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
@@ -39,6 +39,33 @@ define([
                     drawer.histories(histories);
                     drawer.history(settingsModel.get("history"));
                 }
+
+                // drawer socket messages
+                socket.on("invite-response", function (response) {
+                    if (!response.accepted) {
+                        return;
+                    }
+                    
+                    shapeDrawer.addDrawnHandler(function (shape) {
+                        socket.draw({
+                            to: response.sender,
+                            shape: shape
+                        });
+                    });
+                });
+
+                socket.on("invite-accepted", function (fromUser) {
+                    shapeDrawer.addDrawnHandler(function (shape) {
+                        socket.draw({
+                            to: fromUser,
+                            shape: shape
+                        });
+                    });
+                });
+
+                socket.on("draw", function (data) {
+                    drawer.draw(data.shape);
+                });
             };
 
         initialize();

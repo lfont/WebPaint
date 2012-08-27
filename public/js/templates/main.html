@@ -26,9 +26,28 @@
     <p class="message"></p>
 </div>
 
-<div data-role="popup" id="invitationStatus" data-theme="b" class="ui-content">
-    <h3 class="ui-title"><%= r.inviteTitle %></h3>
-    <p class="message"></p>
+<div data-role="popup" id="invitePending" data-position-to="window"
+    class="ui-corner-all message-popup">
+    <div data-role="header" class="ui-corner-top">
+        <h1><%= r.inviteTitle %></h1>
+    </div>
+    <div data-role="content" class="ui-corner-bottom ui-content">
+        <p class="message"></p>
+    </div>
+</div>
+
+<div data-role="popup" id="inviteRequest" data-position-to="window"
+    class="ui-corner-all message-popup">
+    <div data-role="header" class="ui-corner-top">
+        <h1><%= r.inviteTitle %></h1>
+    </div>
+    <div data-role="content" class="ui-corner-bottom ui-content">
+        <p class="message"></p>
+        <a href="#" data-role="button" data-inline="true" data-theme="c"
+            class="reject"><%= r.rejectButton %></a>
+        <a href="#" data-role="button" data-inline="true" data-theme="b"
+            class="accept"><%= r.acceptButton %></a>
+    </div>
 </div>
 
 <div data-role="popup" id="toolsPopup" class="tools-view"></div>

@@ -6,9 +6,7 @@ var express = require("express"),
     app = module.exports = express.createServer(),
     qs = require("querystring"),
     io = require("socket.io"),
-    users = [],
-    lastUserId = 0,
-    sio;
+    users = [];
 
 
 // Configuration
@@ -64,36 +62,83 @@ app.listen(process.env.PORT, process.env.IP, function () {
 
 // Socket.IO
 
-sio = io.listen(app);
-
-sio.of("/users")
+io.listen(app)
+    .sockets
     .on("connection", function (socket) {
-        socket.emit("users", users);
+        socket.emit("users", users.map(function (user) {
+            return {
+                nickname: user.nickname
+            };
+        }));
 
-        socket.on("set user", function (user) {
-            user.id = lastUserId++;
+        socket.on("connect-user", function (nickname) {
+            var user = {
+                nickname: nickname,
+                socket: socket
+            };
             users.push(user);
 
             socket.set("user", user, function () {
-                socket.emit("ready", user.id);
+                socket.emit("user-connected");
             });
 
-            socket.broadcast.emit("users", users);
-        });
-
-        socket.on("invite", function (userId) {
-            setTimeout(3000, function () {
-                socket.emit("response", true);
-            });
+            socket.broadcast.emit("users", users.map(function (u) {
+                return {
+                    nickname: u.nickname
+                };
+            }));
         });
 
         socket.on("disconnect", function () {
             socket.get("user", function (err, user) {
-                users = users.filter(function (val) {
-                    return val.id !== user.id;
+                users = users.filter(function (u) {
+                    return u.nickname !== user.nickname;
                 });
 
-                socket.broadcast.emit("users", users);
+                socket.broadcast.emit("users", users.map(function (u) {
+                    return {
+                        nickname: u.nickname
+                    };
+                }));
+            });
+        });
+
+        // invite messages
+        socket.on("invite-request", function (nickname) {
+            socket.get("user", function (err, user) {
+                var to = users.filter(function (u) {
+                        return u.nickname === nickname;
+                    });
+
+                to[0].socket.emit("invite-request", user.nickname);
+            });
+        });
+
+        socket.on("invite-response", function (response) {
+            socket.get("user", function (err, user) {
+                var to = users.filter(function (u) {
+                        return u.nickname === response.replyTo;
+                    });
+
+                to[0].socket.emit("invite-response", {
+                    sender: user.nickname,
+                    accepted: response.accepted
+                });
+            });
+        });
+
+        // drawer messages
+        socket.on("draw", function (data) {
+            socket.get("user", function (err, user) {
+                var to = users.filter(function (u) {
+                        return u.nickname === data.to;
+                    });
+
+                // TODO: manage authorization
+                to[0].socket.emit("draw", {
+                    sender: user.nickname,
+                    shape: data.shape
+                });
             });
         });
     });

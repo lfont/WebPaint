@@ -4,6 +4,5 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define({
-    "title": "Inviter",
-    "userLabel": "Utilisateur n°"
+    "title": "Inviter"
 });

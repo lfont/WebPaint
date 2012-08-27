@@ -5,8 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "root": {
-        "title": "Invite",
-        "userLabel": "User #"
+        "title": "Invite"
     },
     "fr-fr": true
 });

@@ -7,29 +7,53 @@ define([
     "backbone",
     "underscore",
     "lib/socket.io",
-    "collections/users"
-], function (Backbone, _, io, usersCollection) {
+    "collections/users",
+    "models/user"
+], function (Backbone, _, io, usersCollection, UserModel) {
     "use strict";
 
     return function () {
         var that = this,
-            usersSocket;
+            socket;
 
         _.extend(this, Backbone.Events);
 
         this.connect = function (user) {
-            usersSocket = io.connect("/users");
-            usersSocket.on("connect", function () {
-                usersSocket.emit("set user", user.toJSON());
+            socket = io.connect("/");
 
-                usersSocket.on("ready", function (userId) {
-                    user.set("id", userId);
-                    that.trigger("ready", user);
+            socket.on("connect", function () {
+                socket.emit("connect-user", user.get("nickname"));
+
+                socket.on("user-connected", function () {
+                    that.trigger("connected");
+
+                    // invite messages
+                    socket.on("invite-request", function (sender) {
+                        that.trigger("invite-request",
+                                     new UserModel({
+                                        nickname: sender
+                                     }));
+                    });
+
+                    socket.on("invite-response", function (response) {
+                        response.sender = new UserModel({
+                            nickname: response.sender
+                        });
+                        that.trigger("invite-response", response);
+                    });
+
+                    // drawer messages
+                    socket.on("draw", function (data) {
+                        data.sender = new UserModel({
+                            nickname: data.sender
+                        });
+                        that.trigger("draw", data);
+                    });
                 });
 
-                usersSocket.on("users", function (users) {
+                socket.on("users", function (users) {
                     var others = _.filter(users, function (u) {
-                            return u.id !== user.get("id");
+                            return u.nickname !== user.get("nickname");
                         });
 
                     usersCollection.reset(others);
@@ -37,13 +61,37 @@ define([
             });
         };
 
-        this.invite = function (userId) {
-            this.trigger("invite", userId);
-            usersSocket.emit("invite", userId);
+        this.invite = function (nickname) {
+            var user = usersCollection.find(function (user) {
+                    return user.get("nickname") === nickname;
+                });
 
-            usersSocket.on("response", function (accept) {
-                that.trigger("response", accept);
+            that.trigger("invite", user);
+            socket.emit("invite-request", user.get("nickname"));
+        };
+
+        this.acceptInvite = function (fromNickname) {
+            var user = usersCollection.find(function (user) {
+                    return user.get("nickname") === fromNickname;
+                });
+
+            that.trigger("invite-accepted", user);
+            socket.emit("invite-response", {
+                replyTo: user.get("nickname"),
+                accepted: true
             });
+        };
+
+        this.rejectInvite = function (fromNickname) {
+            socket.emit("invite-response", {
+                replyTo: fromNickname,
+                accepted: false
+            });
+        };
+
+        this.draw = function (data) {
+            data.to = data.to.get("nickname");
+            socket.emit("draw", data);
         };
     };
 });
