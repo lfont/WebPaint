@@ -6,15 +6,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 require.config({
     paths: {
         "i18n": "lib/requirejs/i18n",
+        "domReady": "lib/requirejs/domReady",
         "text": "lib/requirejs/text",
-        "jquery": "http://code.jquery.com/jquery-1.7.2.min",
+        "jquery": "http://code.jquery.com/jquery-1.8.2.min",
         "underscore": "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min",
         "backbone": "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min",
-        "lib/socket.io": "lib/socket.io/socket.io.min",
-        "lib/jquery.mobile": "http://code.jquery.com/mobile/1.2.0-alpha.1/jquery.mobile-1.2.0-alpha.1.min",
+        "socket.io": "lib/socket.io/socket.io.min",
+        "lib/jquery.mobile": "http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min",
         "lib/jquery.mobile.download": "lib/jquery.mobile/jquery.mobile.download",
         "lib/jquery.mobile.toast": "lib/jquery.mobile/jquery.mobile.toast",
-        "lib/drawing": "lib/drawing/drawing-0.6.1",
+        "drawing": "lib/drawing/drawing-0.6.1",
         "lib/drawing.event": "lib/drawing/drawing.event.jquery-0.6.1"
     },
     shim: {
@@ -22,29 +23,17 @@ require.config({
             exports: "_"
         },
         "backbone": {
-            deps: ["underscore", "jquery"],
+            deps: [ "underscore", "jquery" ],
             exports: "Backbone"
         },
-        "lib/socket.io": {
+        "socket.io": {
             exports: "io"
         },
-        "lib/jquery.mobile": {
-            deps: [ "jquery" ],
-            exports: "jQuery.mobile"
-        },
-        "lib/jquery.mobile.download": {
-            deps: [ "lib/jquery.mobile" ],
-            exports: "jQuery.mobile.download"
-        },
-        "lib/jquery.mobile.toast": {
-            deps: [ "lib/jquery.mobile" ],
-            exports: "jQuery.mobile.toast"
-        },
-        "lib/drawing": {
+        "drawing": {
             exports: "drawing"
         },
         "lib/drawing.event": {
-            deps: [ "lib/drawing", "jquery" ],
+            deps: [ "drawing", "jquery" ],
             exports: "drawing.canvasDrawer.fn.eventShapeDrawer"
         }
     }

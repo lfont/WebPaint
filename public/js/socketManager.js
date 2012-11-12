@@ -6,7 +6,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
     "backbone",
     "underscore",
-    "lib/socket.io",
+    "socket.io",
     "collections/users",
     "models/user"
 ], function (Backbone, _, io, usersCollection, UserModel) {

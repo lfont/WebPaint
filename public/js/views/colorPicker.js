@@ -7,11 +7,9 @@ define([
     "jquery",
     "backbone",
     "underscore",
-    "global",
     "text!templates/colorPicker.html",
     "i18n!views/nls/colorPicker"
-], function ($, Backbone, _, global, colorPickerTemplate,
-             colorPickerResources) {
+], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
     "use strict";
     
     var SELECTED_CLASS = "colorpicker-color-selected",

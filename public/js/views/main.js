@@ -7,7 +7,7 @@ define([
     "jquery",
     "backbone",
     "underscore",
-    "global",
+    "environment",
     "drawerManager",
     "socketManager",
     "models/settings",
@@ -16,14 +16,12 @@ define([
     "views/options",
     "text!templates/main.html",
     "i18n!views/nls/main"
-], function ($, Backbone, _, global, DrawerManager, SocketManager,
+], function ($, Backbone, _, environment, DrawerManager, SocketManager,
              settingsModel, UserModel, ToolsView, OptionsView, mainTemplate,
              mainResources) {
     "use strict";
 
-    var info = global.getInfo(),
-
-        fixContentGeometry = function ($header, $content) {
+    var fixContentGeometry = function ($header, $content) {
             var contentHeight = $(window).height() - $header.outerHeight();
 
             contentHeight -= ($content.outerHeight() - $content.height());
@@ -37,26 +35,6 @@ define([
                 ($canvas.outerHeight() - $canvas.height()));
             canvas.width = ($content.width() -
                 ($canvas.outerWidth() - $canvas.width()));
-        },
-
-        getEnvironmentInfo = function () {
-            if ($(window).height() <= 720) {
-                return {
-                    defaultTransition: "none",
-                    toolsView: {
-                        id: "#toolsDialog",
-                        type: "dialog"
-                    }
-                };
-            }
-
-            return {
-                defaultTransition: "fade",
-                toolsView: {
-                    id: "#toolsPopup",
-                    type: "popup"
-                }
-            };
         },
 
         createSocketManager = function (mainView) {
@@ -124,24 +102,32 @@ define([
         template: _.template(mainTemplate),
 
         render: function () {
+            var appInfo = environment.getAppInfo(),
+                UIInfo = environment.getUIInfo();
+            
+            this.toolsViewId = UIInfo.toolsViewType === 'popup' ?
+                '#toolsPopup' :
+                '#toolsDialog';
+            
             this.$el.html(this.template({
                 r: mainResources,
-                name: info.name,
-                toolsView: this.environmentInfo.toolsView
+                name: appInfo.name,
+                toolsView: {
+                    id: this.toolsViewId,
+                    type: UIInfo.toolsViewType
+                }
             }));
 
             return this;
         },
         
         initialize: function () {
-            var that = this;
-            
-            this.environmentInfo = getEnvironmentInfo();
+            var UIInfo = environment.getUIInfo();
             
             $(document).on("mobileinit", function () {
                 $.mobile.defaultPageTransition =
                     $.mobile.defaultDialogTransition =
-                        that.environmentInfo.defaultTransition;
+                        UIInfo.defaultTransition;
             });
         },
 
@@ -173,7 +159,7 @@ define([
                                             this.socket);
 
             this.toolsView = new ToolsView({
-                el: $(this.environmentInfo.toolsView.id),
+                el: $(this.toolsViewId),
                 drawer: this.drawer
             });
             this.toolsView.on("open", _.bind(this.drawer.off, this.drawer));

@@ -3,13 +3,18 @@ Simple download plugin for jQuery Mobile
 Loïc Fontaine - MIT Licensed
 */
 
-(function ($) {
-    $.extend($.mobile, {
+define([
+    'jquery',
+    'lib/jquery.mobile'    
+], function ($, $mobile) {
+    'use strict';
+    
+    $.extend($mobile, {
         download: function (url, method, data) {
-            var formHeader = "<form method='" + method + "' " +
-                    "action='" + url + "' " +
-                    "data-ajax='false'>",
-                formFooter = "</form>",
+            var formHeader = '<form method="' + method + '" ' +
+                    'action="' + url + '" ' +
+                    'data-ajax="false">',
+                formFooter = '</form>',
                 form = formHeader;
                 
             for (var paramName in data) {
@@ -17,14 +22,15 @@ Loïc Fontaine - MIT Licensed
                     continue;   
                 }
                 
-                form += "<input name='" + paramName + "' type='hidden' " +
-                    "value='" + data[paramName] + "' />";
+                form += '<input name="' + paramName + '" type="hidden" ' +
+                    'value="' + data[paramName] + '" />';
             }
             
             form += formFooter;
-            $(form).appendTo("body")
+            
+            $(form).appendTo('body')
                    .submit()
                    .remove();
         }
     });
-}(window.jQuery));
+});

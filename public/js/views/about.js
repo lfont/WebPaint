@@ -4,31 +4,31 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "global",
-    "text!templates/about.html",
-    "i18n!views/nls/about"
-], function ($, Backbone, _, global, aboutTemplate, aboutResources) {
-    "use strict";
-
-    var info = global.getInfo();
+    'jquery',
+    'backbone',
+    'underscore',
+    'environment',
+    'text!templates/about.html',
+    'i18n!views/nls/about'
+], function ($, Backbone, _, environment, aboutTemplate, aboutResources) {
+    'use strict';
 
     return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate",
-            "pagebeforeshow": "pagebeforeshow",
-            "pagehide": "pagehide"
+            'pagebeforecreate': 'pagebeforecreate',
+            'pagebeforeshow': 'pagebeforeshow',
+            'pagehide': 'pagehide'
         },
 
         template: _.template(aboutTemplate),
 
         render: function () {
+            var appInfo = environment.getAppInfo();
+            
             this.$el.html(this.template({
                 r: aboutResources,
-                name: info.name,
-                version: info.version
+                name: appInfo.name,
+                version: appInfo.version
             }));
 
             return this;
@@ -39,11 +39,11 @@ define([
         },
 
         pagebeforeshow: function () {
-            this.trigger("open");
+            this.trigger('open');
         },
 
         pagehide: function () {
-            this.trigger("close");
+            this.trigger('close');
         }
     });
 });

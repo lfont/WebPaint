@@ -4,13 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-   "jquery",
-   "backbone",
-   "underscore",
-   "lib/drawing",
-   "models/settings",
-   "i18n!nls/drawerManager",
-   "lib/drawing.event"
+    "jquery",
+    "backbone",
+    "underscore",
+    "drawing",
+    "models/settings",
+    "i18n!nls/drawerManager",
+    "lib/drawing.event"
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     "use strict";
 
