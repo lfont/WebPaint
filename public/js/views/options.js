@@ -12,7 +12,7 @@ define([
     "views/invite",
     "views/language",
     "views/about",
-    "text!templates/options.html",
+    "text!/templates/options.html",
     "i18n!views/nls/options"
 ], function ($, Backbone, _, NewDrawingView, HistoryView, InviteView,
              LanguageView, AboutView, optionsTemplate, optionsResources) {

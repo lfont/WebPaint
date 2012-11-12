@@ -8,8 +8,8 @@ define([
     "backbone",
     "underscore",
     "models/settings",
-    "text!templates/history.html",
-    "text!templates/historyList.html",
+    "text!/templates/history.html",
+    "text!/templates/historyList.html",
     "i18n!views/nls/history"
 ], function ($, Backbone, _, settingsModel, historyTemplate,
              historyListTemplate, historyResources) {

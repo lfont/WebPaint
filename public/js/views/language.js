@@ -9,8 +9,8 @@ define([
     "underscore",
     "models/settings",
     "collections/languages",
-    "text!templates/language.html",
-    "text!templates/languageList.html",
+    "text!/templates/language.html",
+    "text!/templates/languageList.html",
     "i18n!views/nls/language"
 ], function ($, Backbone, _, settingsModel, languagesCollection,
              languageTemplate, languageListTemplate, languageResources) {

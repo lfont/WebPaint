@@ -8,8 +8,8 @@ define([
     "backbone",
     "underscore",
     "collections/users",
-    "text!templates/invite.html",
-    "text!templates/userList.html",
+    "text!/templates/invite.html",
+    "text!/templates/userList.html",
     "i18n!views/nls/invite"
 ], function ($, Backbone, _, usersCollection, inviteTemplate,
              userListTemplate, inviteResources) {

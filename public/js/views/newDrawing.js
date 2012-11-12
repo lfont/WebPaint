@@ -9,7 +9,7 @@ define([
     "underscore",
     "collections/colors",
     "views/colorPicker",
-    "text!templates/newDrawing.html",
+    "text!/templates/newDrawing.html",
     "i18n!views/nls/newDrawing"
 ], function ($, Backbone, _, colorsCollection, ColorPickerView,
              newDrawingTemplate, newDrawingResources) {

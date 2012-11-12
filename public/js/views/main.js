@@ -14,7 +14,7 @@ define([
     "models/user",
     "views/tools",
     "views/options",
-    "text!templates/main.html",
+    "text!/templates/main.html",
     "i18n!views/nls/main"
 ], function ($, Backbone, _, environment, DrawerManager, SocketManager,
              settingsModel, UserModel, ToolsView, OptionsView, mainTemplate,

@@ -8,7 +8,7 @@ define([
     'backbone',
     'underscore',
     'environment',
-    'text!templates/about.html',
+    'text!/templates/about.html',
     'i18n!views/nls/about'
 ], function ($, Backbone, _, environment, aboutTemplate, aboutResources) {
     'use strict';
