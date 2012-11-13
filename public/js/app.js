@@ -80,8 +80,6 @@ define([
                 mainView.unload();
                 settingsModel.save();
             });
-
-            $('#appLoadingMessage').hide();
         });
     });
 });

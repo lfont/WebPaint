@@ -5,12 +5,9 @@
 
     <% _.each(options, function (option) { %>
         <li>
-            <a href="<%= option.link %>"
-               data-rel="dialog"
-                <% if (option.action) { %>
-                    data-value="<%= option.action %>"
-                    class="action"
-                <% } %>><%= option.name %></a>
+            <a href="#"
+                data-option="<%= option.option %>"
+                class="option"><%= option.name %></a>
         </li>
     <% }); %>
 </ul>

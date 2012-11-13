@@ -13,14 +13,11 @@ define([
     "socketManager",
     "models/settings",
     "models/user",
-    "views/tools",
-    "views/options",
     "text!/templates/main.html",
     "i18n!views/nls/main"
 ], function ($, mobile, Backbone, _, environment, DrawerManager, SocketManager,
-             settingsModel, UserModel, ToolsView, OptionsView, mainTemplate,
-             mainResources) {
-    "use strict";
+             settingsModel, UserModel, mainTemplate, mainResources) {
+    'use strict';
 
     var fixContentGeometry = function ($header, $content) {
             var contentHeight = $(window).height() - $header.outerHeight();
@@ -95,31 +92,20 @@ define([
             "pageshow": "pageshow",
             "vclick .undo": "undo",
             "vclick .redo": "redo",
+            "vclick .tools": "showTools",
+            "vclick .options": "showOptions",
             "vclick .accept": "accept",
             "vclick .reject": "reject"
         },
 
         template: _.template(mainTemplate),
 
-        initialize: function () {
-            var UIInfo = environment.getUIInfo();
-
-            this.toolsViewType = UIInfo.toolsViewType;
-            this.toolsViewId = UIInfo.toolsViewType === 'popup' ?
-                '#toolsPopup' :
-                '#toolsDialog';
-        },
-
         render: function () {
             var appInfo = environment.getAppInfo();
 
             this.$el.html(this.template({
                 r: mainResources,
-                name: appInfo.name,
-                toolsView: {
-                    id: this.toolsViewId,
-                    type: this.toolsViewType
-                }
+                name: appInfo.name
             })).addClass('main-view')
                // The data-url attribute must be set for popups
                .attr('data-url', '/')
@@ -153,21 +139,6 @@ define([
             this.socket = createSocketManager(this);
             this.drawer = new DrawerManager($canvas[0], this.socket);
 
-            this.toolsView = new ToolsView({
-                el: $(this.toolsViewId),
-                drawer: this.drawer
-            });
-            this.toolsView.on("open", _.bind(this.drawer.off, this.drawer));
-            this.toolsView.on("close", _.bind(this.drawer.on, this.drawer));
-            
-            this.optionsView = new OptionsView({
-                el: $("#options"),
-                drawer: this.drawer,
-                socket: this.socket
-            });
-            this.optionsView.on("open", _.bind(this.drawer.off, this.drawer));
-            this.optionsView.on("close", _.bind(this.drawer.on, this.drawer));
-
             $(window).on('online', _.bind(this.showNetworkStatus, this, true))
                      .on('offline', _.bind(this.showNetworkStatus, this, false));
 
@@ -182,6 +153,53 @@ define([
         redo: function (event) {
             event.preventDefault();
             this.drawer.redo();
+        },
+
+        showTools: function (event) {
+            var _this = this;
+
+            event.preventDefault();
+
+            require([
+                'views/tools'
+            ], function (ToolsView) {
+                if (!_this.toolsView) {
+                    _this.toolsView = new ToolsView({
+                        parentView: _this.$el,
+                        positionTo: $('.tools'),
+                        drawer: _this.drawer
+                    });
+                    _this.toolsView.on('open', _.bind(_this.drawer.off, _this.drawer));
+                    _this.toolsView.on('close', _.bind(_this.drawer.on, _this.drawer));
+                    _this.toolsView.render();
+                }
+
+                _this.toolsView.show();
+            });
+        },
+
+        showOptions: function (event) {
+            var _this = this;
+
+            event.preventDefault();
+
+            require([
+                'views/options'
+            ], function (OptionsView) {
+                if (!_this.optionsView) {
+                    _this.optionsView = new OptionsView({
+                        parentView: _this.$el,
+                        positionTo: $('.options'),
+                        drawer: _this.drawer,
+                        socket: _this.socket
+                    });
+                    _this.optionsView.on('open', _.bind(_this.drawer.off, _this.drawer));
+                    _this.optionsView.on('close', _.bind(_this.drawer.on, _this.drawer));
+                    _this.optionsView.render();
+                }
+
+                _this.optionsView.show();
+            });
         },
 
         accept: function (event) {

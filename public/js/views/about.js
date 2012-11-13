@@ -5,17 +5,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
+    'lib/jquery.mobile',
     'backbone',
     'underscore',
     'environment',
     'text!/templates/about.html',
     'i18n!views/nls/about'
-], function ($, Backbone, _, environment, aboutTemplate, aboutResources) {
+], function ($, mobile, Backbone, _, environment, aboutTemplate, aboutResources) {
     'use strict';
 
     return Backbone.View.extend({
         events: {
-            'pagebeforecreate': 'pagebeforecreate',
             'pagebeforeshow': 'pagebeforeshow',
             'pagehide': 'pagehide'
         },
@@ -29,13 +29,13 @@ define([
                 r: aboutResources,
                 name: appInfo.name,
                 version: appInfo.version
-            }));
+            })).page();
 
             return this;
         },
 
-        pagebeforecreate: function () {
-            this.render();
+        show: function () {
+            mobile.changePage(this.$el);
         },
 
         pagebeforeshow: function () {

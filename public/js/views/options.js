@@ -4,24 +4,18 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "views/newDrawing",
-    "views/history",
-    "views/invite",
-    "views/language",
-    "views/about",
-    "text!/templates/options.html",
-    "i18n!views/nls/options"
-], function ($, Backbone, _, NewDrawingView, HistoryView, InviteView,
-             LanguageView, AboutView, optionsTemplate, optionsResources) {
-    "use strict";
+    'jquery',
+    'backbone',
+    'underscore',
+    'text!/templates/options.html',
+    'i18n!views/nls/options'
+], function ($, Backbone, _, optionsTemplate, optionsResources) {
+    'use strict';
 
     return Backbone.View.extend({
         events: {
-            "popupbeforeposition": "popupbeforeposition",
-            "vclick .action": "actionSelected"
+            'popupbeforeposition': 'popupbeforeposition',
+            'vclick .option': 'option'
         },
 
         template: _.template(optionsTemplate),
@@ -31,89 +25,81 @@ define([
                 r: optionsResources,
                 options: [
                     {
-                        name: optionsResources["new"],
-                        link: "#newDrawing"
+                        name: optionsResources['new'],
+                        option: 'newDrawing'
                     },
                     {
                         name: optionsResources.save,
-                        link: "#",
-                        action: "save"
+                        option: 'save'
                     },
                     {
                         name: optionsResources.clear,
-                        link: "#",
-                        action: "clear"
+                        option: 'clear'
                     },
                     {
                         name: optionsResources.history,
-                        link: "#history"
+                        option: 'history'
                     },
                     {
                         name: optionsResources.invite,
-                        link: "#invite"
+                        option: 'invite'
                     },
                     {
                         name: optionsResources.language,
-                        link: "#language"
+                        option: 'language'
                     },
                     {
                         name: optionsResources.about,
-                        link: "#about"
+                        option: 'about'
                     }
                 ]
-            }));
-
-            this.$el.trigger("create");
+            })).addClass('options-view')
+               .appendTo(this.options.parentView)
+               .trigger('create')
+               .popup();
 
             return this;
         },
 
-        initialize: function () {
-            var that = this;
-
-            this.render();
-
-            this.newDrawingView = new NewDrawingView({
-                el: $("#newDrawing"),
-                drawer: this.options.drawer
+        show: function () {
+            this.$el.popup('open', {
+                positionTo: this.options.positionTo
             });
-            this.newDrawingView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.historyView = new HistoryView({
-                el: $("#history"),
-                drawer: this.options.drawer
-            });
-            this.historyView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.inviteView = new InviteView({
-                el: $("#invite"),
-                socket: this.options.socket
-            });
-            this.inviteView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.languageView = new LanguageView({
-                el: $("#language")
-            });
-            this.languageView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.aboutView = new AboutView({
-                el: $("#about")
-            });
-            this.aboutView.on("close", _.bind(this.trigger, this, "close"));
         },
 
         popupbeforeposition: function () {
-            this.trigger("open");
+            this.trigger('open');
         },
 
-        actionSelected: function (event) {
-            var $this = $(event.target),
-                action = $this.attr("data-value");
+        option: function (event) {
+            var _this = this,
+                $this = $(event.target),
+                option = $this.attr('data-option');
 
             event.preventDefault();
-            this.options.drawer[action]();
-            $.mobile.changePage("#main", { reverse: true });
-            this.trigger("close");
+
+            if (option === 'save' || option === 'clear') {
+                this.options.drawer[option]();
+                this.$el.popup('close');
+                this.trigger('close');
+            } else {
+                this.$el.popup('close');
+
+                require([
+                    'views/' + option
+                ], function (View) {
+                    if (!_this[option]) {
+                        _this[option] = new View({
+                            el: $('<div></div>').appendTo($('body'))
+                        });
+
+                        _this[option].on('close', _.bind(_this.trigger, _this, 'close'));
+                        _this[option].render();
+                    }
+
+                    _this[option].show();
+                });
+            }
         }
     });
 });
