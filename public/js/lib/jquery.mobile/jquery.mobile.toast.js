@@ -5,11 +5,11 @@ Loïc Fontaine - http://jsfiddle.net/loic_fontaine/kapWz/
 
 define([
     'jquery',
-    'lib/jquery.mobile'    
-], function ($, $mobile) {
+    'lib/jquery.mobile'
+], function ($, mobile) {
     'use strict';
     
-    $.extend($mobile, {
+    $.extend(mobile, {
         showToast: function (message, delay, callback) {
             if (typeof(delay) === 'function') {
                 callback = delay;
@@ -20,7 +20,7 @@ define([
                 delay = 1000;
             }
 
-            $mobile.loading('show', {
+            mobile.loading('show', {
                 theme: 'b',
                 text: message,
                 textonly: true,
@@ -28,7 +28,7 @@ define([
             });
 
             setTimeout(function () {
-                $mobile.loading('hide');
+                mobile.loading('hide');
                 if (callback) {
                     callback();
                 }

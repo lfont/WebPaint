@@ -5,6 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     "jquery",
+    "lib/jquery.mobile",
     "backbone",
     "underscore",
     "environment",
@@ -16,7 +17,7 @@ define([
     "views/options",
     "text!/templates/main.html",
     "i18n!views/nls/main"
-], function ($, Backbone, _, environment, DrawerManager, SocketManager,
+], function ($, mobile, Backbone, _, environment, DrawerManager, SocketManager,
              settingsModel, UserModel, ToolsView, OptionsView, mainTemplate,
              mainResources) {
     "use strict";
@@ -49,7 +50,7 @@ define([
                         mainView.showNetworkStatus(true);
                   })
                   .on("invite", function (user) {
-                        var $popup = $("#invitePending");
+                        var $popup = this.$invitePending;
 
                         $popup.find(".message")
                               // TODO: Format the message cleanly.
@@ -59,7 +60,7 @@ define([
                               .popup("open");
                   })
                   .on("invite-response", function (response) {
-                        var $popup = $("#invitePending");
+                        var $popup = this.$invitePending;
 
                         $popup.find(".message")
                               .text(response.accepted ?
@@ -71,7 +72,7 @@ define([
                         }, 2000);
                   })
                   .on("invite-request", function (user) {
-                        var $popup = $("#inviteRequest");
+                        var $popup = this.$inviteRequest;
 
                         // TODO: manage a request queue.
                         $popup.find(".message")
@@ -91,7 +92,6 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate",
             "pageshow": "pageshow",
             "vclick .undo": "undo",
             "vclick .redo": "redo",
@@ -101,43 +101,39 @@ define([
 
         template: _.template(mainTemplate),
 
-        render: function () {
-            var appInfo = environment.getAppInfo(),
-                UIInfo = environment.getUIInfo();
-            
+        initialize: function () {
+            var UIInfo = environment.getUIInfo();
+
+            this.toolsViewType = UIInfo.toolsViewType;
             this.toolsViewId = UIInfo.toolsViewType === 'popup' ?
                 '#toolsPopup' :
                 '#toolsDialog';
-            
+        },
+
+        render: function () {
+            var appInfo = environment.getAppInfo();
+
             this.$el.html(this.template({
                 r: mainResources,
                 name: appInfo.name,
                 toolsView: {
                     id: this.toolsViewId,
-                    type: UIInfo.toolsViewType
+                    type: this.toolsViewType
                 }
-            }));
+            })).addClass('main-view')
+               // The data-url attribute must be set for popups
+               .attr('data-url', '/')
+               .page();
+
+            this.$networkStatusTooltip = this.$el.find('.networkStatusTooltip');
+            this.$inviteRequest = this.$el.find('.inviteRequest');
+            this.$invitePending = this.$el.find('.invitePending');
 
             return this;
         },
-        
-        initialize: function () {
-            var UIInfo = environment.getUIInfo();
-            
-            $(document).on("mobileinit", function () {
-                $.mobile.defaultPageTransition =
-                    $.mobile.defaultDialogTransition =
-                        UIInfo.defaultTransition;
-            });
-        },
 
-        pagebeforecreate: function () {
-            var $window = $(window);
-            
-            this.render();
-
-            $window.on("online", _.bind(this.showNetworkStatus, this, true));
-            $window.on("offline", _.bind(this.showNetworkStatus, this, false));
+        show: function () {
+            mobile.changePage(this.$el);
         },
 
         pageshow: function () {
@@ -146,7 +142,7 @@ define([
             if (this.drawer) {
                 return;
             }
-            
+         
             $header = this.$el.find("[data-role='header']");
             $content = this.$el.find("[data-role='content']");
             $canvas = this.$el.find("canvas");
@@ -155,8 +151,7 @@ define([
             fixCanvasGeometry($content, $canvas);
 
             this.socket = createSocketManager(this);
-            this.drawer = new DrawerManager(this.$el.find("canvas")[0],
-                                            this.socket);
+            this.drawer = new DrawerManager($canvas[0], this.socket);
 
             this.toolsView = new ToolsView({
                 el: $(this.toolsViewId),
@@ -172,6 +167,9 @@ define([
             });
             this.optionsView.on("open", _.bind(this.drawer.off, this.drawer));
             this.optionsView.on("close", _.bind(this.drawer.on, this.drawer));
+
+            $(window).on('online', _.bind(this.showNetworkStatus, this, true))
+                     .on('offline', _.bind(this.showNetworkStatus, this, false));
 
             this.drawer.on();
         },
@@ -192,7 +190,7 @@ define([
 
             event.preventDefault();
             this.socket.acceptInvite(nickname);
-            $("#inviteRequest").popup("close");
+            this.$inviteRequest.popup('close');
         },
 
         reject: function (event) {
@@ -201,15 +199,16 @@ define([
 
             event.preventDefault();
             this.socket.rejectInvite(nickname);
-            $("#inviteRequest").popup("close");
+            this.$inviteRequest.popup('close');
         },
 
         isVisible: function () {
-            return $.mobile.activePage.attr("id") === this.$el.attr("id");
+            return mobile.activePage === this.$el;
         },
 
         showNetworkStatus: function (isOnline) {
-            var $networkStatusTooltip, removedClass, addedClass, message;
+            var _this = this,
+                removedClass, addedClass, message;
 
             if (!this.isVisible()) {
                 return;
@@ -231,17 +230,16 @@ define([
                     .removeClass(removedClass)
                     .addClass(addedClass);
 
-            $networkStatusTooltip = $("#networkStatusTooltip");
-            $networkStatusTooltip.find(".message")
-                                 .text(message)
-                                 .end()
-                                 .popup("open", {
-                                    x: 0,
-                                    y: 82
-                                });
+            this.$networkStatusTooltip.find(".message")
+                                      .text(message)
+                                      .end()
+                                      .popup("open", {
+                                        x: 0,
+                                        y: 82
+                                      });
 
              window.setTimeout(function () {
-                $networkStatusTooltip.popup("close");
+                _this.$networkStatusTooltip.popup('close');
              }, 2000);
 
              return this;

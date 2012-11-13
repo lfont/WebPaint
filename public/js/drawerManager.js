@@ -10,7 +10,9 @@ define([
     "drawing",
     "models/settings",
     "i18n!nls/drawerManager",
-    "lib/drawing.event"
+    "lib/drawing.event",
+    "lib/jquery.mobile.download",
+    "lib/jquery.mobile.toast"
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     "use strict";
 

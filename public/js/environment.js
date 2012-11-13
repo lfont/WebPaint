@@ -4,8 +4,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'domReady!'
+    'jquery'
 ], function ($) {
     'use strict';
 
@@ -13,7 +12,7 @@ define([
         getAppInfo: function () {
             return {
                 name: 'WebPaint',
-                version: '0.6.1'
+                version: '0.6.2'
             };
         },
         
