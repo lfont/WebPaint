@@ -22,41 +22,41 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                r: optionsResources,
-                options: [
-                    {
-                        name: optionsResources['new'],
-                        option: 'newDrawing'
-                    },
-                    {
-                        name: optionsResources.save,
-                        option: 'save'
-                    },
-                    {
-                        name: optionsResources.clear,
-                        option: 'clear'
-                    },
-                    {
-                        name: optionsResources.history,
-                        option: 'history'
-                    },
-                    {
-                        name: optionsResources.invite,
-                        option: 'invite'
-                    },
-                    {
-                        name: optionsResources.language,
-                        option: 'language'
-                    },
-                    {
-                        name: optionsResources.about,
-                        option: 'about'
-                    }
-                ]
-            })).addClass('options-view')
-               .appendTo(this.options.parentView)
-               .trigger('create')
-               .popup();
+                        r: optionsResources,
+                        options: [
+                            {
+                                name: optionsResources['new'],
+                                option: 'new'
+                            },
+                            {
+                                name: optionsResources.save,
+                                option: 'save'
+                            },
+                            {
+                                name: optionsResources.clear,
+                                option: 'clear'
+                            },
+                            {
+                                name: optionsResources.history,
+                                option: 'history'
+                            },
+                            {
+                                name: optionsResources.invite,
+                                option: 'invite'
+                            },
+                            {
+                                name: optionsResources.language,
+                                option: 'language'
+                            },
+                            {
+                                name: optionsResources.about,
+                                option: 'about'
+                            }
+                        ]
+                    }))
+                    .addClass('options-view')
+                    .trigger('create')
+                    .popup();
 
             return this;
         },
@@ -83,16 +83,14 @@ define([
                 this.$el.popup('close');
                 this.trigger('close');
             } else {
-                this.$el.popup('close');
-
                 require([
                     'views/' + option
                 ], function (View) {
                     if (!_this[option]) {
                         _this[option] = new View({
-                            el: $('<div></div>').appendTo($('body'))
+                            el: $('<div></div>').appendTo($('body')),
+                            drawer: _this.options.drawer
                         });
-
                         _this[option].on('close', _.bind(_this.trigger, _this, 'close'));
                         _this[option].render();
                     }

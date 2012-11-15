@@ -8,10 +8,12 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'environment',
-    'text!/templates/about.html',
-    'i18n!views/nls/about'
-], function ($, mobile, Backbone, _, environment, aboutTemplate, aboutResources) {
+    'collections/colors',
+    'views/colorPicker',
+    'text!/templates/new.html',
+    'i18n!views/nls/new'
+], function ($, mobile, Backbone, _, colorsCollection, ColorPickerView,
+             newTemplate, newResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -20,19 +22,27 @@ define([
             'pagehide': 'pagehide'
         },
 
-        template: _.template(aboutTemplate),
+        template: _.template(newTemplate),
 
         render: function () {
-            var appInfo = environment.getAppInfo();
-            
+            var _this = this;
+
             this.$el.html(this.template({
-                        r: aboutResources,
-                        name: appInfo.name,
-                        version: appInfo.version
+                        r: newResources
                     }))
-                    .attr('data-url', 'about')
+                    .attr('data-url', 'new')
                     .attr('data-role', 'dialog')
                     .page();
+
+            this.backgroundColorPicker = new ColorPickerView({
+                el: this.$el.find('.color-picker'),
+                colors: colorsCollection
+            }).render();
+
+            this.backgroundColorPicker.on('color', function (hex) {
+                _this.options.drawer.newDrawing(hex);
+                _this.$el.dialog('close');
+            });
 
             return this;
         },

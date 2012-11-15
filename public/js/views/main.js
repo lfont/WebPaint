@@ -104,12 +104,13 @@ define([
             var appInfo = environment.getAppInfo();
 
             this.$el.html(this.template({
-                r: mainResources,
-                name: appInfo.name
-            })).addClass('main-view')
-               // The data-url attribute must be set for popups
-               .attr('data-url', '/')
-               .page();
+                        r: mainResources,
+                        name: appInfo.name
+                    }))
+                    .addClass('main-view')
+                    // The data-url attribute must be set for popups
+                    .attr('data-url', '/')
+                    .page();
 
             this.$networkStatusTooltip = this.$el.find('.networkStatusTooltip');
             this.$inviteRequest = this.$el.find('.inviteRequest');
@@ -163,10 +164,17 @@ define([
             require([
                 'views/tools'
             ], function (ToolsView) {
+                var UIInfo = environment.getUIInfo(),
+                    isPopup = UIInfo.toolsViewType === 'popup';
+
                 if (!_this.toolsView) {
                     _this.toolsView = new ToolsView({
-                        parentView: _this.$el,
-                        positionTo: $('.tools'),
+                        el: isPopup ?
+                            $('<div></div>').appendTo(_this.$el) :
+                            $('<div></div>').appendTo($('body')),
+                        positionTo: isPopup ?
+                            event.target :
+                            null,
                         drawer: _this.drawer
                     });
                     _this.toolsView.on('open', _.bind(_this.drawer.off, _this.drawer));
@@ -188,8 +196,8 @@ define([
             ], function (OptionsView) {
                 if (!_this.optionsView) {
                     _this.optionsView = new OptionsView({
-                        parentView: _this.$el,
-                        positionTo: $('.options'),
+                        el: $('<div></div>').appendTo(_this.$el),
+                        positionTo: event.target,
                         drawer: _this.drawer,
                         socket: _this.socket
                     });

@@ -4,46 +4,47 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "collections/users",
-    "text!/templates/invite.html",
-    "text!/templates/userList.html",
-    "i18n!views/nls/invite"
-], function ($, Backbone, _, usersCollection, inviteTemplate,
-             userListTemplate, inviteResources) {
-    "use strict";
+    'jquery',
+    'lib/jquery.mobile',
+    'backbone',
+    'underscore',
+    'collections/users',
+    'text!/templates/list-wrapper.html',
+    'text!/templates/invite.html',
+    'i18n!views/nls/invite'
+], function ($, mobile, Backbone, _, usersCollection, listWrapperTemplate,
+             inviteTemplate, inviteResources) {
+    'use strict';
 
     return Backbone.View.extend({
         events: {
-            "pagebeforecreate": "pagebeforecreate",
-            "pagecreate": "pagecreate",
-            "pagebeforeshow": "pagebeforeshow",
-            "pagehide": "pagehide",
-            "vclick .user": "userSelected"
+            'pagecreate': 'pagecreate',
+            'pagebeforeshow': 'pagebeforeshow',
+            'pagehide': 'pagehide',
+            'vclick .user': 'userSelected'
         },
 
-        template: _.template(inviteTemplate),
+        template: _.template(listWrapperTemplate),
         
-        listTemplate: _.template(userListTemplate),
+        listTemplate: _.template(inviteTemplate),
 
         render: function () {
             this.$el.html(this.template({
-                r: inviteResources
-            }));
+                        r: inviteResources
+                    }))
+                    .attr('data-url', 'invite')
+                    .attr('data-role', 'dialog')
+                    .page();
+
+            usersCollection.on(
+                'change reset',
+                _.bind(this.refreshUsers, this));
 
             return this;
         },
 
-        initialize: function () {
-            usersCollection.on(
-                "change reset",
-                _.bind(this.refreshUsers, this));
-        },
-
-        pagebeforecreate: function () {
-            this.render();
+        show: function () {
+            mobile.changePage(this.$el);
         },
 
         pagecreate: function () {
@@ -51,20 +52,20 @@ define([
         },
 
         pagebeforeshow: function () {
-            this.trigger("open");
+            this.trigger('open');
         },
 
         pagehide: function () {
-            this.trigger("close");
+            this.trigger('close');
         },
 
         userSelected: function (event) {
             var $this = $(event.target),
-                nickname = $this.attr("data-value");
+                nickname = $this.attr('data-value');
 
             event.preventDefault();
 
-            $.mobile.changePage("#main", { reverse: true });
+            this.$el.dialog('close');
             
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
@@ -75,12 +76,12 @@ define([
         },
 
         refreshUsers: function () {
-            this.$el.find(".user-list")
+            this.$el.find('.list-wrapper')
                     .html(this.listTemplate({
                         r: inviteResources,
                         users: usersCollection.toJSON()
                     }))
-                    .trigger("create");
+                    .trigger('create');
 
             return this;
         }
