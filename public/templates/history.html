@@ -1,6 +1,11 @@
- <div data-role="header">
-    <h1><%= r.title %></h1>
-</div>
-
-<div data-role="content" data-theme="d" class="history-list">
-</div>
+<ul data-role="listview">
+    <% _.each(histories, function(imageDataURL, index) { %>
+        <li>
+            <a href="#" class="history" data-value="<%= index %>">
+                <img src="<%= imageDataURL %>" alt="<%= index %>" class="webpaint-history-image" />
+                <%= r.historyLabel + index %>
+                <span class="ui-li-count" style="display: none;">*</span>
+            </a>
+        </li>
+    <% }); %>
+</ul>

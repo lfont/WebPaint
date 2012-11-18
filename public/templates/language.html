@@ -1,8 +1,15 @@
-<div data-role="header">
-    <h1><%= r.title %></h1>
-</div>
+<ul data-role="listview" data-divider-theme="c">
+    <li data-role="list-divider">
+        <%= r.information %>
+    </li>
 
-<div data-role="content" data-theme="d">
-    <p><%= r.information %></p>
-    <div class="language-list"></div>
-</div>
+    <% _.each(languages, function (language) { %>
+        <li>
+            <a href="#" class="language" data-value="<%= language.code %>">
+                <img src="img/<%= language.code %>.png" alt="<%= language.name %>" class="ui-li-icon" />
+                <%= language.name %>
+                <span class="ui-li-count" style="display: none;">*</span>
+            </a>
+        </li>
+    <% }); %>
+</ul>

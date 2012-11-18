@@ -27,9 +27,8 @@ app.configure("production", function() {
 
 // Routes
 
-app.post("/service/saveAs/:name", function (req, res) {
-    var data = "",
-        fileName = req.param("name");
+app.post("/service/saveImage", function (req, res) {
+    var data = "";
 
     req.on("data", function (chunk) {
         data += chunk.toString();
@@ -37,14 +36,15 @@ app.post("/service/saveAs/:name", function (req, res) {
     
     req.on("end", function () {
         var body = qs.parse(data),
+            name = body.name,
             image = new Buffer(
-                body.dataURL.replace("data:image/png;base64,", ""),
+                body.data.replace("data:image/png;base64,", ""),
                 "base64");
         
         res.writeHead(200, {
             "Content-Type": "image/png",
             "Content-Length": image.length,
-            "Content-Disposition": "attachment; filename=" + fileName
+            "Content-Disposition": "attachment; filename=" + name
         });
         
         res.end(image);

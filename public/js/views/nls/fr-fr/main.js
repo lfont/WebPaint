@@ -15,5 +15,9 @@ define({
     "inviteRejected": "Ton invitation a été refusée.",
     "inviteRequest": "Tu as reçu une invitation de : ",
     "acceptButton": "Accepter",
-    "rejectButton": "Refuser"
+    "rejectButton": "Refuser",
+    "saveTitle": "Enregistrer",
+    "saveName": "Nom : ",
+    "cancelButton": "Annuler",
+    "saveButton": "Enregistrer"
 });

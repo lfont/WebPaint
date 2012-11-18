@@ -4,116 +4,108 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "views/newDrawing",
-    "views/history",
-    "views/invite",
-    "views/language",
-    "views/about",
-    "text!/templates/options.html",
-    "i18n!views/nls/options"
-], function ($, Backbone, _, NewDrawingView, HistoryView, InviteView,
-             LanguageView, AboutView, optionsTemplate, optionsResources) {
-    "use strict";
+    'require',
+    'jquery',
+    'backbone',
+    'underscore',
+    'text!/templates/options.html',
+    'i18n!views/nls/options'
+], function (require, $, Backbone, _, optionsTemplate, optionsResources) {
+    'use strict';
 
     return Backbone.View.extend({
         events: {
-            "popupbeforeposition": "popupbeforeposition",
-            "vclick .action": "actionSelected"
+            'popupbeforeposition': 'popupbeforeposition',
+            'vclick .option': 'option'
         },
 
         template: _.template(optionsTemplate),
 
         render: function () {
             this.$el.html(this.template({
-                r: optionsResources,
-                options: [
-                    {
-                        name: optionsResources["new"],
-                        link: "#newDrawing"
-                    },
-                    {
-                        name: optionsResources.save,
-                        link: "#",
-                        action: "save"
-                    },
-                    {
-                        name: optionsResources.clear,
-                        link: "#",
-                        action: "clear"
-                    },
-                    {
-                        name: optionsResources.history,
-                        link: "#history"
-                    },
-                    {
-                        name: optionsResources.invite,
-                        link: "#invite"
-                    },
-                    {
-                        name: optionsResources.language,
-                        link: "#language"
-                    },
-                    {
-                        name: optionsResources.about,
-                        link: "#about"
-                    }
-                ]
-            }));
-
-            this.$el.trigger("create");
+                        r: optionsResources,
+                        options: [
+                            {
+                                name: optionsResources['new'],
+                                option: 'new'
+                            },
+                            {
+                                name: optionsResources.save,
+                                option: 'save'
+                            },
+                            {
+                                name: optionsResources.clear,
+                                option: 'clear'
+                            },
+                            {
+                                name: optionsResources.history,
+                                option: 'history'
+                            },
+                            {
+                                name: optionsResources.invite,
+                                option: 'invite'
+                            },
+                            {
+                                name: optionsResources.language,
+                                option: 'language'
+                            },
+                            {
+                                name: optionsResources.about,
+                                option: 'about'
+                            }
+                        ]
+                    }))
+                    .addClass('options-view')
+                    .trigger('create')
+                    .popup();
 
             return this;
         },
 
-        initialize: function () {
-            var that = this;
-
-            this.render();
-
-            this.newDrawingView = new NewDrawingView({
-                el: $("#newDrawing"),
-                drawer: this.options.drawer
+        show: function () {
+            this.$el.popup('open', {
+                positionTo: this.options.positionTo
             });
-            this.newDrawingView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.historyView = new HistoryView({
-                el: $("#history"),
-                drawer: this.options.drawer
-            });
-            this.historyView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.inviteView = new InviteView({
-                el: $("#invite"),
-                socket: this.options.socket
-            });
-            this.inviteView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.languageView = new LanguageView({
-                el: $("#language")
-            });
-            this.languageView.on("close", _.bind(this.trigger, this, "close"));
-
-            this.aboutView = new AboutView({
-                el: $("#about")
-            });
-            this.aboutView.on("close", _.bind(this.trigger, this, "close"));
         },
 
         popupbeforeposition: function () {
-            this.trigger("open");
+            this.trigger('open');
         },
 
-        actionSelected: function (event) {
-            var $this = $(event.target),
-                action = $this.attr("data-value");
+        option: function (event) {
+            var _this = this,
+                $this = $(event.target),
+                option = $this.attr('data-option');
 
             event.preventDefault();
-            this.options.drawer[action]();
-            $.mobile.changePage("#main", { reverse: true });
-            this.trigger("close");
+
+            if (option === 'save') {
+                this.$el.popup('close');
+                this.trigger('close');
+
+                window.setTimeout(function () {
+                    _this.trigger('save');
+                }, 250);
+            } else if (option === 'clear') {
+                this.options.drawer[option]();
+                this.$el.popup('close');
+                this.trigger('close');
+            } else {
+                require([
+                    'views/' + option
+                ], function (View) {
+                    if (!_this[option]) {
+                        _this[option] = new View({
+                            el: $('<div></div>').appendTo('body'),
+                            drawer: _this.options.drawer
+                        });
+                        _this[option].on('close', _.bind(_this.trigger, _this, 'close'));
+                        _this[option].render();
+                    }
+
+                    _this[option].show();
+                });
+            }
         }
     });
 });
