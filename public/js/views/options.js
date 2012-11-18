@@ -4,12 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
+    'require',
     'jquery',
     'backbone',
     'underscore',
     'text!/templates/options.html',
     'i18n!views/nls/options'
-], function ($, Backbone, _, optionsTemplate, optionsResources) {
+], function (require, $, Backbone, _, optionsTemplate, optionsResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -78,7 +79,14 @@ define([
 
             event.preventDefault();
 
-            if (option === 'save' || option === 'clear') {
+            if (option === 'save') {
+                this.$el.popup('close');
+                this.trigger('close');
+
+                window.setTimeout(function () {
+                    _this.trigger('save');
+                }, 250);
+            } else if (option === 'clear') {
                 this.options.drawer[option]();
                 this.$el.popup('close');
                 this.trigger('close');
@@ -88,7 +96,7 @@ define([
                 ], function (View) {
                     if (!_this[option]) {
                         _this[option] = new View({
-                            el: $('<div></div>').appendTo($('body')),
+                            el: $('<div></div>').appendTo('body'),
                             drawer: _this.options.drawer
                         });
                         _this[option].on('close', _.bind(_this.trigger, _this, 'close'));

@@ -11,7 +11,6 @@ define([
     "models/settings",
     "i18n!nls/drawerManager",
     "lib/drawing.event",
-    "lib/jquery.mobile.download",
     "lib/jquery.mobile.toast"
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     "use strict";
@@ -174,13 +173,8 @@ define([
             drawer.clear().store();
         };
 
-        this.save = function () {
-            $.mobile.download(
-                "/service/saveAs/drawing.png",
-                "POST",
-                {
-                    dataURL: drawer.histories()[drawer.history()]
-                });
+        this.getDataURL = function () {
+            return drawer.histories()[drawer.history()];
         };
 
         this.unload = function () {

@@ -20,12 +20,13 @@
     <canvas />
 </div>
 
-<div data-role="popup" class="networkStatusTooltip" data-theme="b" class="ui-content">
+<div data-role="popup" data-theme="b"
+    class="networkStatusTooltip ui-content">
     <p class="message"></p>
 </div>
 
-<div data-role="popup" class="invitePending" data-position-to="window"
-    class="ui-corner-all message-popup">
+<div data-role="popup" data-position-to="window"
+    class="invitePendingPopup ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>
@@ -34,8 +35,8 @@
     </div>
 </div>
 
-<div data-role="popup" class="inviteRequest" data-position-to="window"
-    class="ui-corner-all message-popup">
+<div data-role="popup" data-position-to="window"
+    class="inviteRequestPopup ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>
@@ -45,5 +46,26 @@
             class="reject"><%= r.rejectButton %></a>
         <a href="#" data-role="button" data-inline="true" data-theme="b"
             class="accept"><%= r.acceptButton %></a>
+    </div>
+</div>
+
+<div data-role="popup" data-position-to="window"
+    class="downloadPopup ui-corner-all message-popup">
+    <div data-role="header" class="ui-corner-top">
+        <h1><%= r.saveTitle %></h1>
+    </div>
+    <div data-role="content" class="ui-corner-bottom ui-content">
+        <form method="post" action="/service/saveImage" data-ajax="false">
+            <div data-role="fieldcontain">
+                <label for="name"><%= r.saveName %></label>
+                <input type="text" id="name" name="name"
+                    placeholder="drawing.png" />
+            </div>
+            <input type="hidden" name="data" class="data" />
+            <button data-inline="true" data-theme="c"
+                class="cancel"><%= r.cancelButton %></button>
+            <input type="submit" data-inline="true" data-theme="b"
+                class="save" value="<%= r.saveButton %>" />
+        </form>
     </div>
 </div>

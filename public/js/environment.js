@@ -12,7 +12,7 @@ define([
         getAppInfo: function () {
             return {
                 name: 'WebPaint',
-                version: '0.6.3'
+                version: '0.6.4'
             };
         },
         

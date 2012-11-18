@@ -17,7 +17,11 @@ define({
         "inviteRejected": "Your invite was rejected.",
         "inviteRequest": "You have received an invite from: ",
         "acceptButton": "Accept",
-        "rejectButton": "Reject"
+        "rejectButton": "Reject",
+        "saveTitle": "Save",
+        "saveName": "Name: ",
+        "cancelButton": "Cancel",
+        "saveButton": "Save"
     },
     "fr-fr": true
 });
