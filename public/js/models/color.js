@@ -5,7 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     "backbone",
-    "i18n!models/nls/color"
+    "i18n!nls/color-model"
 ], function (Backbone, colorResources) {
     "use strict";
 

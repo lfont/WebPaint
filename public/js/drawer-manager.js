@@ -9,7 +9,7 @@ define([
     "underscore",
     "drawing",
     "models/settings",
-    "i18n!nls/drawerManager",
+    "i18n!nls/drawer-manager",
     "lib/drawing.event",
     "lib/jquery.mobile.toast"
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {

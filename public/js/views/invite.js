@@ -11,7 +11,7 @@ define([
     'collections/users',
     'text!/templates/list-wrapper.html',
     'text!/templates/invite.html',
-    'i18n!views/nls/invite'
+    'i18n!nls/invite-view'
 ], function ($, mobile, Backbone, _, usersCollection, listWrapperTemplate,
              inviteTemplate, inviteResources) {
     'use strict';

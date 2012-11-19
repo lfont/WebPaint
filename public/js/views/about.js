@@ -10,7 +10,7 @@ define([
     'underscore',
     'environment',
     'text!/templates/about.html',
-    'i18n!views/nls/about'
+    'i18n!nls/about-view'
 ], function ($, mobile, Backbone, _, environment, aboutTemplate, aboutResources) {
     'use strict';
 

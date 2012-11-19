@@ -70,7 +70,7 @@ define([
     ], function (MainView) {
         $(function () {
             var mainView = new MainView({
-                el: $('<div></div>').appendTo($('body'))
+                el: $('<div></div>').appendTo('body')
             });
 
             mainView.render()

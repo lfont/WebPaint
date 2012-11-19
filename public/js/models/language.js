@@ -5,7 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     "backbone",
-    "i18n!models/nls/language"
+    "i18n!nls/language-model"
 ], function (Backbone, languageResources) {
     "use strict";
 

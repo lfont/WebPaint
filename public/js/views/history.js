@@ -11,7 +11,7 @@ define([
     'models/settings',
     'text!/templates/list-wrapper.html',
     'text!/templates/history.html',
-    'i18n!views/nls/history'
+    'i18n!nls/history-view'
 ], function ($, mobile, Backbone, _, settingsModel, listWrapperTemplate,
              historyTemplate, historyResources) {
     'use strict';

@@ -9,7 +9,7 @@ define([
     'backbone',
     'underscore',
     'text!/templates/options.html',
-    'i18n!views/nls/options'
+    'i18n!nls/options-view'
 ], function (require, $, Backbone, _, optionsTemplate, optionsResources) {
     'use strict';
 

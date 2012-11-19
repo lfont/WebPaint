@@ -10,12 +10,12 @@ define([
     'backbone',
     'underscore',
     'environment',
-    'drawerManager',
-    'socketManager',
+    'drawer-manager',
+    'socket-manager',
     'models/settings',
     'models/user',
     'text!/templates/main.html',
-    'i18n!views/nls/main'
+    'i18n!nls/main-view'
 ], function (require, $, mobile, Backbone, _, environment, DrawerManager,
              SocketManager, settingsModel, UserModel, mainTemplate,
              mainResources) {

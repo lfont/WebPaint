@@ -12,7 +12,7 @@ define([
     'collections/languages',
     'text!/templates/list-wrapper.html',
     'text!/templates/language.html',
-    'i18n!views/nls/language'
+    'i18n!nls/language-view'
 ], function ($, mobile, Backbone, _, settingsModel, languagesCollection,
              listWrapperTemplate, languageTemplate, languageResources) {
     'use strict';

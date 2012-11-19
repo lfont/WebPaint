@@ -9,9 +9,9 @@ define([
     'backbone',
     'underscore',
     'collections/colors',
-    'views/colorPicker',
+    'views/color-picker',
     'text!/templates/new.html',
-    'i18n!views/nls/new'
+    'i18n!nls/new-view'
 ], function ($, mobile, Backbone, _, colorsCollection, ColorPickerView,
              newTemplate, newResources) {
     'use strict';

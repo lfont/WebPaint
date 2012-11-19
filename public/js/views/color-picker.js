@@ -8,7 +8,7 @@ define([
     'backbone',
     'underscore',
     'text!/templates/color-picker.html',
-    'i18n!views/nls/colorPicker'
+    'i18n!nls/color-picker-view'
 ], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
     'use strict';
     
