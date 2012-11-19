@@ -56,6 +56,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.fillStyle = fillStyle;
         },
+
+        setCanvasBackground = function (canvas, context, background) {
+            if (background.match(/^data:/)) {
+                restoreContextImage(context, background);
+            } else {
+                drawCanvasBackground(canvas, context, background);
+            }
+        },
         
         clearCanvas = function (canvas) {
             canvas.width = canvas.width;
@@ -185,7 +193,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             });
                         },
                         end: function () {
-                            if (!hasBegin) return;
+                            if (!hasBegin) {
+                                return;
+                            }
                             
                             context.closePath();
                             if (!hasDrawn) {
@@ -206,7 +216,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
         CanvasDrawer = function (canvas, options) {
             var context = canvas.getContext("2d"),
                 opts = $.extend({}, defaultOptions, options),
-                histories, historyIndex, background, properties;
+                histories, historyIndex, originalBackground, properties;
                 
             this.canvas = function () {
                 return canvas;
@@ -251,21 +261,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 historyIndex = (histories.length - 1);
                 return this;
             };
-            
+
             this.clear = function () {
                 clearCanvas(canvas);
                 setContextProperties(context, properties);
-                drawCanvasBackground(canvas, context, background);
+                setCanvasBackground(canvas, context, originalBackground);
                 return this;
             };
             
-            this.newDrawing = function (backgroundColor) {
+            this.newDrawing = function (background) {
                 histories = [];
                 historyIndex = 0;
                 clearCanvas(canvas);
                 properties = getContextProperties(context);
-                background = backgroundColor || opts.backgroundColor;
-                drawCanvasBackground(canvas, context, background);
+                originalBackground = background || opts.backgroundColor;
+                setCanvasBackground(canvas, context, originalBackground);
+
                 return this.store();
             };
             

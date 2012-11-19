@@ -22,19 +22,21 @@ define([
     'use strict';
 
     var fixContentGeometry = function ($header, $content) {
-            var contentHeight = $(window).height() - $header.outerHeight();
+            var contentHeight;
 
-            contentHeight -= ($content.outerHeight() - $content.height());
+            contentHeight = $(window).height() - $header.outerHeight() -
+                            ($content.outerHeight() - $content.height());
+
             $content.height(contentHeight);
         },
 
         fixCanvasGeometry = function ($content, $canvas) {
             var canvas = $canvas[0];
 
-            canvas.height = ($content.height() -
-                ($canvas.outerHeight() - $canvas.height()));
-            canvas.width = ($content.width() -
-                ($canvas.outerWidth() - $canvas.width()));
+            canvas.height = $content.height() -
+                            ($canvas.outerHeight() - $canvas.height());
+            canvas.width = $content.width() -
+                           ($canvas.outerWidth() - $canvas.width());
         },
 
         createSocketManager = function (mainView) {
@@ -93,9 +95,7 @@ define([
             "vclick .tools": "showTools",
             "vclick .options": "showOptions",
             "vclick .accept": "accept",
-            "vclick .reject": "reject",
-            "vclick .cancel": "cancel",
-            "vclick .save": "save"
+            "vclick .reject": "reject"
         },
 
         template: _.template(mainTemplate),
@@ -116,7 +116,6 @@ define([
             this.$networkStatusTooltip = this.$el.find('.networkStatusTooltip');
             this.$inviteRequestPopup = this.$el.find('.inviteRequestPopup');
             this.$invitePendingPopup = this.$el.find('.invitePendingPopup');
-            this.$downloadPopup = this.$el.find('.downloadPopup');
 
             return this;
         },
@@ -174,19 +173,6 @@ define([
             event.preventDefault();
             this.socket.rejectInvite(nickname);
             this.$inviteRequest.popup('close');
-        },
-
-        cancel: function (event) {
-            event.preventDefault();
-            this.$downloadPopup.popup('close');
-        },
-
-        save: function (event) {
-            var _this = this;
-
-            window.setTimeout(function () {
-                _this.$downloadPopup.popup('close');
-            }, 250);
         },
 
         isVisible: function () {
@@ -279,19 +265,11 @@ define([
                     });
                     _this.optionsView.on('open', _.bind(_this.drawer.off, _this.drawer));
                     _this.optionsView.on('close', _.bind(_this.drawer.on, _this.drawer));
-                    _this.optionsView.on('save', _.bind(_this.showDownload, _this));
                     _this.optionsView.render();
                 }
 
                 _this.optionsView.show();
             });
-        },
-
-        showDownload: function () {
-            this.$downloadPopup.find('.data')
-                               .val(this.drawer.getDataURL())
-                               .end()
-                               .popup('open');
         },
 
         unload: function () {

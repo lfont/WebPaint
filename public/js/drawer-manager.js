@@ -153,16 +153,16 @@ define([
             return drawer.history();
         };
 
-        this.newDrawing = function (hex) {
+        this.newDrawing = function (background) {
             settingsModel.set({
                 histories: null,
                 history: null
             }, { silent: true });
 
-            drawer.newDrawing(hex);
+            drawer.newDrawing(background);
 
             settingsModel.set({
-                background: hex,
+                background: background,
                 shape: "pencil",
                 histories: drawer.histories(),
                 history: drawer.history()
