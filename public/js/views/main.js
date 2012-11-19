@@ -34,7 +34,8 @@ define([
             var canvas = $canvas[0];
 
             canvas.height = $content.height() -
-                            ($canvas.outerHeight() - $canvas.height());
+                            ($canvas.outerHeight() - $canvas.height()) -
+                            4; // FIX: we should not set this manually
             canvas.width = $content.width() -
                            ($canvas.outerWidth() - $canvas.width());
         },
