@@ -60,7 +60,7 @@ define([
             {
                 name: optionsResources.about,
                 option: 'about',
-                type: 'page'
+                type: 'popup'
             }
         ],
 

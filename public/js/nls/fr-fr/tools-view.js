@@ -7,5 +7,8 @@ define({
     "title": "Outils",
     "shapeLabel": "Forme",
     "widthLabel": "Epaisseur",
-    "colorLabel": "Couleur"
+    "colorLabel": "Couleur",
+    "pencil": "Crayon",
+    "line": "Trait",
+    "circle": "Cercle"
 });

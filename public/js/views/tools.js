@@ -8,11 +8,12 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
+    'drawing',
     'collections/colors',
     'views/color-picker',
     'text!/templates/tools.html',
     'i18n!nls/tools-view'
-], function ($, mobile, Backbone, _, colorsCollection, ColorPickerView,
+], function ($, mobile, Backbone, _, drawing, colorsCollection, ColorPickerView,
              toolsTemplate, toolsResources) {
     'use strict';
 
@@ -36,7 +37,8 @@ define([
             var _this = this;
 
             this.$el.html(this.template({
-                        r: toolsResources
+                        r: toolsResources,
+                        shapes: drawing.shapes
                     }))
                     .addClass('tools-view');
 

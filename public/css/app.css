@@ -38,6 +38,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: left;
 }
 
+.main-view .ui-popup .ui-header .ui-title {
+    margin: .6em 30% .8em;
+    text-align: center;
+}
+
 .main-view canvas {
     border: 1px solid black;
     background: transparent url("../img/background.png") repeat 0 0;

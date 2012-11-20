@@ -69,7 +69,10 @@ define([
                     .show();
 
             $(window).unload(function () {
-                mainView.drawer.unload();
+                settingsModel.set({
+                    background: mainView.drawer.snapshot()
+                });
+
                 settingsModel.save();
             });
         });

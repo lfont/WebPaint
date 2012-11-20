@@ -183,16 +183,8 @@ define([
             });
         };
 
-        this.getDataURL = function () {
+        this.snapshot = function () {
             return drawer.histories()[drawer.history()];
-        };
-
-        this.unload = function () {
-            settingsModel.set({
-                background: this.getDataURL()
-            });
-
-            return this;
         };
     };
 });

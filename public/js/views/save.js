@@ -40,7 +40,7 @@ define([
                     .val('')
                     .end()
                     .find('.data')
-                    .val(this.options.drawer.getDataURL())
+                    .val(this.options.drawer.snapshot())
                     .end()
                     .popup('open');
         },
