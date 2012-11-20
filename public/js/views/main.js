@@ -30,16 +30,6 @@ define([
             $content.height(contentHeight);
         },
 
-        fixCanvasGeometry = function ($content, $canvas) {
-            var canvas = $canvas[0];
-
-            canvas.height = $content.height() -
-                            ($canvas.outerHeight() - $canvas.height()) -
-                            4; // FIX: we should not set this manually
-            canvas.width = $content.width() -
-                           ($canvas.outerWidth() - $canvas.width());
-        },
-
         createSocketManager = function (mainView) {
             var socket = new SocketManager(),
                 user = new UserModel({
@@ -126,21 +116,16 @@ define([
         },
 
         pageshow: function () {
-            var $header, $content, $canvas;
-
             if (this.drawer) {
                 return;
             }
-         
-            $header = this.$el.find("[data-role='header']");
-            $content = this.$el.find("[data-role='content']");
-            $canvas = this.$el.find("canvas");
 
-            fixContentGeometry($header, $content);
-            fixCanvasGeometry($content, $canvas);
+            fixContentGeometry(this.$el.find("[data-role='header']"),
+                               this.$el.find("[data-role='content']"));
 
             this.socket = createSocketManager(this);
-            this.drawer = new DrawerManager($canvas[0], this.socket);
+            this.drawer = new DrawerManager(this.$el.find("canvas"),
+                                            this.socket);
 
             $(window).on('online', _.bind(this.showNetworkStatus, this, true))
                      .on('offline', _.bind(this.showNetworkStatus, this, false));

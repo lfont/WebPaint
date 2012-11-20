@@ -15,8 +15,65 @@ define([
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
     'use strict';
 
-    return function (canvas, socket) {
-        var drawer = drawing.canvasDrawer(canvas),
+    var fixCanvasGeometry = function ($canvas) {
+            var $container = $canvas.parent(),
+                canvas = $canvas[0];
+
+            canvas.height = $container.height() -
+                            ($canvas.outerHeight() - $canvas.height()) -
+                            4; // FIX: we should not set this manually
+            canvas.width = $container.width() -
+                           ($canvas.outerWidth() - $canvas.width());
+        },
+
+        restoreDrawer = function (drawer) {
+            drawer.newDrawing(settingsModel.get('background'), function () {
+                var histories = settingsModel.get('histories');
+
+                this.properties({
+                    lineWidth: settingsModel.get('lineWidth'),
+                    strokeStyle: settingsModel.get('strokeStyle'),
+                    fillStyle: settingsModel.get('fillStyle'),
+                    lineCap: settingsModel.get('lineCap')
+                });
+
+                if (histories.length > 0) {
+                    this.histories(histories);
+                    this.history(settingsModel.get('history'));
+                }
+            });
+        },
+
+        bindSocketHandler = function (socket, drawer, shapeDrawer) {
+            socket.on('invite-response', function (response) {
+                if (!response.accepted) {
+                    return;
+                }
+                
+                shapeDrawer.addDrawnHandler(function (shape) {
+                    socket.draw({
+                        to: response.sender,
+                        shape: shape
+                    });
+                });
+            });
+
+            socket.on('invite-accepted', function (fromUser) {
+                shapeDrawer.addDrawnHandler(function (shape) {
+                    socket.draw({
+                        to: fromUser,
+                        shape: shape
+                    });
+                });
+            });
+
+            socket.on('draw', function (data) {
+                drawer.draw(data.shape);
+            });
+        };
+
+    return function ($canvas, socket) {
+        var drawer = drawing.canvasDrawer($canvas[0]),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
                     down: 'vmousedown',
@@ -25,47 +82,9 @@ define([
                 }
             });
 
-        drawer.newDrawing(settingsModel.get('background'), function () {
-            var histories = settingsModel.get('histories');
-
-            this.properties({
-                lineWidth: settingsModel.get('lineWidth'),
-                strokeStyle: settingsModel.get('strokeStyle'),
-                fillStyle: settingsModel.get('fillStyle'),
-                lineCap: settingsModel.get('lineCap')
-            });
-
-            if (histories.length > 0) {
-                this.histories(histories);
-                this.history(settingsModel.get('history'));
-            }
-        });
-
-        socket.on('invite-response', function (response) {
-            if (!response.accepted) {
-                return;
-            }
-            
-            shapeDrawer.addDrawnHandler(function (shape) {
-                socket.draw({
-                    to: response.sender,
-                    shape: shape
-                });
-            });
-        });
-
-        socket.on('invite-accepted', function (fromUser) {
-            shapeDrawer.addDrawnHandler(function (shape) {
-                socket.draw({
-                    to: fromUser,
-                    shape: shape
-                });
-            });
-        });
-
-        socket.on('draw', function (data) {
-            drawer.draw(data.shape);
-        });
+        fixCanvasGeometry($canvas);
+        restoreDrawer(drawer);
+        bindSocketHandler(socket, drawer, shapeDrawer);
 
         this.undo = function () {
             if (!drawer.undo()) {
