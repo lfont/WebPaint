@@ -3,28 +3,37 @@ A simple canvas drawing library.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-(function ($, drawing) {
-    "use strict";
-    var defaultOptions = {
-            events: {
-                down: "mousedown",
-                up: "mouseup",
-                move: "mousemove"
-            }
-        },
-        getPosition = function (event, offset) {
-            return {
-                x: event.pageX - offset.left,
-                y: event.pageY - offset.top
+(function (window, jQuery, drawing) {
+    'use strict';
+
+    (function (factory) {
+        if (typeof(define) === 'function' && define['amd']) {
+            define(['jquery', 'drawing'], factory);
+        } else {
+            factory(jQuery, drawing);
+        }
+    }(function ($, drawing) {
+        var defaultOptions = {
+                events: {
+                    down: 'mousedown',
+                    up: 'mouseup',
+                    move: 'mousemove'
+                }
+            },
+
+            getPosition = function (event, offset) {
+                return {
+                    x: event.pageX - offset.left,
+                    y: event.pageY - offset.top
+                };
             };
-        };
-        
+            
         $.extend(drawing.canvasDrawer.fn, {
             eventShapeDrawer: function (options) {
-                var opts = $.extend({}, defaultOptions, options),
-                    that = this,
-                    $canvas = $(that.canvas()),
-                    $body = $("body"),
+                var _this = this,
+                    opts = $.extend({}, defaultOptions, options),
+                    $canvas = $(_this.context().canvas),
+                    $body = $('body'),
                     onDrawnHandlers = [],
                     handlers = {
                         down: null,
@@ -42,7 +51,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
                 return {
                     on: function (shapeName) {
-                        var shapeDrawer = that.shapeDrawer(shapeName);
+                        var shapeDrawer = _this.shapeDrawer(shapeName);
                             
                         $canvas.off(opts.events.down, handlers.down);
                 
@@ -72,16 +81,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     
                         $canvas.on(opts.events.down, handlers.down);
                     },
+
                     off: function () {
                         $canvas.off(opts.events.down, handlers.down)
                                .off(opts.events.move, handlers.move);
                         $body.off(opts.events.up, handlers.up);
                     },
+
                     addDrawnHandler: function (handler) {
-                        if (handler && typeof handler === "function") {
+                        if (handler && typeof handler === 'function') {
                             onDrawnHandlers.push(handler);
                         }
                     },
+
                     removeDrawnHandler: function (handler) {
                         var i, len;
                     
@@ -95,4 +107,5 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 };
             }
         });
-}(window.jQuery, window.drawing));
+    }));
+}(window, window['jQuery'], window['drawing']));

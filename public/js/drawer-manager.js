@@ -4,72 +4,68 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "drawing",
-    "models/settings",
-    "i18n!nls/drawer-manager",
-    "lib/drawing.event",
-    "lib/jquery.mobile.toast"
+    'jquery',
+    'backbone',
+    'underscore',
+    'drawing',
+    'models/settings',
+    'i18n!nls/drawer-manager',
+    'lib/drawing.event',
+    'lib/jquery.mobile.toast'
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
-    "use strict";
+    'use strict';
 
     return function (canvas, socket) {
         var drawer = drawing.canvasDrawer(canvas),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
-                    down: "vmousedown",
-                    up: "vmouseup",
-                    move: "vmousemove"
+                    down: 'vmousedown',
+                    up: 'vmouseup',
+                    move: 'vmousemove'
                 }
-            }),
+            });
 
-            initialize = function () {
-                var histories = settingsModel.get("histories");
+        drawer.newDrawing(settingsModel.get('background'), function () {
+            var histories = settingsModel.get('histories');
 
-                drawer.newDrawing(settingsModel.get("background"));
-                drawer.properties({
-                    lineWidth: settingsModel.get("lineWidth"),
-                    strokeStyle: settingsModel.get("strokeStyle"),
-                    fillStyle: settingsModel.get("fillStyle"),
-                    lineCap: settingsModel.get("lineCap")
+            this.properties({
+                lineWidth: settingsModel.get('lineWidth'),
+                strokeStyle: settingsModel.get('strokeStyle'),
+                fillStyle: settingsModel.get('fillStyle'),
+                lineCap: settingsModel.get('lineCap')
+            });
+
+            if (histories.length > 0) {
+                this.histories(histories);
+                this.history(settingsModel.get('history'));
+            }
+        });
+
+        socket.on('invite-response', function (response) {
+            if (!response.accepted) {
+                return;
+            }
+            
+            shapeDrawer.addDrawnHandler(function (shape) {
+                socket.draw({
+                    to: response.sender,
+                    shape: shape
                 });
+            });
+        });
 
-                if (histories.length > 0) {
-                    drawer.histories(histories);
-                    drawer.history(settingsModel.get("history"));
-                }
-
-                // drawer socket messages
-                socket.on("invite-response", function (response) {
-                    if (!response.accepted) {
-                        return;
-                    }
-                    
-                    shapeDrawer.addDrawnHandler(function (shape) {
-                        socket.draw({
-                            to: response.sender,
-                            shape: shape
-                        });
-                    });
+        socket.on('invite-accepted', function (fromUser) {
+            shapeDrawer.addDrawnHandler(function (shape) {
+                socket.draw({
+                    to: fromUser,
+                    shape: shape
                 });
+            });
+        });
 
-                socket.on("invite-accepted", function (fromUser) {
-                    shapeDrawer.addDrawnHandler(function (shape) {
-                        socket.draw({
-                            to: fromUser,
-                            shape: shape
-                        });
-                    });
-                });
-
-                socket.on("draw", function (data) {
-                    drawer.draw(data.shape);
-                });
-            };
-
-        initialize();
+        socket.on('draw', function (data) {
+            drawer.draw(data.shape);
+        });
 
         this.undo = function () {
             if (!drawer.undo()) {
@@ -89,7 +85,7 @@ define([
 
         this.on = function () {
             window.setTimeout(function () {
-                shapeDrawer.on(settingsModel.get("shape"));
+                shapeDrawer.on(settingsModel.get('shape'));
             }, 250);
 
             return this;
@@ -113,7 +109,7 @@ define([
                 });
             }
 
-            return settingsModel.get("shape");
+            return settingsModel.get('shape');
         };
 
         this.color = function (hex) {
@@ -128,7 +124,7 @@ define([
                 drawer.properties(properties);
             }
 
-            return settingsModel.get("strokeStyle");
+            return settingsModel.get('strokeStyle');
         };
 
         this.lineWidth = function (value) {
@@ -142,7 +138,7 @@ define([
                 drawer.properties(properties);
             }
 
-            return settingsModel.get("lineWidth");
+            return settingsModel.get('lineWidth');
         };
 
         this.history = function (value) {
@@ -159,18 +155,20 @@ define([
                 history: null
             }, { silent: true });
 
-            drawer.newDrawing(background);
-
-            settingsModel.set({
-                background: background,
-                shape: "pencil",
-                histories: drawer.histories(),
-                history: drawer.history()
+            drawer.newDrawing(background, function () {
+                settingsModel.set({
+                    background: background,
+                    shape: 'pencil',
+                    histories: this.histories(),
+                    history: this.history()
+                });
             });
         };
 
         this.clear = function () {
-            drawer.clear().store();
+            drawer.clear(function () {
+                this.store();
+            });
         };
 
         this.getDataURL = function () {

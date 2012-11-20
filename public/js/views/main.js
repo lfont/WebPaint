@@ -271,11 +271,6 @@ define([
 
                 _this.optionsView.show();
             });
-        },
-
-        unload: function () {
-            this.drawer.unload();
-            return this;
         }
     });
 });
