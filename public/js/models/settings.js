@@ -4,21 +4,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-   "backbone",
-   "underscore"
+   'backbone',
+   'underscore'
 ], function (Backbone, _) {
-    "use strict";
+    'use strict';
     
-    var SETTINGS_STORAGE_KEY = "settings",
+    var SETTINGS_STORAGE_KEY = 'settings',
         defaultSettings = {
-            locale: "",
-            background: "transparent",
+            locale: '',
+            background: 'transparent',
             histories: [],
-            shape: "pencil",
-            strokeStyle: "#000000",
-            fillStyle: "#000000",
+            history: 0,
+            shape: 'pencil',
+            strokeStyle: '#000000',
+            fillStyle: '#000000',
             lineWidth: 1,
-            lineCap: "round"
+            lineCap: 'round'
         },
 
         Settings = Backbone.Model.extend({
@@ -46,9 +47,15 @@ define([
             },
 
             save: function () {
+                var model = this.toJSON();
+
+                // The histories can be very large so we don't try to store it.
+                delete model.histories;
+                delete model.history;
+
                 window.localStorage.setItem(
                     SETTINGS_STORAGE_KEY,
-                    JSON.stringify(this));
+                    JSON.stringify(model));
             }
         });
 

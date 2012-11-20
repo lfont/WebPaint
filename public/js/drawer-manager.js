@@ -28,19 +28,12 @@ define([
 
         restoreDrawer = function (drawer) {
             drawer.newDrawing(settingsModel.get('background'), function () {
-                var histories = settingsModel.get('histories');
-
                 this.properties({
                     lineWidth: settingsModel.get('lineWidth'),
                     strokeStyle: settingsModel.get('strokeStyle'),
                     fillStyle: settingsModel.get('fillStyle'),
                     lineCap: settingsModel.get('lineCap')
                 });
-
-                if (histories.length > 0) {
-                    this.histories(histories);
-                    this.history(settingsModel.get('history'));
-                }
             });
         },
 
@@ -195,16 +188,8 @@ define([
         };
 
         this.unload = function () {
-            var histories = drawer.histories(),
-                history = drawer.history();
-
             settingsModel.set({
-                histories: (histories.length > 10) ?
-                    histories.slice(histories.length - 10) :
-                    histories,
-                history: (history >= histories.length) ?
-                    histories.length - 1 :
-                    history
+                background: this.getDataURL()
             });
 
             return this;

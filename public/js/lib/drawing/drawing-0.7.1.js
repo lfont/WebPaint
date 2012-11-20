@@ -3,7 +3,7 @@ A simple canvas drawing library.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-(function (window, jQuery, undefined) {
+(function (window, document, jQuery, undefined) {
     'use strict';
 
     (function (factory) {
@@ -79,6 +79,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             
             clearCanvas = function (canvas) {
                 canvas.width = canvas.width;
+            },
+
+            cloneCanvas = function (canvas) {
+                //create a new canvas
+                var newCanvas = document.createElement('canvas');
+
+                // set the size of the new canvas
+                newCanvas.height = canvas.height;
+                newCanvas.width = canvas.width;
+
+                //apply the old canvas to the new one
+                newCanvas.getContext('2d')
+                         .drawImage(canvas, 0, 0);
+
+                //return the new canvas
+                return newCanvas;
             },
             
             buildLineDrawer = function () {
@@ -229,7 +245,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var _this = this,
                     context = canvas.getContext('2d'),
                     opts = $.extend({}, defaultOptions, options),
-                    histories, historyIndex, originalBackground, properties;
+                    histories = [],
+                    historyIndex = 0,
+                    properties = getContextProperties(context),
+                    originalBackground = canvas.toDataURL();
                     
                 this.context = function () {
                     return context;
@@ -307,8 +326,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
                     return this;
                 };
-                
-                this.newDrawing();
             };
         
         CanvasDrawer.prototype = {
@@ -317,7 +334,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     context = this.context(),
                     canvas = context.canvas,
                     shapeDrawer = exports.shapes[kind](context),
-                    shapeContext = {};
+                    shapeContext = {},
+                    tempCanvas;
                 
                 if (!shapeDrawer) {
                     throw new Error('Unknown shape kind: ' + kind);
@@ -325,16 +343,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 
                 return {
                     begin: function (position) {
-                        var image = context.getImageData(
-                            0, 0,
-                            canvas.width,
-                            canvas.height);
-                            
+                        tempCanvas = cloneCanvas(canvas);
+                    
                         shapeContext.commands = [];
                         shapeContext.origin = position;
                         shapeContext.restore = function () {
-                            _this.clear();
-                            context.putImageData(image, 0, 0);
+                            context.drawImage(tempCanvas, 0, 0);
                         };
                         
                         shapeDrawer.begin(shapeContext);
@@ -348,7 +362,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         if (shapeDrawer.hasOwnProperty('end')) {
                             shapeDrawer.end();
                         }
-                        
+
+                        tempCanvas = null;
                         _this.store();
                         
                         return {
@@ -425,4 +440,4 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             pencil: buildPencilDrawer()
         };
     }));
-}(window, window['jQuery']));
+}(window, document, window['jQuery']));
