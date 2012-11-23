@@ -69,7 +69,7 @@ define([
                 index = $this.attr('data-value');
 
             event.preventDefault();
-            this.options.drawer.history(parseInt(index, 10));
+            this.options.drawer.cursor(parseInt(index, 10));
             this.$el.dialog('close');
         },
 

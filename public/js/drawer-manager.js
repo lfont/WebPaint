@@ -27,14 +27,28 @@ define([
         },
 
         restoreDrawer = function (drawer) {
-            drawer.newDrawing(settingsModel.get('background'), function () {
-                this.properties({
+            var background = settingsModel.get('background'),
+                image;
+
+            function setBackground(background) {
+                drawer.newDrawing(background);
+                drawer.properties({
                     lineWidth: settingsModel.get('lineWidth'),
                     strokeStyle: settingsModel.get('strokeStyle'),
                     fillStyle: settingsModel.get('fillStyle'),
                     lineCap: settingsModel.get('lineCap')
                 });
-            });
+            }
+
+            if (background.match(/(?:^data:)|(?:\.(?:jpg|png)$)/)) {
+                image = new window.Image();
+                image.onload = function () {
+                    setBackground(image);
+                };
+                image.src = background;
+            } else {
+                setBackground(background);
+            }
         },
 
         bindSocketHandler = function (socket, drawer, shapeDrawer) {
@@ -105,8 +119,8 @@ define([
 
         this.off = function () {
             settingsModel.set({
-                histories: drawer.histories(),
-                history: drawer.history()
+                histories: drawer.snapshots(),
+                history: drawer.cursor()
             });
 
             shapeDrawer.off();
@@ -153,12 +167,16 @@ define([
             return settingsModel.get('lineWidth');
         };
 
-        this.history = function (value) {
-            if (_.isNumber(value)) {
-                drawer.history(value);
+        this.snapshot = function () {
+            return drawer.snapshots()[drawer.cursor()];
+        };
+
+        this.cursor = function (index) {
+            if (_.isNumber(index)) {
+                drawer.cursor(index);
             }
 
-            return drawer.history();
+            return drawer.cursor();
         };
 
         this.newDrawing = function (background) {
@@ -167,24 +185,18 @@ define([
                 history: null
             }, { silent: true });
 
-            drawer.newDrawing(background, function () {
-                settingsModel.set({
-                    background: background,
-                    shape: 'pencil',
-                    histories: this.histories(),
-                    history: this.history()
-                });
+            drawer.newDrawing(background);
+
+            settingsModel.set({
+                background: background,
+                shape: 'pencil',
+                histories: drawer.snapshots(),
+                history: drawer.cursor()
             });
         };
 
         this.clear = function () {
-            drawer.clear(function () {
-                this.store();
-            });
-        };
-
-        this.snapshot = function () {
-            return drawer.histories()[drawer.history()];
+            drawer.clear().store();
         };
     };
 });

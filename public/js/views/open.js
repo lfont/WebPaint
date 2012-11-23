@@ -75,7 +75,11 @@ define([
             reader = new FileReader();
 
             reader.onload = function(e) {
-                _this.options.drawer.newDrawing(e.target.result);
+                var image = new window.Image();
+                image.onload = function () {
+                    _this.options.drawer.newDrawing(image);
+                };
+                image.src = e.target.result;
             };
 
             // TODO: add a progress bar.

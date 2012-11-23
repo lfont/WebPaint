@@ -13,7 +13,7 @@ require.config({
         'socket.io': 'lib/socket.io/socket.io.min',
         'lib/jquery.mobile': 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min',
         'lib/jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
-        'drawing': 'lib/drawing/drawing-0.7.1',
+        'drawing': 'lib/drawing/drawing-0.8.0',
         'lib/drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0'
     },
     shim: {

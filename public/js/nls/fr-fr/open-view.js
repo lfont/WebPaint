@@ -5,6 +5,5 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "title": "Ouvrir",
-    "filePath": "Chemin : ",
     "cancelButton": "Annuler"
 });

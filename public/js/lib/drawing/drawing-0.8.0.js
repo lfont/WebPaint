@@ -48,7 +48,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 }
             },
 
-            setBackgroundImage = function (context, imageDataURL, callback) {
+            setBackgroundFromDataURL = function (context, imageDataURL, callback) {
                 var image = new window.Image();
                 
                 image.onload = function () {
@@ -59,7 +59,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 image.src = imageDataURL;
             },
             
-            setBackgroundColor = function (context, color) {
+            setBackgroundFromColor = function (context, color) {
                 var canvas = context.canvas,
                     fillStyle = context.fillStyle;
 
@@ -68,12 +68,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 context.fillStyle = fillStyle;
             },
 
-            setBackground = function (context, background, callback) {
-                if (background.match(/^data:/)) {
-                    setBackgroundImage(context, background, callback);
+            setBackground = function (context, background) {
+                if (background instanceof window.Image) {
+                    context.drawImage(background, 0, 0);
                 } else {
-                    setBackgroundColor(context, background);
-                    window.setTimeout(callback, 0);
+                    setBackgroundFromColor(context, background);
                 }
             },
             
@@ -111,6 +110,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             begin: function (shapeContext) {
                                 lineContext = shapeContext;
                             },
+
                             draw: function (position) {
                                 lineContext.restore();
                                 drawLine(context, lineContext.origin, position);
@@ -130,8 +130,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         var width = current.x - origin.x,
                             height = current.y - origin.y;
                         
-                       context.strokeRect(origin.x, origin.y,
-                        width, height);
+                       context.strokeRect(origin.x, origin.y, width, height);
                     };
             
                 return function (context) {
@@ -140,6 +139,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             begin: function (shapeContext) {
                                 rectangleContext = shapeContext;
                             },
+
                             draw: function (position) {
                                 rectangleContext.restore();
                                 drawRectangle(context, rectangleContext.origin,
@@ -173,9 +173,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             begin: function (shapeContext) {
                                 circleContext = shapeContext;
                             },
+
                             draw: function (position) {
                                 circleContext.restore();
-                                drawCircle(context, circleContext.origin, position);
+                                drawCircle(context, circleContext.origin,
+                                           position);
                                 circleContext.commands[0] = {
                                     name: 'draw',
                                     position: position
@@ -196,6 +198,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                             0, Math.PI * 2, false);
                         context.fill();
                     },
+
                     drawLine = function (context, current) {
                         context.lineTo(current.x, current.y);
                         context.stroke();
@@ -212,6 +215,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                 hasDrawn = false;
                                 context.beginPath();
                             },
+
                             draw: function (position) {
                                 hasDrawn = true;
                                 drawLine(context, position);
@@ -220,6 +224,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                                     position: position
                                 });
                             },
+
                             end: function () {
                                 if (!hasBegin) {
                                     return;
@@ -245,8 +250,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 var _this = this,
                     context = canvas.getContext('2d'),
                     opts = $.extend({}, defaultOptions, options),
-                    histories = [],
-                    historyIndex = 0,
+                    snapshots = [],
+                    cursor = 0,
                     properties = getContextProperties(context),
                     originalBackground = canvas.toDataURL();
                     
@@ -263,68 +268,60 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     return getContextProperties(context);
                 };
                 
-                this.histories = function (newHistories) {
-                    if (newHistories) {
-                        histories = newHistories;
-                        if (historyIndex > histories.length - 1) {
-                            historyIndex = histories.length - 1;
+                this.snapshots = function (newSnapshots) {
+                    if (newSnapshots) {
+                        snapshots = newSnapshots;
+                        if (cursor > snapshots.length - 1) {
+                            cursor = snapshots.length - 1;
                         }
                     }
                     
-                    return histories.slice(0);
+                    return snapshots.slice(0);
                 };
                     
-                this.history = function (index, callback) {
+                this.cursor = function (index, callback) {
                     if (index || index === 0) {
-                        historyIndex = index;
+                        cursor = index;
                         clearCanvas(canvas);
                         setContextProperties(context, properties);
-                        setBackgroundImage(context, histories[index], function () {
+                        setBackgroundFromDataURL(context, snapshots[cursor],
+                                                 function () {
                             if (callback && typeof(callback) === 'function') {
                                 callback.call(_this);
                             }
                         });
                     }
                     
-                    return historyIndex;
+                    return cursor;
                 };
                 
                 this.store = function () {
-                    if (histories.length === opts.historicSize) {
-                        histories.shift();
+                    if (snapshots.length === opts.historicSize) {
+                        snapshots.shift();
                     }
-                    histories.push(canvas.toDataURL());
-                    historyIndex = (histories.length - 1);
+                    snapshots.push(canvas.toDataURL());
+                    cursor = (snapshots.length - 1);
 
                     return this;
                 };
 
-                this.clear = function (callback) {
+                this.clear = function () {
                     clearCanvas(canvas);
                     setContextProperties(context, properties);
-                    setBackground(context, originalBackground, function () {
-                        if (callback && typeof(callback) === 'function') {
-                            callback.call(_this);
-                        }
-                    });
+                    setBackground(context, originalBackground);
 
                     return this;
                 };
                 
-                this.newDrawing = function (background, callback) {
-                    histories = [];
-                    historyIndex = 0;
+                this.newDrawing = function (background) {
+                    snapshots.length = 0;
+                    cursor = 0;
                     clearCanvas(canvas);
                     properties = getContextProperties(context);
                     originalBackground = background || opts.backgroundColor;
-                    setBackground(context, originalBackground, function () {
-                        _this.store();
-                        if (callback && typeof(callback) === 'function') {
-                            callback.call(_this);
-                        }
-                    });
+                    setBackground(context, originalBackground);
 
-                    return this;
+                    return this.store();
                 };
             };
         
@@ -334,8 +331,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     context = this.context(),
                     canvas = context.canvas,
                     shapeDrawer = exports.shapes[kind](context),
-                    shapeContext = {},
-                    tempCanvas;
+                    shapeContext;
                 
                 if (!shapeDrawer) {
                     throw new Error('Unknown shape kind: ' + kind);
@@ -343,12 +339,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 
                 return {
                     begin: function (position) {
-                        tempCanvas = cloneCanvas(canvas);
-                    
-                        shapeContext.commands = [];
-                        shapeContext.origin = position;
-                        shapeContext.restore = function () {
-                            context.drawImage(tempCanvas, 0, 0);
+                        var canvasState = cloneCanvas(canvas),
+                            propertiesState = getContextProperties(context);
+
+                        shapeContext = {
+                            commands: [],
+                            origin: position,
+                            restore: function () {
+                                clearCanvas(canvas);
+                                setContextProperties(context, propertiesState);
+                                context.drawImage(canvasState, 0, 0);
+                            }
                         };
                         
                         shapeDrawer.begin(shapeContext);
@@ -359,19 +360,24 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     },
 
                     end: function () {
+                        var drawData;
+
                         if (shapeDrawer.hasOwnProperty('end')) {
                             shapeDrawer.end();
                         }
 
-                        tempCanvas = null;
                         _this.store();
                         
-                        return {
+                        drawData = {
                             kind: kind,
                             properties: _this.properties(),
                             origin: shapeContext.origin,
                             commands: shapeContext.commands
                         };
+
+                        shapeContext = null;
+
+                        return drawData;
                     }
                 };
             },
@@ -395,22 +401,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             },
 
             undo: function () {
-                var history = this.history(),
-                    isFirst = (history <= 0);
+                var cursor = this.cursor(),
+                    isFirst = (cursor <= 0);
                 
                 if (!isFirst) {
-                    this.history(history - 1);
+                    this.cursor(cursor - 1);
                 }
                 
                 return !isFirst;
             },
 
             redo: function () {
-                var history = this.history(),
-                    isLast = (history + 1 >= this.histories().length);
+                var cursor = this.cursor(),
+                    isLast = (cursor + 1 >= this.snapshots().length);
                 
                 if (!isLast) {
-                    this.history(history + 1);
+                    this.cursor(cursor + 1);
                 }
                 
                 return !isLast;
