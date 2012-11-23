@@ -180,16 +180,23 @@ define([
         };
 
         this.newDrawing = function (background) {
+            var properties;
+
             settingsModel.set({
                 histories: null,
                 history: null
             }, { silent: true });
 
             drawer.newDrawing(background);
+            properties = drawer.properties();
 
+            // FIX: restore the default settings
             settingsModel.set({
                 background: background,
                 shape: 'pencil',
+                lineWidth: properties.lineWidth,
+                strokeStyle: properties.strokeStyle,
+                fillStyle: properties.fillStyle,
                 histories: drawer.snapshots(),
                 history: drawer.cursor()
             });

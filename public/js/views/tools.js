@@ -79,6 +79,7 @@ define([
 
             $shapes.filter('[value="' + this.options.drawer.shape() + '"]')
                    .attr('checked', true)
+                   .end()
                    .checkboxradio('refresh');
 
             $width.val(this.options.drawer.lineWidth())
