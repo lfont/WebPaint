@@ -8,13 +8,12 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'models/settings',
     'collections/languages',
     'text!/templates/list-wrapper.html',
     'text!/templates/language.html',
     'i18n!nls/language-view'
-], function ($, mobile, Backbone, _, settingsModel, languagesCollection,
-             listWrapperTemplate, languageTemplate, languageResources) {
+], function ($, mobile, Backbone, _, languagesCollection, listWrapperTemplate,
+             languageTemplate, languageResources) {
     'use strict';
 
     var DEFAULT_LOCALE = 'xx-xx';
@@ -39,13 +38,13 @@ define([
                     .attr('data-role', 'dialog')
                     .page();
 
-            settingsModel.on(
+            this.options.environment.on(
                 'change:locale',
-                _.bind(this.refreshLanguage, this));
+                _.bind(this.setLanguage, this));
 
             languagesCollection.on(
                 'change reset',
-                _.bind(this.refreshLanguages, this));
+                _.bind(this.setLanguages, this));
 
             return this;
         },
@@ -55,8 +54,8 @@ define([
         },
 
         pagecreate: function () {
-            this.refreshLanguages()
-                .refreshLanguage();
+            this.setLanguages()
+                .setLanguage();
         },
 
         pagebeforeshow: function () {
@@ -73,12 +72,12 @@ define([
                 locale = (value === DEFAULT_LOCALE) ? '' : value;
 
             event.preventDefault();
-            settingsModel.set('locale', locale);
+            this.options.environment.set('locale', locale);
             window.location = '/';
         },
 
-        refreshLanguage: function () {
-            var locale = settingsModel.get('locale'),
+        setLanguage: function () {
+            var locale = this.options.environment.get('locale'),
                 language = locale === '' ? DEFAULT_LOCALE : locale;
 
             this.$el.find('.language')
@@ -92,7 +91,7 @@ define([
             return this;
         },
 
-        refreshLanguages: function () {
+        setLanguages: function () {
             this.$el.find('.list-wrapper')
                 .html(this.listTemplate({
                     r: languageResources,

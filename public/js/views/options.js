@@ -112,9 +112,10 @@ define([
                         if (!_this[option]) {
                             _this[option] = new View({
                                 el: $('<div></div>').appendTo(_this.$el.closest('.ui-page')),
+                                environment: _this.options.environment,
                                 drawer: _this.options.drawer
                             });
-                            _this[option].on('close', _.bind(_this.trigger, _this, 'close'));
+                            _this[option].on('close', _this.trigger.bind(_this, 'close'));
                             _this[option].render();
                         }
 
@@ -132,9 +133,10 @@ define([
                         if (!_this[option]) {
                             _this[option] = new View({
                                 el: $('<div></div>').appendTo('body'),
+                                environment: _this.options.environment,
                                 drawer: _this.options.drawer
                             });
-                            _this[option].on('close', _.bind(_this.trigger, _this, 'close'));
+                            _this[option].on('close', _this.trigger.bind(_this, 'close'));
                             _this[option].render();
                         }
 

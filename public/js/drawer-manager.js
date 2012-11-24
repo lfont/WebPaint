@@ -8,11 +8,10 @@ define([
     'backbone',
     'underscore',
     'drawing',
-    'models/settings',
     'i18n!nls/drawer-manager',
     'lib/drawing.event',
     'lib/jquery.mobile.toast'
-], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
+], function ($, Backbone, _, drawing, drawerManagerResources) {
     'use strict';
 
     var fixCanvasGeometry = function ($canvas) {
@@ -26,17 +25,17 @@ define([
                            ($canvas.outerWidth() - $canvas.width());
         },
 
-        restoreDrawer = function (drawer) {
-            var background = settingsModel.get('background'),
+        restoreDrawer = function (drawer, environment) {
+            var background = environment.get('background'),
                 image;
 
             function setBackground(background) {
                 drawer.newDrawing(background);
                 drawer.properties({
-                    lineWidth: settingsModel.get('lineWidth'),
-                    strokeStyle: settingsModel.get('strokeStyle'),
-                    fillStyle: settingsModel.get('fillStyle'),
-                    lineCap: settingsModel.get('lineCap')
+                    lineWidth: environment.get('lineWidth'),
+                    strokeStyle: environment.get('strokeStyle'),
+                    fillStyle: environment.get('fillStyle'),
+                    lineCap: environment.get('lineCap')
                 });
             }
 
@@ -79,7 +78,7 @@ define([
             });
         };
 
-    return function ($canvas, socket) {
+    return function ($canvas, socket, environment) {
         var drawer = drawing.canvasDrawer($canvas[0]),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
@@ -90,7 +89,7 @@ define([
             });
 
         fixCanvasGeometry($canvas);
-        restoreDrawer(drawer);
+        restoreDrawer(drawer, environment);
         bindSocketHandler(socket, drawer, shapeDrawer);
 
         this.undo = function () {
@@ -111,16 +110,16 @@ define([
 
         this.on = function () {
             window.setTimeout(function () {
-                shapeDrawer.on(settingsModel.get('shape'));
+                shapeDrawer.on(environment.get('shape'));
             }, 250);
 
             return this;
         };
 
         this.off = function () {
-            settingsModel.set({
-                histories: drawer.snapshots(),
-                history: drawer.cursor()
+            environment.set({
+                snapshots: drawer.snapshots(),
+                cursor: drawer.cursor()
             });
 
             shapeDrawer.off();
@@ -130,12 +129,12 @@ define([
 
         this.shape = function (name) {
             if (_.isString(name)) {
-                settingsModel.set({
+                environment.set({
                     shape: name
                 });
             }
 
-            return settingsModel.get('shape');
+            return environment.get('shape');
         };
 
         this.color = function (hex) {
@@ -146,11 +145,11 @@ define([
                     strokeStyle: hex,
                     fillStyle: hex
                 };
-                settingsModel.set(properties);
+                environment.set(properties);
                 drawer.properties(properties);
             }
 
-            return settingsModel.get('strokeStyle');
+            return environment.get('strokeStyle');
         };
 
         this.lineWidth = function (value) {
@@ -160,11 +159,11 @@ define([
                 properties = {
                     lineWidth: value
                 };
-                settingsModel.set(properties);
+                environment.set(properties);
                 drawer.properties(properties);
             }
 
-            return settingsModel.get('lineWidth');
+            return environment.get('lineWidth');
         };
 
         this.snapshot = function () {
@@ -182,23 +181,23 @@ define([
         this.newDrawing = function (background) {
             var properties;
 
-            settingsModel.set({
-                histories: null,
-                history: null
+            environment.set({
+                snapshots: null,
+                cursor: null
             }, { silent: true });
 
             drawer.newDrawing(background);
             properties = drawer.properties();
 
             // FIX: restore the default settings
-            settingsModel.set({
+            environment.set({
                 background: background,
                 shape: 'pencil',
                 lineWidth: properties.lineWidth,
                 strokeStyle: properties.strokeStyle,
                 fillStyle: properties.fillStyle,
-                histories: drawer.snapshots(),
-                history: drawer.cursor()
+                snapshots: drawer.snapshots(),
+                cursor: drawer.cursor()
             });
         };
 

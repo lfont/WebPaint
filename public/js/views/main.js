@@ -9,16 +9,13 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'environment',
     'drawer-manager',
     'socket-manager',
-    'models/settings',
     'models/user',
     'text!/templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, mobile, Backbone, _, environment, DrawerManager,
-             SocketManager, settingsModel, UserModel, mainTemplate,
-             mainResources) {
+], function (require, $, mobile, Backbone, _, DrawerManager, SocketManager,
+             UserModel, mainTemplate, mainResources) {
     'use strict';
 
     var fixContentGeometry = function ($header, $content) {
@@ -34,44 +31,44 @@ define([
             var socket = new SocketManager(),
                 user = new UserModel({
                     // TODO: allow the user to set a nickname
-                    nickname: Math.floor(Math.random() * (1000 - 1)) + ""
+                    nickname: Math.floor(Math.random() * (1000 - 1)) + ''
                 });
 
             mainView.user = user;
-            socket.on("connected", function () {
+            socket.on('connected', function () {
                         mainView.showNetworkStatus(true);
                   })
-                  .on("invite", function (user) {
+                  .on('invite', function (user) {
                         mainView.$invitePendingPopup
-                                .find(".message")
+                                .find('.message')
                                 // TODO: Format the message cleanly.
                                 .text(mainResources.invitePending +
-                                      user.get("nickname"))
+                                      user.get('nickname'))
                                 .end()
-                                .popup("open");
+                                .popup('open');
                   })
-                  .on("invite-response", function (response) {
+                  .on('invite-response', function (response) {
                         mainView.$invitePendingPopup
-                                .find(".message")
+                                .find('.message')
                                 .text(response.accepted ?
                                       mainResources.inviteAccepted :
                                       mainResources.inviteRejected);
 
                         setTimeout(function () {
-                            mainView.$invitePendingPopup.popup("close");
+                            mainView.$invitePendingPopup.popup('close');
                         }, 2000);
                   })
-                  .on("invite-request", function (user) {
+                  .on('invite-request', function (user) {
                         // TODO: manage a request queue.
-                        mainView.$inviteRequestPopup.find(".message")
+                        mainView.$inviteRequestPopup.find('.message')
                                 // TODO: Format the message cleanly.
                                 .text(mainResources.inviteRequest +
-                                      user.get("nickname"))
+                                      user.get('nickname'))
                                 .end()
-                                .find(".accept, .reject")
-                                .attr("data-value", user.get("nickname"))
+                                .find('.accept, .reject')
+                                .attr('data-value', user.get('nickname'))
                                 .end()
-                                .popup("open");
+                                .popup('open');
                   })
                   .connect(user);
 
@@ -80,23 +77,21 @@ define([
 
     return Backbone.View.extend({
         events: {
-            "pageshow": "pageshow",
-            "vclick .undo": "undo",
-            "vclick .redo": "redo",
-            "vclick .tools": "showTools",
-            "vclick .options": "showOptions",
-            "vclick .accept": "accept",
-            "vclick .reject": "reject"
+            'pageshow': 'pageshow',
+            'vclick .undo': 'undo',
+            'vclick .redo': 'redo',
+            'vclick .tools': 'showTools',
+            'vclick .options': 'showOptions',
+            'vclick .accept': 'accept',
+            'vclick .reject': 'reject'
         },
 
         template: _.template(mainTemplate),
 
         render: function () {
-            var appInfo = environment.getAppInfo();
-
             this.$el.html(this.template({
                         r: mainResources,
-                        name: appInfo.name
+                        name: this.options.environment.get('appName')
                     }))
                     .addClass('main-view')
                     // The data-url attribute must be set for popups
@@ -120,12 +115,13 @@ define([
                 return;
             }
 
-            fixContentGeometry(this.$el.find("[data-role='header']"),
-                               this.$el.find("[data-role='content']"));
+            fixContentGeometry(this.$el.find('[data-role="header"]'),
+                               this.$el.find('[data-role="content"]'));
 
             this.socket = createSocketManager(this);
-            this.drawer = new DrawerManager(this.$el.find("canvas"),
-                                            this.socket);
+            this.drawer = new DrawerManager(this.$el.find('canvas'),
+                                            this.socket,
+                                            this.options.environment);
 
             $(window).on('online', _.bind(this.showNetworkStatus, this, true))
                      .on('offline', _.bind(this.showNetworkStatus, this, false));
@@ -144,8 +140,8 @@ define([
         },
 
         accept: function (event) {
-            var $this = this.$el.find(".accept"),
-                nickname = $this.attr("data-value");
+            var $this = this.$el.find('.accept'),
+                nickname = $this.attr('data-value');
 
             event.preventDefault();
             this.socket.acceptInvite(nickname);
@@ -153,8 +149,8 @@ define([
         },
 
         reject: function (event) {
-            var $this = this.$el.find(".reject"),
-                nickname = $this.attr("data-value");
+            var $this = this.$el.find('.reject'),
+                nickname = $this.attr('data-value');
 
             event.preventDefault();
             this.socket.rejectInvite(nickname);
@@ -174,25 +170,25 @@ define([
             }
 
             if (isOnline) {
-                removedClass = "title-offline";
-                addedClass = "title-online";
+                removedClass = 'title-offline';
+                addedClass = 'title-online';
                 // TODO: Format the message cleanly.
                 message = mainResources.onlineMessage +
-                          this.user.get("nickname");
+                          this.user.get('nickname');
             } else {
-                removedClass = "title-online";
-                addedClass = "title-offline";
+                removedClass = 'title-online';
+                addedClass = 'title-offline';
                 message = mainResources.offlineMessage;
             }
 
-            this.$el.find(".title")
+            this.$el.find('.title')
                     .removeClass(removedClass)
                     .addClass(addedClass);
 
-            this.$networkStatusTooltip.find(".message")
+            this.$networkStatusTooltip.find('.message')
                                       .text(message)
                                       .end()
-                                      .popup("open", {
+                                      .popup('open', {
                                         x: 0,
                                         y: 82
                                       });
@@ -212,8 +208,8 @@ define([
             require([
                 'views/tools'
             ], function (ToolsView) {
-                var UIInfo = environment.getUIInfo(),
-                    isPopup = UIInfo.toolsViewType === 'popup';
+                var isPopup = _this.options.environment.get('sreenSize') ===
+                             'small';
 
                 if (!_this.toolsView) {
                     _this.toolsView = new ToolsView({
@@ -223,10 +219,11 @@ define([
                         positionTo: isPopup ?
                             event.target :
                             null,
+                        environment: _this.options.environment,
                         drawer: _this.drawer
                     });
-                    _this.toolsView.on('open', _.bind(_this.drawer.off, _this.drawer));
-                    _this.toolsView.on('close', _.bind(_this.drawer.on, _this.drawer));
+                    _this.toolsView.on('open', _this.drawer.off.bind(_this.drawer));
+                    _this.toolsView.on('close', _this.drawer.on.bind(_this.drawer));
                     _this.toolsView.render();
                 }
 
@@ -246,11 +243,12 @@ define([
                     _this.optionsView = new OptionsView({
                         el: $('<div></div>').appendTo(_this.$el),
                         positionTo: event.target,
+                        environment: _this.options.environment,
                         drawer: _this.drawer,
                         socket: _this.socket
                     });
-                    _this.optionsView.on('open', _.bind(_this.drawer.off, _this.drawer));
-                    _this.optionsView.on('close', _.bind(_this.drawer.on, _this.drawer));
+                    _this.optionsView.on('open', _this.drawer.off.bind(_this.drawer));
+                    _this.optionsView.on('close', _this.drawer.on.bind(_this.drawer));
                     _this.optionsView.render();
                 }
 

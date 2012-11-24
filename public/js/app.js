@@ -32,12 +32,15 @@ require.config({
 
 define([
     'jquery',
-    'environment',
-    'models/settings'
-], function ($, environment, settingsModel) {
+    'models/environment'
+], function ($, EnvironmentModel) {
     'use strict';
 
-    var locale = settingsModel.get('locale');
+    var environment = new EnvironmentModel(),
+        locale;
+
+    environment.fetch();
+    locale = environment.get('locale');
 
     // Set the UI language if it is defined by the user.
     if (locale) {
@@ -51,10 +54,11 @@ define([
     }
             
     $(document).on('mobileinit', function () {
-        var UIInfo = environment.getUIInfo();
+        var screenSize = environment.get('screenSize');
+
         $.mobile.defaultPageTransition =
             $.mobile.defaultDialogTransition =
-                UIInfo.defaultTransition;
+                screenSize === 'small' ? 'none': 'fade';
     });
 
     require([
@@ -62,18 +66,19 @@ define([
     ], function (MainView) {
         $(function () {
             var mainView = new MainView({
-                el: $('<div></div>').appendTo('body')
+                el: $('<div></div>').appendTo('body'),
+                environment: environment
             });
 
             mainView.render()
                     .show();
 
             $(window).unload(function () {
-                settingsModel.set({
+                environment.set({
                     background: mainView.drawer.snapshot()
                 });
 
-                settingsModel.save();
+                environment.save();
             });
         });
     });

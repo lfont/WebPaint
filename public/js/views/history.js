@@ -8,12 +8,11 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'models/settings',
     'text!/templates/list-wrapper.html',
     'text!/templates/history.html',
     'i18n!nls/history-view'
-], function ($, mobile, Backbone, _, settingsModel, listWrapperTemplate,
-             historyTemplate, historyResources) {
+], function ($, mobile, Backbone, _, listWrapperTemplate, historyTemplate,
+             historyResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -21,7 +20,7 @@ define([
             'pagecreate': 'pagecreate',
             'pagebeforeshow': 'pagebeforeshow',
             'pagehide': 'pagehide',
-            'vclick .history': 'historySelected'
+            'vclick .history': 'snapshotSelected'
         },
 
         template: _.template(listWrapperTemplate),
@@ -36,13 +35,11 @@ define([
                     .attr('data-role', 'dialog')
                     .page();
 
-            settingsModel.on(
-                'change:history',
-                _.bind(this.refreshHistory, this));
+            this.options.environment.on(
+                'change:cursor', this.setSnapshot.bind(this));
 
-            settingsModel.on(
-                'change:histories',
-                _.bind(this.refreshHistories, this));
+            this.options.environment.on(
+                'change:snapshots', this.setSnapshots.bind(this));
 
             return this;
         },
@@ -52,8 +49,8 @@ define([
         },
 
         pagecreate: function () {
-            this.refreshHistories()
-                .refreshHistory();
+            this.setSnapshots()
+                .setSnapshot();
         },
 
         pagebeforeshow: function () {
@@ -64,7 +61,7 @@ define([
             this.trigger('close');
         },
 
-        historySelected: function (event) {
+        snapshotSelected: function (event) {
             var $this = $(event.target),
                 index = $this.attr('data-value');
 
@@ -73,23 +70,24 @@ define([
             this.$el.dialog('close');
         },
 
-        refreshHistory: function () {
+        setSnapshot: function () {
             this.$el.find('.history')
                     .find('.ui-li-count')
                     .hide()
                     .end()
-                    .filter('[data-value="' + settingsModel.get('history') + '"]')
+                    .filter('[data-value="' +
+                            this.options.environment.get('cursor') + '"]')
                     .find('.ui-li-count')
                     .show();
 
             return this;
         },
 
-        refreshHistories: function () {
+        setSnapshots: function () {
             this.$el.find('.list-wrapper')
                     .html(this.listTemplate({
                         r: historyResources,
-                        histories: settingsModel.get('histories')
+                        histories: this.options.environment.get('snapshots')
                     }))
                     .trigger('create');
 

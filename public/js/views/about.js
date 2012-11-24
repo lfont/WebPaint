@@ -8,10 +8,9 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'environment',
     'text!/templates/about.html',
     'i18n!nls/about-view'
-], function ($, mobile, Backbone, _, environment, aboutTemplate, aboutResources) {
+], function ($, mobile, Backbone, _, aboutTemplate, aboutResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -23,12 +22,10 @@ define([
         template: _.template(aboutTemplate),
 
         render: function () {
-            var appInfo = environment.getAppInfo();
-            
             this.$el.html(this.template({
                         r: aboutResources,
-                        name: appInfo.name,
-                        version: appInfo.version
+                        name: this.options.environment.get('appName'),
+                        version: this.options.environment.get('appVersion')
                     }))
                     .addClass('ui-corner-all')
                     .attr('data-position-to', 'window')
