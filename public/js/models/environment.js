@@ -17,7 +17,8 @@ define([
             strokeStyle: '#000000',
             fillStyle: '#000000',
             lineWidth: 1,
-            lineCap: 'round'
+            lineCap: 'round',
+            openSavedPicture: false
         },
 
         localStorage = window.localStorage,

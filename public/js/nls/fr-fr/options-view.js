@@ -10,6 +10,6 @@ define({
     "clear": "Effacer",
     "history": "Historique",
     "invite": "Inviter",
-    "language": "Langues",
+    "settings": "Réglages",
     "about": "A propos"
 });

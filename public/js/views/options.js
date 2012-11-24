@@ -53,8 +53,8 @@ define([
                 type: 'page'
             },
             {
-                name: optionsResources.language,
-                option: 'language',
+                name: optionsResources.settings,
+                option: 'settings',
                 type: 'page'
             },
             {

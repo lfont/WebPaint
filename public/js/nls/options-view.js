@@ -12,7 +12,7 @@ define({
         "clear": "Clear",
         "history": "History",
         "invite": "Invite",
-        "language": "Languages",
+        "settings": "Settings",
         "about": "About"
     },
     "fr-fr": true

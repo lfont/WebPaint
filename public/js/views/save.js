@@ -60,15 +60,19 @@ define([
 
         save: function (event) {
             var _this = this,
-                $fileName = this.$el.find('.name');
+                $name = this.$el.find('.name'),
+                data = this.$el.find('.data').val();
 
-            if ($fileName.val() === '') {
-                $fileName.val(saveResources.defaultFileName);
+            if ($name.val() === '') {
+                $name.val(saveResources.defaultFileName);
             }
 
             this.$el.find('form').submit();
 
             window.setTimeout(function () {
+                if (_this.options.environment.get('openSavedPicture')) {
+                    window.open(data, '_blank');
+                }
                 _this.$el.popup('close');
             }, 250);
         }

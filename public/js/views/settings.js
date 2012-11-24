@@ -8,11 +8,11 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'text!/templates/list-wrapper.html',
-    'text!/templates/language.html',
-    'i18n!nls/language-view'
-], function ($, mobile, Backbone, _, listWrapperTemplate, languageTemplate,
-             languageResources) {
+    'text!/templates/settings.html',
+    'text!/templates/languages.html',
+    'i18n!nls/settings-view'
+], function ($, mobile, Backbone, _, settingsTemplate, languagesTemplate,
+             settingsResources) {
     'use strict';
 
     var DEFAULT_LOCALE = 'xx-xx';
@@ -25,13 +25,12 @@ define([
             'vclick .language': 'languageSelected'
         },
 
-        template: _.template(listWrapperTemplate),
-        
-        listTemplate: _.template(languageTemplate),
+        template: _.template(settingsTemplate),
+        languageBlockTemplate: _.template(languagesTemplate),
 
         render: function () {
             this.$el.html(this.template({
-                        r: languageResources
+                        r: settingsResources
                     }))
                     .attr('data-url', 'language')
                     .attr('data-role', 'dialog')
@@ -58,10 +57,20 @@ define([
         },
 
         pagebeforeshow: function () {
+            var $openSavedPicture = this.$el.find('.open-saved-picture');
+
+            $openSavedPicture.attr('checked',
+                                   this.options.environment.get('openSavedPicture'))
+                             .checkboxradio('refresh');
+
             this.trigger('open');
         },
 
         pagehide: function () {
+            var $openSavedPicture = this.$el.find('.open-saved-picture');
+
+            this.options.environment.set('openSavedPicture',
+                                         $openSavedPicture[0].checked);
             this.trigger('close');
         },
 
@@ -91,9 +100,9 @@ define([
         },
 
         setLanguages: function () {
-            this.$el.find('.list-wrapper')
-                .html(this.listTemplate({
-                    r: languageResources,
+            this.$el.find('.languages-wrapper')
+                .html(this.languageBlockTemplate({
+                    r: settingsResources,
                     languages: this.options.environment.get('languages')
                                                        .toJSON()
                 }))
