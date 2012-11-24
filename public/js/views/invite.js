@@ -35,7 +35,7 @@ define([
                     .attr('data-role', 'dialog')
                     .page();
 
-            this.options.get('users').on(
+            this.options.environment.get('users').on(
                 'change reset',
                 _.bind(this.refreshUsers, this));
 
@@ -76,7 +76,7 @@ define([
             this.$el.find('.list-wrapper')
                     .html(this.listTemplate({
                         r: inviteResources,
-                        users: this.options.get('users').toJSON()
+                        users: this.options.environment.get('users').toJSON()
                     }))
                     .trigger('create');
 

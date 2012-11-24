@@ -4,5 +4,5 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define({
-    "title": "Inviter"
+    "title": "Inviter (alpha)"
 });

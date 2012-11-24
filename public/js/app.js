@@ -38,7 +38,7 @@ define([
 
     var environment = new EnvironmentModel({
             appName: 'WebPaint',
-            appVersion: '0.6.12',
+            appVersion: '0.6.13',
             screenSize: $(window).height() <= 720 ? 'small' : 'normal'
         }),
         locale;
