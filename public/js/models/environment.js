@@ -4,16 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone'
-], function ($, Backbone) {
+    'backbone',
+    'underscore'
+], function (Backbone, _) {
     'use strict';
     
     var SETTINGS_STORAGE_KEY = 'settings',
-
-        localStorage = window.localStorage,
-        console = window.console,
-        defaultSettings = {
+        DEFAULT_SETTINGS = {
             locale: '',
             background: 'transparent',
             shape: 'pencil',
@@ -21,17 +18,15 @@ define([
             fillStyle: '#000000',
             lineWidth: 1,
             lineCap: 'round'
-        };
+        },
+
+        localStorage = window.localStorage,
+        console = window.console;
 
     return Backbone.Model.extend({
-        initialize: function () {
-            this.set({
-                appName: 'WebPaint',
-                appVersion: '0.6.11',
-                screenSize: $(window).height() <= 720 ? 'small' : 'normal',
-                snapshots: [],
-                cursor: 0
-            });
+        defaults: {
+            snapshots: [],
+            cursor: 0
         },
 
         fetch: function () {
@@ -47,7 +42,7 @@ define([
                 }
             }
 
-            $.extend(settings, defaultSettings, userSettings);
+            _.extend(settings, DEFAULT_SETTINGS, userSettings);
 
             this.set(settings);
         },
@@ -57,7 +52,7 @@ define([
                 property;
 
             for (property in properties) {
-                if (!defaultSettings.hasOwnProperty(property)) {
+                if (!DEFAULT_SETTINGS.hasOwnProperty(property)) {
                     // The properties that were not in the default properties
                     // must not be persisted.
                     delete properties[property];
@@ -69,7 +64,11 @@ define([
         },
 
         getDefaultSettings: function () {
-            return $.extend({}, defaultSettings);
+            var settings = {};
+
+            _.extend(settings, DEFAULT_SETTINGS);
+
+            return settings;
         }
     });
 });

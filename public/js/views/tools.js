@@ -9,12 +9,11 @@ define([
     'backbone',
     'underscore',
     'drawing',
-    'collections/colors',
     'views/color-picker',
     'text!/templates/tools.html',
     'i18n!nls/tools-view'
-], function ($, mobile, Backbone, _, drawing, colorsCollection, ColorPickerView,
-             toolsTemplate, toolsResources) {
+], function ($, mobile, Backbone, _, drawing, ColorPickerView, toolsTemplate,
+             toolsResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -53,7 +52,8 @@ define([
 
             this.shapeColorPicker = new ColorPickerView({
                 el: this.$el.find('.color-picker'),
-                colors: colorsCollection.withoutTransparent()
+                colors: this.options.environment.get('colors')
+                                                .getDrawableColors()
             }).render();
 
             this.shapeColorPicker.on('color', function (hex) {

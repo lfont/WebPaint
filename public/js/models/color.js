@@ -4,14 +4,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "backbone",
-    "i18n!nls/color-model"
+    'backbone',
+    'i18n!nls/color-model'
 ], function (Backbone, colorResources) {
-    "use strict";
+    'use strict';
 
     return Backbone.Model.extend({
         initialize: function (color) {
-            this.set("name", colorResources[color.code]);
+            this.set('name', colorResources[color.code]);
         }
     });
 });

@@ -4,9 +4,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "backbone"
+    'backbone'
 ], function (Backbone) {
-    "use strict";
+    'use strict';
 
     return Backbone.Model.extend({
 

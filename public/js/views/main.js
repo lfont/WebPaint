@@ -28,7 +28,7 @@ define([
         },
 
         createSocketManager = function (mainView) {
-            var socket = new SocketManager(),
+            var socket = new SocketManager(mainView.options.environment.get('users')),
                 user = new UserModel({
                     // TODO: allow the user to set a nickname
                     nickname: Math.floor(Math.random() * (1000 - 1)) + ''

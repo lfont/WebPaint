@@ -4,14 +4,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "backbone",
-    "i18n!nls/language-model"
+    'backbone',
+    'i18n!nls/language-model'
 ], function (Backbone, languageResources) {
-    "use strict";
+    'use strict';
 
     return Backbone.Model.extend({
         initialize: function (language) {
-            this.set("name", languageResources[language.code]);
+            this.set('name', languageResources[language.code]);
         }
     });
 });

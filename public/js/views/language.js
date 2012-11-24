@@ -8,12 +8,11 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'collections/languages',
     'text!/templates/list-wrapper.html',
     'text!/templates/language.html',
     'i18n!nls/language-view'
-], function ($, mobile, Backbone, _, languagesCollection, listWrapperTemplate,
-             languageTemplate, languageResources) {
+], function ($, mobile, Backbone, _, listWrapperTemplate, languageTemplate,
+             languageResources) {
     'use strict';
 
     var DEFAULT_LOCALE = 'xx-xx';
@@ -42,7 +41,7 @@ define([
                 'change:locale',
                 _.bind(this.setLanguage, this));
 
-            languagesCollection.on(
+            this.options.environment.get('languages').on(
                 'change reset',
                 _.bind(this.setLanguages, this));
 
@@ -95,7 +94,8 @@ define([
             this.$el.find('.list-wrapper')
                 .html(this.listTemplate({
                     r: languageResources,
-                    languages: languagesCollection.toJSON()
+                    languages: this.options.environment.get('languages')
+                                                       .toJSON()
                 }))
                 .trigger('create');
 

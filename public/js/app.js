@@ -36,7 +36,11 @@ define([
 ], function ($, EnvironmentModel) {
     'use strict';
 
-    var environment = new EnvironmentModel(),
+    var environment = new EnvironmentModel({
+            appName: 'WebPaint',
+            appVersion: '0.6.11',
+            screenSize: $(window).height() <= 720 ? 'small' : 'normal'
+        }),
         locale;
 
     environment.fetch();
@@ -62,10 +66,39 @@ define([
     });
 
     require([
-        'views/main'
-    ], function (MainView) {
+        'views/main',
+        'collections/colors',
+        'collections/languages',
+        'collections/users'
+    ], function (MainView, ColorCollection, LanguageCollection,
+                 UserCollection) {
         $(function () {
-            var mainView = new MainView({
+            var mainView;
+
+            environment.set({
+                colors: new ColorCollection([
+                    { code: 'transparent' },
+                    { code: '#000000' },
+                    { code: '#d2691e' },
+                    { code: '#ffffff' },
+                    { code: '#ffc0cb' },
+                    { code: '#ff0000' },
+                    { code: '#ffa500' },
+                    { code: '#ee82ee' },
+                    { code: '#0000ff' },
+                    { code: '#40e0d0' },
+                    { code: '#008000' },
+                    { code: '#ffff00' }
+                ]),
+                languages: new LanguageCollection([
+                    { code: 'xx-xx' },
+                    { code: 'en-us' },
+                    { code: 'fr-fr' }
+                ]),
+                users: new UserCollection()
+            });
+
+            mainView = new MainView({
                 el: $('<div></div>').appendTo('body'),
                 environment: environment
             });

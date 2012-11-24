@@ -8,12 +8,11 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'collections/colors',
     'views/color-picker',
     'text!/templates/new.html',
     'i18n!nls/new-view'
-], function ($, mobile, Backbone, _, colorsCollection, ColorPickerView,
-             newTemplate, newResources) {
+], function ($, mobile, Backbone, _, ColorPickerView, newTemplate,
+             newResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -36,7 +35,7 @@ define([
 
             this.backgroundColorPicker = new ColorPickerView({
                 el: this.$el.find('.color-picker'),
-                colors: colorsCollection
+                colors: this.options.environment.get('colors')
             }).render();
 
             this.backgroundColorPicker.on('color', function (hex) {

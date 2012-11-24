@@ -8,12 +8,11 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
-    'collections/users',
     'text!/templates/list-wrapper.html',
     'text!/templates/invite.html',
     'i18n!nls/invite-view'
-], function ($, mobile, Backbone, _, usersCollection, listWrapperTemplate,
-             inviteTemplate, inviteResources) {
+], function ($, mobile, Backbone, _, listWrapperTemplate, inviteTemplate,
+             inviteResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -36,7 +35,7 @@ define([
                     .attr('data-role', 'dialog')
                     .page();
 
-            usersCollection.on(
+            this.options.get('users').on(
                 'change reset',
                 _.bind(this.refreshUsers, this));
 
@@ -69,17 +68,15 @@ define([
             
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
-            setTimeout(_.bind(this.options.socket.invite,
-                              this.options.socket,
-                              nickname),
-                        250);
+            setTimeout(this.options.socket.invite.bind(this.options.socket,
+                                                       nickname), 250);
         },
 
         refreshUsers: function () {
             this.$el.find('.list-wrapper')
                     .html(this.listTemplate({
                         r: inviteResources,
-                        users: usersCollection.toJSON()
+                        users: this.options.get('users').toJSON()
                     }))
                     .trigger('create');
 
