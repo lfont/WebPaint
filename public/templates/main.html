@@ -48,24 +48,3 @@
             class="accept"><%= r.acceptButton %></a>
     </div>
 </div>
-
-<div data-role="popup" data-position-to="window"
-    class="downloadPopup ui-corner-all message-popup">
-    <div data-role="header" class="ui-corner-top">
-        <h1><%= r.saveTitle %></h1>
-    </div>
-    <div data-role="content" class="ui-corner-bottom ui-content">
-        <form method="post" action="/service/saveImage" data-ajax="false">
-            <div data-role="fieldcontain">
-                <label for="name"><%= r.saveName %></label>
-                <input type="text" id="name" name="name"
-                    placeholder="drawing.png" />
-            </div>
-            <input type="hidden" name="data" class="data" />
-            <button data-inline="true" data-theme="c"
-                class="cancel"><%= r.cancelButton %></button>
-            <input type="submit" data-inline="true" data-theme="b"
-                class="save" value="<%= r.saveButton %>" />
-        </form>
-    </div>
-</div>

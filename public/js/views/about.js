@@ -16,8 +16,8 @@ define([
 
     return Backbone.View.extend({
         events: {
-            'pagebeforeshow': 'pagebeforeshow',
-            'pagehide': 'pagehide'
+            'popupbeforeposition': 'popupbeforeposition',
+            'popupafterclose': 'popupafterclose'
         },
 
         template: _.template(aboutTemplate),
@@ -30,22 +30,23 @@ define([
                         name: appInfo.name,
                         version: appInfo.version
                     }))
-                    .attr('data-url', 'about')
-                    .attr('data-role', 'dialog')
-                    .page();
+                    .addClass('ui-corner-all')
+                    .attr('data-position-to', 'window')
+                    .trigger('create')
+                    .popup();
 
             return this;
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            this.$el.popup('open');
         },
 
-        pagebeforeshow: function () {
+        popupbeforeposition: function () {
             this.trigger('open');
         },
 
-        pagehide: function () {
+        popupafterclose: function () {
             this.trigger('close');
         }
     });

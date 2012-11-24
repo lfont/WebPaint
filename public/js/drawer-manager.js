@@ -4,72 +4,94 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    "jquery",
-    "backbone",
-    "underscore",
-    "drawing",
-    "models/settings",
-    "i18n!nls/drawer-manager",
-    "lib/drawing.event",
-    "lib/jquery.mobile.toast"
+    'jquery',
+    'backbone',
+    'underscore',
+    'drawing',
+    'models/settings',
+    'i18n!nls/drawer-manager',
+    'lib/drawing.event',
+    'lib/jquery.mobile.toast'
 ], function ($, Backbone, _, drawing, settingsModel, drawerManagerResources) {
-    "use strict";
+    'use strict';
 
-    return function (canvas, socket) {
-        var drawer = drawing.canvasDrawer(canvas),
+    var fixCanvasGeometry = function ($canvas) {
+            var $container = $canvas.parent(),
+                canvas = $canvas[0];
+
+            canvas.height = $container.height() -
+                            ($canvas.outerHeight() - $canvas.height()) -
+                            4; // FIX: we should not set this manually
+            canvas.width = $container.width() -
+                           ($canvas.outerWidth() - $canvas.width());
+        },
+
+        restoreDrawer = function (drawer) {
+            var background = settingsModel.get('background'),
+                image;
+
+            function setBackground(background) {
+                drawer.newDrawing(background);
+                drawer.properties({
+                    lineWidth: settingsModel.get('lineWidth'),
+                    strokeStyle: settingsModel.get('strokeStyle'),
+                    fillStyle: settingsModel.get('fillStyle'),
+                    lineCap: settingsModel.get('lineCap')
+                });
+            }
+
+            if (background.match(/(?:^data:)|(?:\.(?:jpg|png)$)/)) {
+                image = new window.Image();
+                image.onload = function () {
+                    setBackground(image);
+                };
+                image.src = background;
+            } else {
+                setBackground(background);
+            }
+        },
+
+        bindSocketHandler = function (socket, drawer, shapeDrawer) {
+            socket.on('invite-response', function (response) {
+                if (!response.accepted) {
+                    return;
+                }
+                
+                shapeDrawer.addDrawnHandler(function (shape) {
+                    socket.draw({
+                        to: response.sender,
+                        shape: shape
+                    });
+                });
+            });
+
+            socket.on('invite-accepted', function (fromUser) {
+                shapeDrawer.addDrawnHandler(function (shape) {
+                    socket.draw({
+                        to: fromUser,
+                        shape: shape
+                    });
+                });
+            });
+
+            socket.on('draw', function (data) {
+                drawer.draw(data.shape);
+            });
+        };
+
+    return function ($canvas, socket) {
+        var drawer = drawing.canvasDrawer($canvas[0]),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
-                    down: "vmousedown",
-                    up: "vmouseup",
-                    move: "vmousemove"
+                    down: 'vmousedown',
+                    up: 'vmouseup',
+                    move: 'vmousemove'
                 }
-            }),
+            });
 
-            initialize = function () {
-                var histories = settingsModel.get("histories");
-
-                drawer.newDrawing(settingsModel.get("background"));
-                drawer.properties({
-                    lineWidth: settingsModel.get("lineWidth"),
-                    strokeStyle: settingsModel.get("strokeStyle"),
-                    fillStyle: settingsModel.get("fillStyle"),
-                    lineCap: settingsModel.get("lineCap")
-                });
-
-                if (histories.length > 0) {
-                    drawer.histories(histories);
-                    drawer.history(settingsModel.get("history"));
-                }
-
-                // drawer socket messages
-                socket.on("invite-response", function (response) {
-                    if (!response.accepted) {
-                        return;
-                    }
-                    
-                    shapeDrawer.addDrawnHandler(function (shape) {
-                        socket.draw({
-                            to: response.sender,
-                            shape: shape
-                        });
-                    });
-                });
-
-                socket.on("invite-accepted", function (fromUser) {
-                    shapeDrawer.addDrawnHandler(function (shape) {
-                        socket.draw({
-                            to: fromUser,
-                            shape: shape
-                        });
-                    });
-                });
-
-                socket.on("draw", function (data) {
-                    drawer.draw(data.shape);
-                });
-            };
-
-        initialize();
+        fixCanvasGeometry($canvas);
+        restoreDrawer(drawer);
+        bindSocketHandler(socket, drawer, shapeDrawer);
 
         this.undo = function () {
             if (!drawer.undo()) {
@@ -89,7 +111,7 @@ define([
 
         this.on = function () {
             window.setTimeout(function () {
-                shapeDrawer.on(settingsModel.get("shape"));
+                shapeDrawer.on(settingsModel.get('shape'));
             }, 250);
 
             return this;
@@ -97,8 +119,8 @@ define([
 
         this.off = function () {
             settingsModel.set({
-                histories: drawer.histories(),
-                history: drawer.history()
+                histories: drawer.snapshots(),
+                history: drawer.cursor()
             });
 
             shapeDrawer.off();
@@ -113,7 +135,7 @@ define([
                 });
             }
 
-            return settingsModel.get("shape");
+            return settingsModel.get('shape');
         };
 
         this.color = function (hex) {
@@ -128,7 +150,7 @@ define([
                 drawer.properties(properties);
             }
 
-            return settingsModel.get("strokeStyle");
+            return settingsModel.get('strokeStyle');
         };
 
         this.lineWidth = function (value) {
@@ -142,55 +164,46 @@ define([
                 drawer.properties(properties);
             }
 
-            return settingsModel.get("lineWidth");
+            return settingsModel.get('lineWidth');
         };
 
-        this.history = function (value) {
-            if (_.isNumber(value)) {
-                drawer.history(value);
+        this.snapshot = function () {
+            return drawer.snapshots()[drawer.cursor()];
+        };
+
+        this.cursor = function (index) {
+            if (_.isNumber(index)) {
+                drawer.cursor(index);
             }
 
-            return drawer.history();
+            return drawer.cursor();
         };
 
-        this.newDrawing = function (hex) {
+        this.newDrawing = function (background) {
+            var properties;
+
             settingsModel.set({
                 histories: null,
                 history: null
             }, { silent: true });
 
-            drawer.newDrawing(hex);
+            drawer.newDrawing(background);
+            properties = drawer.properties();
 
+            // FIX: restore the default settings
             settingsModel.set({
-                background: hex,
-                shape: "pencil",
-                histories: drawer.histories(),
-                history: drawer.history()
+                background: background,
+                shape: 'pencil',
+                lineWidth: properties.lineWidth,
+                strokeStyle: properties.strokeStyle,
+                fillStyle: properties.fillStyle,
+                histories: drawer.snapshots(),
+                history: drawer.cursor()
             });
         };
 
         this.clear = function () {
             drawer.clear().store();
-        };
-
-        this.getDataURL = function () {
-            return drawer.histories()[drawer.history()];
-        };
-
-        this.unload = function () {
-            var histories = drawer.histories(),
-                history = drawer.history();
-
-            settingsModel.set({
-                histories: (histories.length > 10) ?
-                    histories.slice(histories.length - 10) :
-                    histories,
-                history: (history >= histories.length) ?
-                    histories.length - 1 :
-                    history
-            });
-
-            return this;
         };
     };
 });

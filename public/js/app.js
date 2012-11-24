@@ -12,10 +12,9 @@ require.config({
         'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min',
         'socket.io': 'lib/socket.io/socket.io.min',
         'lib/jquery.mobile': 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min',
-        'lib/jquery.mobile.download': 'lib/jquery.mobile/jquery.mobile.download',
         'lib/jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
-        'drawing': 'lib/drawing/drawing-0.6.1',
-        'lib/drawing.event': 'lib/drawing/drawing.event.jquery-0.6.1'
+        'drawing': 'lib/drawing/drawing-0.8.0',
+        'lib/drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0'
     },
     shim: {
         'underscore': {
@@ -27,13 +26,6 @@ require.config({
         },
         'socket.io': {
             exports: 'io'
-        },
-        'drawing': {
-            exports: 'drawing'
-        },
-        'lib/drawing.event': {
-            deps: [ 'drawing', 'jquery' ],
-            exports: 'drawing.canvasDrawer.fn.eventShapeDrawer'
         }
     }
 });
@@ -77,7 +69,10 @@ define([
                     .show();
 
             $(window).unload(function () {
-                mainView.unload();
+                settingsModel.set({
+                    background: mainView.drawer.snapshot()
+                });
+
                 settingsModel.save();
             });
         });

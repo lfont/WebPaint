@@ -9,10 +9,10 @@ define({
         "shapeLabel": "Shape",
         "widthLabel": "Width",
         "colorLabel": "Color",
-        "pencilLabel": "S",
-        "lineLabel": "|",
-        "rectangleLabel": "[]",
-        "circleLabel": "O"
+        "pencil": "Pencil",
+        "line": "Line",
+        "rectangle": "Rectangle",
+        "circle": "Circle"
     },
     "fr-fr": true
 });
