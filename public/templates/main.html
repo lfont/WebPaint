@@ -1,5 +1,13 @@
 <div data-role="header" data-position="fixed">
-    <h1 class="title"><%= name %></h1>
+    <h1 class="title">
+        <%= name %>
+    </h1>
+
+    <span class="twitter">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://lfont.webpaint.jit.su" data-text="WebPaint: a simple drawing application for fun." data-via="loic_fontaine" data-hashtags="html5">Tweet</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    </span>
+
     <span class="ui-btn-right">
         <a href="#" class="undo"
             data-role="button" data-inline="true" data-icon="back"
@@ -13,7 +21,7 @@
         <a href="#" class="options"
             data-role="button" data-inline="true" data-icon="gear"
             data-iconpos="notext" data-theme="b"><%= r.optionsButton %></a>
-    <span>
+    </span>
 </div>
 
 <div data-role="content">

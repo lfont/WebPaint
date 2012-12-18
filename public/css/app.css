@@ -43,6 +43,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
+.main-view .ui-header .twitter {
+    position: absolute;
+    left: 100px;
+    top: 10px;
+}
+
 .main-view canvas {
     border: 1px solid black;
     background: transparent url("../img/background.png") repeat 0 0;
