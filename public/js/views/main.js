@@ -10,12 +10,12 @@ define([
     'backbone',
     'underscore',
     'drawer-manager',
-    'socket-manager',
-    'models/user',
+    'drawing-client',
+    'sprintf',
     'text!/templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, mobile, Backbone, _, DrawerManager, SocketManager,
-             UserModel, mainTemplate, mainResources) {
+], function (require, $, mobile, Backbone, _, DrawerManager, DrawingClient,
+             sprintf, mainTemplate, mainResources) {
     'use strict';
 
     var fixContentGeometry = function ($header, $content) {
@@ -25,54 +25,6 @@ define([
                             ($content.outerHeight() - $content.height());
 
             $content.height(contentHeight);
-        },
-
-        createSocketManager = function (mainView) {
-            var socket = new SocketManager(mainView.options.environment.get('users')),
-                user = new UserModel({
-                    // TODO: allow the user to set a nickname
-                    nickname: Math.floor(Math.random() * (1000 - 1)) + ''
-                });
-
-            mainView.user = user;
-            socket.on('connected', function () {
-                        mainView.showNetworkStatus(true);
-                  })
-                  .on('invite', function (user) {
-                        mainView.$invitePendingPopup
-                                .find('.message')
-                                // TODO: Format the message cleanly.
-                                .text(mainResources.invitePending +
-                                      user.get('nickname'))
-                                .end()
-                                .popup('open');
-                  })
-                  .on('invite-response', function (response) {
-                        mainView.$invitePendingPopup
-                                .find('.message')
-                                .text(response.accepted ?
-                                      mainResources.inviteAccepted :
-                                      mainResources.inviteRejected);
-
-                        setTimeout(function () {
-                            mainView.$invitePendingPopup.popup('close');
-                        }, 2000);
-                  })
-                  .on('invite-request', function (user) {
-                        // TODO: manage a request queue.
-                        mainView.$inviteRequestPopup.find('.message')
-                                // TODO: Format the message cleanly.
-                                .text(mainResources.inviteRequest +
-                                      user.get('nickname'))
-                                .end()
-                                .find('.accept, .reject')
-                                .attr('data-value', user.get('nickname'))
-                                .end()
-                                .popup('open');
-                  })
-                  .connect(user);
-
-            return socket;
         };
 
     return Backbone.View.extend({
@@ -98,8 +50,7 @@ define([
                     .attr('data-url', '/')
                     .page();
 
-            // TODO: create dedicated views
-            this.$networkStatusTooltip = this.$el.find('.networkStatusTooltip');
+            this.$messageTooltip = this.$el.find('.messageTooltip');
             this.$inviteRequestPopup = this.$el.find('.inviteRequestPopup');
             this.$invitePendingPopup = this.$el.find('.invitePendingPopup');
 
@@ -111,6 +62,8 @@ define([
         },
 
         pageshow: function () {
+            var _this = this;
+
             if (this.drawer) {
                 return;
             }
@@ -118,13 +71,23 @@ define([
             fixContentGeometry(this.$el.find('[data-role="header"]'),
                                this.$el.find('[data-role="content"]'));
 
-            this.socket = createSocketManager(this);
             this.drawer = new DrawerManager(this.$el.find('canvas'),
-                                            this.socket,
                                             this.options.environment);
 
-            $(window).on('online', _.bind(this.showNetworkStatus, this, true))
-                     .on('offline', _.bind(this.showNetworkStatus, this, false));
+            this.socket = new DrawingClient(this.drawer,
+                                            this.options.environment);
+            this.socket.on('message', this.showMessage.bind(this))
+                       .on('inviteGuestRequest', this.showInvitePending.bind(this))
+                       .on('inviteRequest', this.showInviteRequest.bind(this))
+                       .on('inviteResponse', this.showInviteResponse.bind(this))
+                       .on('inviteRequestCanceled', function () {
+                            _this.$inviteRequestPopup.popup('close');
+                       });
+
+            $(window).on('online', this.showNetworkStatus.bind(this, true))
+                     .on('offline', this.showNetworkStatus.bind(this, false));
+
+            this.showNetworkStatus(navigator.onLine);
 
             this.drawer.on();
         },
@@ -144,8 +107,8 @@ define([
                 nickname = $this.attr('data-value');
 
             event.preventDefault();
-            this.socket.acceptInvite(nickname);
-            this.$inviteRequest.popup('close');
+            this.socket.sendResponse(nickname, true);
+            this.$inviteRequestPopup.popup('close');
         },
 
         reject: function (event) {
@@ -153,28 +116,21 @@ define([
                 nickname = $this.attr('data-value');
 
             event.preventDefault();
-            this.socket.rejectInvite(nickname);
-            this.$inviteRequest.popup('close');
+            this.socket.sendResponse(nickname, false);
+            this.$inviteRequestPopup.popup('close');
         },
 
         isVisible: function () {
-            return mobile.activePage === this.$el;
+            return mobile.activePage[0] === this.$el[0];
         },
 
         showNetworkStatus: function (isOnline) {
-            var _this = this,
-                removedClass, addedClass, message;
-
-            if (!this.isVisible()) {
-                return;
-            }
+            var removedClass, addedClass, message;
 
             if (isOnline) {
                 removedClass = 'title-offline';
                 addedClass = 'title-online';
-                // TODO: Format the message cleanly.
-                message = mainResources.onlineMessage +
-                          this.user.get('nickname');
+                message = mainResources.onlineMessage;
             } else {
                 removedClass = 'title-online';
                 addedClass = 'title-offline';
@@ -183,21 +139,76 @@ define([
 
             this.$el.find('.title')
                     .removeClass(removedClass)
-                    .addClass(addedClass);
-
-            this.$networkStatusTooltip.find('.message')
-                                      .text(message)
-                                      .end()
-                                      .popup('open', {
-                                        x: 0,
-                                        y: 82
-                                      });
-
-             window.setTimeout(function () {
-                _this.$networkStatusTooltip.popup('close');
-             }, 2000);
+                    .addClass(addedClass)
+                    .attr('title', message);
 
              return this;
+        },
+
+        showMessage: function (text) {
+            var _this = this;
+
+            // TODO: a message queue can be useful to
+            // display all messages
+            this.$messageTooltip
+                .find('.text')
+                .text(text)
+                .end()
+                .popup('open', {
+                    x: 0,
+                    y: 82
+                });
+
+            setTimeout(function () {
+                _this.$messageTooltip.popup('close');
+            }, 2000);
+
+            return this;
+        },
+
+        showInviteRequest: function (nickname) {
+            var _this = this;
+
+            this.$inviteRequestPopup.find('.message')
+                .text(sprintf(mainResources.inviteRequest, nickname))
+                .end()
+                .find('.accept, .reject')
+                .attr('data-value', nickname)
+                .end()
+                .popup('open');
+
+            return this;
+        },
+
+        showInvitePending: function (nickname) {
+            this.$invitePendingPopup
+                .find('.message')
+                .text(sprintf(mainResources.invitePending, nickname))
+                .end()
+                .popup('open');
+
+            return this;
+        },
+
+        showInviteResponse: function (nickname, status) {
+            var _this = this,
+                message = mainResources.inviteBusy;
+
+            if (status === 'accepted') {
+                message = mainResources.inviteAccepted;
+            } else if (status === 'rejected') {
+                message = mainResources.inviteRejected;
+            }
+
+            this.$invitePendingPopup
+                .find('.message')
+                .text(sprintf(message, nickname));
+
+            setTimeout(function () {
+                _this.$invitePendingPopup.popup('close');
+            }, 2000);
+
+            return this;
         },
 
         showTools: function (event) {

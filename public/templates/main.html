@@ -1,6 +1,6 @@
 <div data-role="header" data-position="fixed">
-    <h1 class="title">
-        <%= name %>
+    <h1>
+        <a class="title title-offline" href="#"><%= name %></a>
     </h1>
 
     <span class="twitter">
@@ -29,8 +29,8 @@
 </div>
 
 <div data-role="popup" data-theme="b"
-    class="networkStatusTooltip ui-content">
-    <p class="message"></p>
+    class="messageTooltip ui-content">
+    <p class="text"></p>
 </div>
 
 <div data-role="popup" data-position-to="window"

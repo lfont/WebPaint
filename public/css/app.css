@@ -59,11 +59,23 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     cursor: crosshair;
 }
 
-.main-view .title-online {
+.main-view .ui-bar-a .title-online,
+.main-view .ui-bar-a .title-offline {
+    cursor: default;
+    text-decoration: none;
+}
+
+.main-view .ui-bar-a .title-online,
+.main-view .ui-bar-a .title-online:active,
+.main-view .ui-bar-a .title-online:hover,
+.main-view .ui-bar-a .title-online:visited {
     color: white;
 }
 
-.main-view .title-offline {
+.main-view .ui-bar-a .title-offline,
+.main-view .ui-bar-a .title-offline:active,
+.main-view .ui-bar-a .title-offline:hover,
+.main-view .ui-bar-a .title-offline:visited {
     color: red;
 }
 

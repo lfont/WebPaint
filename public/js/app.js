@@ -14,7 +14,8 @@ require.config({
         'lib/jquery.mobile': 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min',
         'lib/jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
         'drawing': 'lib/drawing/drawing-0.8.0',
-        'lib/drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0'
+        'lib/drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0',
+        'sprintf': 'lib/sprintf-0.6'
     },
     shim: {
         'underscore': {
@@ -26,6 +27,9 @@ require.config({
         },
         'socket.io': {
             exports: 'io'
+        },
+        'sprintf': {
+            exports: 'sprintf'
         }
     }
 });
@@ -38,7 +42,7 @@ define([
 
     var environment = new EnvironmentModel({
             appName: 'WebPaint',
-            appVersion: '0.6.13',
+            appVersion: '0.6.14',
             screenSize: $(window).height() <= 720 ? 'small' : 'normal'
         }),
         locale;
@@ -69,9 +73,10 @@ define([
         'views/main',
         'collections/colors',
         'collections/languages',
-        'collections/users'
+        'collections/users',
+        'models/user'
     ], function (MainView, ColorCollection, LanguageCollection,
-                 UserCollection) {
+                 UserCollection, UserModel) {
         $(function () {
             var mainView;
 
@@ -95,7 +100,8 @@ define([
                     { code: 'en-us' },
                     { code: 'fr-fr' }
                 ]),
-                users: new UserCollection()
+                guests: new UserCollection(),
+                user: new UserModel()
             });
 
             mainView = new MainView({

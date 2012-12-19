@@ -48,37 +48,9 @@ define([
             } else {
                 setBackground(background);
             }
-        },
-
-        bindSocketHandler = function (socket, drawer, shapeDrawer) {
-            socket.on('invite-response', function (response) {
-                if (!response.accepted) {
-                    return;
-                }
-                
-                shapeDrawer.addDrawnHandler(function (shape) {
-                    socket.draw({
-                        to: response.sender,
-                        shape: shape
-                    });
-                });
-            });
-
-            socket.on('invite-accepted', function (fromUser) {
-                shapeDrawer.addDrawnHandler(function (shape) {
-                    socket.draw({
-                        to: fromUser,
-                        shape: shape
-                    });
-                });
-            });
-
-            socket.on('draw', function (data) {
-                drawer.draw(data.shape);
-            });
         };
 
-    return function ($canvas, socket, environment) {
+    return function ($canvas, environment) {
         var drawer = drawing.canvasDrawer($canvas[0]),
             shapeDrawer = drawer.eventShapeDrawer({
                 events: {
@@ -90,7 +62,14 @@ define([
 
         fixCanvasGeometry($canvas);
         restoreDrawer(drawer, environment);
-        bindSocketHandler(socket, drawer, shapeDrawer);
+
+        this.draw = function (shape) {
+            drawer.draw(shape);
+        };
+
+        this.addDrawnHandler = function (handler) {
+            shapeDrawer.addDrawnHandler(handler);
+        };
 
         this.undo = function () {
             if (!drawer.undo()) {

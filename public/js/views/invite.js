@@ -8,11 +8,12 @@ define([
     'lib/jquery.mobile',
     'backbone',
     'underscore',
+    'sprintf',
     'text!/templates/list-wrapper.html',
     'text!/templates/invite.html',
     'i18n!nls/invite-view'
-], function ($, mobile, Backbone, _, listWrapperTemplate, inviteTemplate,
-             inviteResources) {
+], function ($, mobile, Backbone, _, sprintf, listWrapperTemplate,
+             inviteTemplate, inviteResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -35,9 +36,13 @@ define([
                     .attr('data-role', 'dialog')
                     .page();
 
-            this.options.environment.get('users').on(
+            this.options.environment.get('guests').on(
                 'change reset',
                 _.bind(this.refreshUsers, this));
+
+            this.options.environment.get('user').on(
+                'change:nickname',
+                _.bind(this.refreshInformation, this));
 
             return this;
         },
@@ -68,17 +73,31 @@ define([
             
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
-            setTimeout(this.options.socket.invite.bind(this.options.socket,
-                                                       nickname), 250);
+            setTimeout(this.options.socket.sendInvite.bind(this.options.socket,
+                                                           nickname), 250);
         },
 
         refreshUsers: function () {
+            var guests = this.options.environment.get('guests').toJSON();
+
             this.$el.find('.list-wrapper')
                     .html(this.listTemplate({
                         r: inviteResources,
-                        users: this.options.environment.get('users').toJSON()
+                        guests: guests
                     }))
                     .trigger('create');
+
+            this.refreshInformation();
+                        
+            return this;
+        },
+
+        refreshInformation: function () {
+            var user = this.options.environment.get('user'),
+                nickname = user.get('nickname');
+
+            this.$el.find('.invite-information')
+                    .text(sprintf(inviteResources.inviteInformation, nickname));
 
             return this;
         }
