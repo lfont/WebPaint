@@ -219,7 +219,7 @@ define([
             require([
                 'views/tools'
             ], function (ToolsView) {
-                var isPopup = _this.options.environment.get('sreenSize') ===
+                var isPopup = _this.options.environment.get('screenSize') !==
                              'small';
 
                 if (!_this.toolsView) {
