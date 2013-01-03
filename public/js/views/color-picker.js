@@ -7,7 +7,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!/templates/color-picker.html',
+    'text!templates/color-picker.html',
     'i18n!nls/color-picker-view'
 ], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
     'use strict';

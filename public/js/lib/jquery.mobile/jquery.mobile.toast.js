@@ -5,7 +5,7 @@ Loïc Fontaine - http://jsfiddle.net/loic_fontaine/kapWz/
 
 define([
     'jquery',
-    'lib/jquery.mobile'
+    'jquery.mobile'
 ], function ($, mobile) {
     'use strict';
     

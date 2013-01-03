@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebPaint - Tests</title>
+        <link rel="stylesheet" href="/testem/mocha.css">
+        <script src="/testem/mocha.js"></script>
+        <script>
+            mocha.setup('bdd');
+        </script>
+        <script src="/test/lib/chai.js"></script>
+        <script>
+            var expect = chai.expect;
+        </script>
+        <script src="/test/lib/sinon-1.5.1.js"></script>
+        <script>
+            if (location.hash === '#testem') {
+                document.write('<script src="/testem.js"></'+'script>');
+            }
+        </script>
+    </head>
+    <body>
+        <div id="mocha"></div>
+        <div data-role="page"></div>
+        <script data-main="main" src="/public/js/lib/requirejs/require.js"></script>
+    </body>
+</html>

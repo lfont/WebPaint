@@ -9,8 +9,8 @@ define([
     'underscore',
     'drawing',
     'i18n!nls/drawer-manager',
-    'lib/drawing.event',
-    'lib/jquery.mobile.toast'
+    'drawing.event',
+    'jquery.mobile.toast'
 ], function ($, Backbone, _, drawing, drawerManagerResources) {
     'use strict';
 

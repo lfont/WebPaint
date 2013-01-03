@@ -5,10 +5,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'lib/jquery.mobile',
+    'jquery.mobile',
     'backbone',
     'underscore',
-    'text!/templates/save.html',
+    'text!templates/save.html',
     'i18n!nls/save-view'
 ], function ($, mobile, Backbone, _, saveTemplate, saveResources) {
     'use strict';

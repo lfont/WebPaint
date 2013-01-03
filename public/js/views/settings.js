@@ -5,11 +5,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'lib/jquery.mobile',
+    'jquery.mobile',
     'backbone',
     'underscore',
-    'text!/templates/settings.html',
-    'text!/templates/languages.html',
+    'text!templates/settings.html',
+    'text!templates/languages.html',
     'i18n!nls/settings-view'
 ], function ($, mobile, Backbone, _, settingsTemplate, languagesTemplate,
              settingsResources) {

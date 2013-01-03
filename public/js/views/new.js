@@ -5,11 +5,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'lib/jquery.mobile',
+    'jquery.mobile',
     'backbone',
     'underscore',
     'views/color-picker',
-    'text!/templates/new.html',
+    'text!templates/new.html',
     'i18n!nls/new-view'
 ], function ($, mobile, Backbone, _, ColorPickerView, newTemplate,
              newResources) {

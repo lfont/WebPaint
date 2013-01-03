@@ -8,7 +8,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!/templates/options.html',
+    'text!templates/options.html',
     'i18n!nls/options-view'
 ], function (require, $, Backbone, _, optionsTemplate, optionsResources) {
     'use strict';

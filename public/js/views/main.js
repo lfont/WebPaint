@@ -6,13 +6,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
     'require',
     'jquery',
-    'lib/jquery.mobile',
+    'jquery.mobile',
     'backbone',
     'underscore',
     'drawer-manager',
     'drawing-client',
     'sprintf',
-    'text!/templates/main.html',
+    'text!templates/main.html',
     'i18n!nls/main-view'
 ], function (require, $, mobile, Backbone, _, DrawerManager, DrawingClient,
              sprintf, mainTemplate, mainResources) {
@@ -59,6 +59,7 @@ define([
 
         show: function () {
             mobile.changePage(this.$el);
+            return this;
         },
 
         pageshow: function () {

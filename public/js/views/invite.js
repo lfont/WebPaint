@@ -5,12 +5,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'lib/jquery.mobile',
+    'jquery.mobile',
     'backbone',
     'underscore',
     'sprintf',
-    'text!/templates/list-wrapper.html',
-    'text!/templates/invite.html',
+    'text!templates/list-wrapper.html',
+    'text!templates/invite.html',
     'i18n!nls/invite-view'
 ], function ($, mobile, Backbone, _, sprintf, listWrapperTemplate,
              inviteTemplate, inviteResources) {
