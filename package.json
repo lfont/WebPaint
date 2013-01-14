@@ -15,7 +15,8 @@
     "testem": "~0.2.50"
   },
   "engines": {
-    "node": "0.8.x"
+    "node": "0.8.x",
+    "npm": "1.1.x"
   },
   "subdomain": "lfont.webpaint",
   "scripts": {
