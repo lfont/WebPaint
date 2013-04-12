@@ -41,6 +41,8 @@ define([
         template: _.template(mainTemplate),
 
         render: function () {
+            var _this = this;
+
             this.$el.html(this.template({
                         r: mainResources,
                         name: this.options.environment.get('appName')
@@ -53,6 +55,16 @@ define([
             this.$messageTooltip = this.$el.find('.messageTooltip');
             this.$inviteRequestPopup = this.$el.find('.inviteRequestPopup');
             this.$invitePendingPopup = this.$el.find('.invitePendingPopup');
+
+            if (this.options.environment.get('screenSize') !== 'small') {
+                require([
+                    'views/social-widgets'
+                ], function (SocialWidgetsView) {
+                    var socialWidgetsView = new SocialWidgetsView({
+                        el: _this.$el.find('.social-widgets')
+                    }).render();
+                });
+            }
 
             return this;
         },
@@ -214,7 +226,6 @@ define([
 
         showTools: function (event) {
             var _this = this;
-
             event.preventDefault();
 
             require([
@@ -245,7 +256,6 @@ define([
 
         showOptions: function (event) {
             var _this = this;
-
             event.preventDefault();
 
             require([

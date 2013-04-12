@@ -46,8 +46,11 @@ define(function () {
 
                 var environment = new EnvironmentModel({
                         appName: 'WebPaint',
-                        appVersion: '0.6.17',
-                        screenSize: $(window).height() <= 720 ? 'small' : 'normal'
+                        appVersion: '0.6.18',
+                        screenSize: $(window).height() <= 720 ||
+                                    $(window).width() <= 480 ?
+                                    'small' :
+                                    'normal'
                     }),
                     locale;
 
@@ -64,7 +67,7 @@ define(function () {
                         }
                     });
                 }
-                        
+
                 $(document).on('mobileinit', function () {
                     var screenSize = environment.get('screenSize');
 
@@ -112,9 +115,7 @@ define(function () {
                             el: $('<div></div>').appendTo('body'),
                             environment: environment
                         });
-
-                        mainView.render()
-                                .show();
+                        mainView.render().show();
 
                         $(window).unload(function () {
                             environment.set({

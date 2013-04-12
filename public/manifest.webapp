@@ -14,5 +14,10 @@
   "default_locale": "en",
   "installs_allowed_from": [ "https://marketplace.example.com" ],
   "orientation": [ "portrait" ],
+  "permissions": {
+    "storage": {
+      "description": "Required for the settings of the app"
+    }
+  },
   "type": "web"
 }

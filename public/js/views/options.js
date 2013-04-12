@@ -66,12 +66,11 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                        r: optionsResources,
-                        options: this.optionItems
-                    }))
-                    .addClass('options-view')
-                    .trigger('create')
-                    .popup();
+                r: optionsResources,
+                options: this.optionItems
+            })).addClass('options-view')
+               .trigger('create')
+               .popup();
 
             return this;
         },

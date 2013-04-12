@@ -11,7 +11,7 @@ define([
     'i18n!nls/color-picker-view'
 ], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
     'use strict';
-    
+
     var SELECTED_CLASS = 'colorpicker-color-selected',
 
         hexFromRgb = function (r, g, b) {
@@ -32,7 +32,7 @@ define([
 
         rgbFromHex = function (hex) {
             var match = /([\da-f]{2})([\da-f]{2})([\da-f]{2})/.exec(hex);
-            
+
             if (match && match.length === 4) {
                 return {
                     r: parseInt(match[1], 16),
@@ -40,7 +40,7 @@ define([
                     b: parseInt(match[3], 16)
                 };
             }
-            
+
             return null;
         };
 
@@ -102,7 +102,7 @@ define([
         value: function (hex) {
             var $customColor = this.$el.find('.colorpicker-custom-color'),
                 $predefinedColors, $red, $green, $blue, rgb;
-            
+
             if (this.hasPredefinedColor(hex)) {
                 $customColor.removeClass(SELECTED_CLASS);
 

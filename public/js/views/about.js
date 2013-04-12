@@ -22,15 +22,27 @@ define([
         template: _.template(aboutTemplate),
 
         render: function () {
+            var _this = this;
+
             this.$el.html(this.template({
-                        r: aboutResources,
-                        name: this.options.environment.get('appName'),
-                        version: this.options.environment.get('appVersion')
-                    }))
-                    .addClass('ui-corner-all')
-                    .attr('data-position-to', 'window')
-                    .trigger('create')
-                    .popup();
+                r: aboutResources,
+                name: this.options.environment.get('appName'),
+                version: this.options.environment.get('appVersion')
+            })).addClass('about-view')
+               .addClass('ui-corner-all')
+               .attr('data-position-to', 'window')
+               .trigger('create')
+               .popup();
+
+            if (this.options.environment.get('screenSize') === 'small') {
+                require([
+                    'views/social-widgets'
+                ], function (SocialWidgetsView) {
+                    var socialWidgetsView = new SocialWidgetsView({
+                        el: _this.$el.find('.social-widgets')
+                    }).render();
+                });
+            }
 
             return this;
         },

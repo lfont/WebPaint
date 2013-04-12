@@ -25,7 +25,7 @@ define([
         },
 
         template: _.template(listWrapperTemplate),
-        
+
         listTemplate: _.template(inviteTemplate),
 
         render: function () {
@@ -70,7 +70,7 @@ define([
             event.preventDefault();
 
             this.$el.dialog('close');
-            
+
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
             setTimeout(this.options.socket.sendInvite.bind(this.options.socket,
@@ -88,7 +88,7 @@ define([
                     .trigger('create');
 
             this.refreshInformation();
-                        
+
             return this;
         },
 

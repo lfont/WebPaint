@@ -28,6 +28,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
+.about-view .ui-content a {
+    text-decoration: none;
+}
+
+.about-view .ui-content .social-widgets {
+    margin-left: 2em;
+}
+
 .main-view {
     -webkit-user-select: none;
     user-select: none;
@@ -43,7 +51,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
-.main-view .ui-header .twitter {
+.main-view .ui-header .social-widgets {
     position: absolute;
     left: 100px;
     top: 10px;
