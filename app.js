@@ -24,6 +24,7 @@ app.configure('production', function () {
     app.use(express.errorHandler());
 });
 
+express.static.mime.define({ 'application/x-web-app-manifest+json': [ 'webapp' ] });
 
 // Routes
 

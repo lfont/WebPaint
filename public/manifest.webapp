@@ -1,0 +1,18 @@
+{
+  "name": "WebPaint",
+  "description": "A simple drawing application for fun.",
+  "launch_path": "/",
+  "icons": {
+    "32": "/img/icon-32.png",
+    "60": "/img/icon-60.png",
+    "128": "/img/icon-128.png"
+  },
+  "developer": {
+    "name": "Loïc Fontaine",
+    "url": "http://blog.lfont.me"
+  },
+  "default_locale": "en",
+  "installs_allowed_from": [ "https://marketplace.example.com" ],
+  "orientation": [ "portrait" ],
+  "type": "web"
+}
