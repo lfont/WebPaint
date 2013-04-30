@@ -25,6 +25,7 @@ app.configure('production', function () {
 });
 
 express.static.mime.define({ 'application/x-web-app-manifest+json': [ 'webapp' ] });
+express.static.mime.define({ 'text/cache-manifest': [ 'appcache' ] });
 
 // Routes
 

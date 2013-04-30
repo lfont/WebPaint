@@ -8,11 +8,11 @@ require.config({
         'templates': '../templates',
         'i18n': 'lib/requirejs/i18n',
         'text': 'lib/requirejs/text',
-        'jquery': 'http://code.jquery.com/jquery-1.8.2.min',
-        'underscore': 'http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min',
-        'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min',
+        'jquery': 'lib/jquery-1.8.2',
+        'underscore': 'lib/underscore',
+        'backbone': 'lib/backbone',
         'socket.io': '/socket.io/socket.io.js',
-        'jquery.mobile': 'http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min',
+        'jquery.mobile': 'lib/jquery.mobile/jquery.mobile-1.2.1',
         'jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
         'drawing': 'lib/drawing/drawing-0.8.0',
         'drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0',
@@ -46,7 +46,7 @@ define(function () {
 
                 var environment = new EnvironmentModel({
                         appName: 'WebPaint',
-                        appVersion: '0.6.18',
+                        appVersion: '0.6.19',
                         screenSize: $(window).height() <= 720 ||
                                     $(window).width() <= 480 ?
                                     'small' :
