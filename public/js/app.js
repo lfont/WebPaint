@@ -8,11 +8,11 @@ require.config({
         'templates': '../templates',
         'i18n': 'lib/requirejs/i18n',
         'text': 'lib/requirejs/text',
-        'jquery': 'lib/jquery-1.8.2',
+        'jquery': 'lib/jquery-2.0.0',
         'underscore': 'lib/underscore',
         'backbone': 'lib/backbone',
         'socket.io': '/socket.io/socket.io.js',
-        'jquery.mobile': 'lib/jquery.mobile/jquery.mobile-1.2.1',
+        'jquery.mobile': 'lib/jquery.mobile/jquery.mobile-1.3.1',
         'jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
         'drawing': 'lib/drawing/drawing-0.8.0',
         'drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0',
@@ -46,7 +46,7 @@ define(function () {
 
                 var environment = new EnvironmentModel({
                         appName: 'WebPaint',
-                        appVersion: '0.6.19',
+                        appVersion: '0.6.20',
                         screenSize: $(window).height() <= 720 ||
                                     $(window).width() <= 480 ?
                                     'small' :
@@ -73,7 +73,7 @@ define(function () {
 
                     $.mobile.defaultPageTransition =
                         $.mobile.defaultDialogTransition =
-                            screenSize === 'small' ? 'none': 'fade';
+                            screenSize === 'small' ? 'fade': 'slide';
                 });
 
                 require([

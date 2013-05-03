@@ -1,24 +1,24 @@
 <div data-role="header" data-position="fixed">
     <h1>
-        <a class="title title-offline" href="#"><%= name %></a>
+        <span class="title title-offline"><%= name %></span>
     </h1>
 
     <span class="social-widgets"></span>
 
-    <span class="ui-btn-right">
-        <a href="#" class="undo"
-            data-role="button" data-inline="true" data-icon="back"
-            data-iconpos="notext" data-theme="b"><%= r.undoButton %></a>
-        <a href="#" class="redo"
-            data-role="button" data-inline="true" data-icon="forward"
-            data-iconpos="notext" data-theme="b"><%= r.redoButton %></a>
-        <a href="#" class="tools"
-            data-role="button" data-inline="true" data-icon="grid"
-            data-iconpos="notext" data-theme="b"><%= r.toolsButton %></a>
-        <a href="#" class="options"
-            data-role="button" data-inline="true" data-icon="gear"
-            data-iconpos="notext" data-theme="b"><%= r.optionsButton %></a>
-    </span>
+    <div class="ui-btn-right">
+        <button class="undo"
+            data-inline="true" data-icon="back"
+            data-iconpos="notext" data-theme="b"><%= r.undoButton %></button>
+        <button class="redo"
+            data-inline="true" data-icon="forward"
+            data-iconpos="notext" data-theme="b"><%= r.redoButton %></button>
+        <button class="tools"
+            data-inline="true" data-icon="grid"
+            data-iconpos="notext" data-theme="b"><%= r.toolsButton %></button>
+        <button class="options"
+            data-inline="true" data-icon="gear"
+            data-iconpos="notext" data-theme="b"><%= r.optionsButton %></button>
+    </div>
 </div>
 
 <div data-role="content">

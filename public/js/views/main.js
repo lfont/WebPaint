@@ -47,6 +47,7 @@ define([
                         r: mainResources,
                         name: this.options.environment.get('appName')
                     }))
+                    .attr('id', 'main-view')
                     .addClass('main-view')
                     // The data-url attribute must be set for popups
                     .attr('data-url', '/')
