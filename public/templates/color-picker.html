@@ -1,25 +1,26 @@
 <div class="colorpicker-custom-colors">
     <p><%= r.customColorHint %></p>
-    <div class="colorpicker-custom-color">
-    </div>
-    <div data-role="fieldcontain">
-        <label for="red"><%= r.redLabel %></label>
-        <input type="number" name="red" value="0" min="0" max="255"
-            data-type="range" data-highlight="true" data-mini="true"
-            class="colorpicker-red" />
-    </div>
-    <div data-role="fieldcontain">
-        <label for="green"><%= r.greenLabel %></label>
-        <input type="number" name="green" value="0" min="0" max="255"
-            data-type="range" data-highlight="true" data-mini="true"
-            class="colorpicker-green" />
-    </div>
-    <div data-role="fieldcontain">
-        <label for="blue"><%= r.blueLabel %></label>
-        <input type="number" name="blue" value="0" min="0" max="255"
-            data-type="range" data-highlight="true" data-mini="true"
-            class="colorpicker-blue" />
-    </div>
+    <div class="colorpicker-custom-color"></div>
+    <form>
+        <div data-role="fieldcontain">
+            <label for="red"><%= r.redLabel %></label>
+            <input type="range" name="red" value="0" min="0" max="255"
+                data-highlight="true" data-mini="true"
+                class="colorpicker-red" />
+        </div>
+        <div data-role="fieldcontain">
+            <label for="green"><%= r.greenLabel %></label>
+            <input type="range" name="green" value="0" min="0" max="255"
+                data-highlight="true" data-mini="true"
+                class="colorpicker-green" />
+        </div>
+        <div data-role="fieldcontain">
+            <label for="blue"><%= r.blueLabel %></label>
+            <input type="range" name="blue" value="0" min="0" max="255"
+                data-highlight="true" data-mini="true"
+                class="colorpicker-blue" />
+        </div>
+    </form>
 </div>
 <div class="colorpicker-predefined-colors">
     <p><%= r.predefinedColorHint %></p>

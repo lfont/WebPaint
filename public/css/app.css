@@ -16,8 +16,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 .ui-popup .ui-field-contain input.ui-slider-input {
-    display: inline-block;
-    width: auto;
+    width: 40px;
 }
 
 .ui-header .ui-btn {
@@ -132,8 +131,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 .colorpicker-custom-colors label {
     display: inline-block;
+    margin-top: 7px;
     text-align: left;
-    width: 4em;
+    vertical-align: top;
+    width: 10%;
 }
     
 .colorpicker-predefined-colors>div {

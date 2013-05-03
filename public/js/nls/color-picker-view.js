@@ -7,9 +7,9 @@ define({
     "root": {
         "customColorHint": "Create your own color: ",
         "predefinedColorHint": "Or choose from a predefined one: ",
-        "redLabel": "Red: ",
-        "greenLabel": "Green: ",
-        "blueLabel": "Blue: "
+        "redLabel": "R: ",
+        "greenLabel": "G: ",
+        "blueLabel": "B: "
     },
     "fr-fr": true
 });
