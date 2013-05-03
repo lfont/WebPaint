@@ -8,7 +8,7 @@ define([
     'jquery.mobile'
 ], function ($, mobile) {
     'use strict';
-    
+
     $.extend(mobile, {
         showToast: function (message, delay, callback) {
             if (typeof(delay) === 'function') {
@@ -35,4 +35,6 @@ define([
             }, delay);
         }
     });
+
+    return mobile.showToast;
 });

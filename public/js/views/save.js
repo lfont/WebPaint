@@ -5,12 +5,11 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'text!templates/save.html',
     'i18n!nls/save-view'
-], function ($, mobile, Backbone, _, saveTemplate, saveResources) {
+], function ($, Backbone, _, saveTemplate, saveResources) {
     'use strict';
 
     return Backbone.View.extend({

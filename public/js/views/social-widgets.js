@@ -5,11 +5,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'text!templates/social-widgets.html'
-], function ($, mobile, Backbone, _, socialWidgetsTemplate) {
+], function ($, Backbone, _, socialWidgetsTemplate) {
     'use strict';
 
     return Backbone.View.extend({

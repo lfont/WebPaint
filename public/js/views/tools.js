@@ -5,14 +5,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'drawing',
     'views/color-picker',
     'text!templates/tools.html',
     'i18n!nls/tools-view'
-], function ($, mobile, Backbone, _, drawing, ColorPickerView, toolsTemplate,
+], function ($, Backbone, _, drawing, ColorPickerView, toolsTemplate,
              toolsResources) {
     'use strict';
 
@@ -39,14 +38,14 @@ define([
                         r: toolsResources,
                         shapes: drawing.shapes
                     }))
+                    .attr('id', 'tools')
                     .addClass('tools-view');
 
             if (this.isPopup) {
                 this.$el.trigger('create')
                         .popup();
             } else {
-                this.$el.attr('data-url', 'tools')
-                        .attr('data-role', 'dialog')
+                this.$el.attr('data-role', 'dialog')
                         .page();
             }
 
@@ -69,7 +68,7 @@ define([
                     positionTo: this.options.positionTo
                 });
             } else {
-                mobile.changePage(this.$el);
+                $.mobile.navigate('#tools');
             }
         },
 

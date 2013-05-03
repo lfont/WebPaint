@@ -46,7 +46,7 @@ define(function () {
 
                 var environment = new EnvironmentModel({
                         appName: 'WebPaint',
-                        appVersion: '0.6.20',
+                        appVersion: '0.6.21',
                         screenSize: $(window).height() <= 720 ||
                                     $(window).width() <= 480 ?
                                     'small' :
@@ -111,11 +111,12 @@ define(function () {
                             user: new UserModel()
                         });
 
-                        mainView = new MainView({
-                            el: $('<div></div>').appendTo('body'),
-                            environment: environment
+                        mainView = new MainView({ environment: environment });
+                        mainView.render().$el.css('visibility', 'hidden').appendTo('body');
+
+                        require(['jquery.mobile'], function () {
+                            mainView.$el.css('visibility', 'visible');
                         });
-                        mainView.render().show();
 
                         $(window).unload(function () {
                             environment.set({

@@ -5,13 +5,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'text!templates/list-wrapper.html',
     'text!templates/history.html',
     'i18n!nls/history-view'
-], function ($, mobile, Backbone, _, listWrapperTemplate, historyTemplate,
+], function ($, Backbone, _, listWrapperTemplate, historyTemplate,
              historyResources) {
     'use strict';
 
@@ -24,14 +23,13 @@ define([
         },
 
         template: _.template(listWrapperTemplate),
-
         listTemplate: _.template(historyTemplate),
 
         render: function () {
             this.$el.html(this.template({
                         r: historyResources
                     }))
-                    .attr('data-url', 'history')
+                    .attr('id', 'history')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -45,7 +43,7 @@ define([
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            $.mobile.navigate('#history');
         },
 
         pagecreate: function () {

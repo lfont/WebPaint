@@ -6,7 +6,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
     'require',
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'drawer-manager',
@@ -14,7 +13,7 @@ define([
     'sprintf',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, mobile, Backbone, _, DrawerManager, DrawingClient,
+], function (require, $, Backbone, _, DrawerManager, DrawingClient,
              sprintf, mainTemplate, mainResources) {
     'use strict';
 
@@ -39,6 +38,8 @@ define([
         },
 
         template: _.template(mainTemplate),
+        className: 'main-view',
+        attributes: { 'id': 'main-view', 'data-role': 'page' },
 
         render: function () {
             var _this = this;
@@ -46,12 +47,7 @@ define([
             this.$el.html(this.template({
                         r: mainResources,
                         name: this.options.environment.get('appName')
-                    }))
-                    .attr('id', 'main-view')
-                    .addClass('main-view')
-                    // The data-url attribute must be set for popups
-                    .attr('data-url', '/')
-                    .page();
+                    }));
 
             this.$messageTooltip = this.$el.find('.messageTooltip');
             this.$inviteRequestPopup = this.$el.find('.inviteRequestPopup');
@@ -71,7 +67,7 @@ define([
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            $.mobile.navigate('#main-view');
             return this;
         },
 
@@ -135,7 +131,7 @@ define([
         },
 
         isVisible: function () {
-            return mobile.activePage[0] === this.$el[0];
+            return $.mobile.activePage[0] === this.$el[0];
         },
 
         showNetworkStatus: function (isOnline) {

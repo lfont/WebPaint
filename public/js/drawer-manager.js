@@ -9,46 +9,51 @@ define([
     'underscore',
     'drawing',
     'i18n!nls/drawer-manager',
-    'drawing.event',
-    'jquery.mobile.toast'
+    'drawing.event'
 ], function ($, Backbone, _, drawing, drawerManagerResources) {
     'use strict';
 
-    var fixCanvasGeometry = function ($canvas) {
-            var $container = $canvas.parent(),
-                canvas = $canvas[0];
+    function fixCanvasGeometry ($canvas) {
+        var $container = $canvas.parent(),
+            canvas = $canvas[0];
 
-            canvas.height = $container.height() -
-                            ($canvas.outerHeight() - $canvas.height()) -
-                            4; // FIX: we should not set this manually
-            canvas.width = $container.width() -
-                           ($canvas.outerWidth() - $canvas.width());
-        },
+        canvas.height = $container.height() -
+                        ($canvas.outerHeight() - $canvas.height()) -
+                        4; // FIX: we should not set this manually
+        canvas.width = $container.width() -
+                       ($canvas.outerWidth() - $canvas.width());
+    }
 
-        restoreDrawer = function (drawer, environment) {
-            var background = environment.get('background'),
-                image;
+    function restoreDrawer (drawer, environment) {
+        var background = environment.get('background'),
+            image;
 
-            function setBackground(background) {
-                drawer.newDrawing(background);
-                drawer.properties({
-                    lineWidth: environment.get('lineWidth'),
-                    strokeStyle: environment.get('strokeStyle'),
-                    fillStyle: environment.get('fillStyle'),
-                    lineCap: environment.get('lineCap')
-                });
-            }
+        function setBackground(background) {
+            drawer.newDrawing(background);
+            drawer.properties({
+                lineWidth: environment.get('lineWidth'),
+                strokeStyle: environment.get('strokeStyle'),
+                fillStyle: environment.get('fillStyle'),
+                lineCap: environment.get('lineCap')
+            });
+        }
 
-            if (background.match(/(?:^data:)|(?:\.(?:jpg|png)$)/)) {
-                image = new window.Image();
-                image.onload = function () {
-                    setBackground(image);
-                };
-                image.src = background;
-            } else {
-                setBackground(background);
-            }
-        };
+        if (background.match(/(?:^data:)|(?:\.(?:jpg|png)$)/)) {
+            image = new window.Image();
+            image.onload = function () {
+                setBackground(image);
+            };
+            image.src = background;
+        } else {
+            setBackground(background);
+        }
+    }
+
+    function showToast (message) {
+        require(['jquery.mobile.toast'], function (toast) {
+            toast(message);
+        });
+    }
 
     return function ($canvas, environment) {
         var drawer = drawing.canvasDrawer($canvas[0]),
@@ -73,7 +78,7 @@ define([
 
         this.undo = function () {
             if (!drawer.undo()) {
-                $.mobile.showToast(drawerManagerResources.lastUndo);
+                showToast(drawerManagerResources.lastUndo);
             }
 
             return this;
@@ -81,7 +86,7 @@ define([
 
         this.redo = function () {
             if (!drawer.redo()) {
-                $.mobile.showToast(drawerManagerResources.lastRedo);
+                showToast(drawerManagerResources.lastRedo);
             }
 
             return this;

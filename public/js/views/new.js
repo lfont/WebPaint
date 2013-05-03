@@ -5,13 +5,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'views/color-picker',
     'text!templates/new.html',
     'i18n!nls/new-view'
-], function ($, mobile, Backbone, _, ColorPickerView, newTemplate,
+], function ($, Backbone, _, ColorPickerView, newTemplate,
              newResources) {
     'use strict';
 
@@ -29,7 +28,7 @@ define([
             this.$el.html(this.template({
                         r: newResources
                     }))
-                    .attr('data-url', 'new')
+                    .attr('id', 'new')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -47,7 +46,7 @@ define([
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            $.mobile.navigate('#new');
         },
 
         pagebeforeshow: function () {

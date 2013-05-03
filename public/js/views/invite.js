@@ -5,14 +5,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'sprintf',
     'text!templates/list-wrapper.html',
     'text!templates/invite.html',
     'i18n!nls/invite-view'
-], function ($, mobile, Backbone, _, sprintf, listWrapperTemplate,
+], function ($, Backbone, _, sprintf, listWrapperTemplate,
              inviteTemplate, inviteResources) {
     'use strict';
 
@@ -32,7 +31,7 @@ define([
             this.$el.html(this.template({
                         r: inviteResources
                     }))
-                    .attr('data-url', 'invite')
+                    .attr('id', 'invite')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -48,7 +47,7 @@ define([
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            $.mobile.navigate('#invite');
         },
 
         pagecreate: function () {

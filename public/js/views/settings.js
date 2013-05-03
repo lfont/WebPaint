@@ -5,13 +5,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'jquery',
-    'jquery.mobile',
     'backbone',
     'underscore',
     'text!templates/settings.html',
     'text!templates/languages.html',
     'i18n!nls/settings-view'
-], function ($, mobile, Backbone, _, settingsTemplate, languagesTemplate,
+], function ($, Backbone, _, settingsTemplate, languagesTemplate,
              settingsResources) {
     'use strict';
 
@@ -32,7 +31,7 @@ define([
             this.$el.html(this.template({
                         r: settingsResources
                     }))
-                    .attr('data-url', 'language')
+                    .attr('id', 'language')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -48,7 +47,7 @@ define([
         },
 
         show: function () {
-            mobile.changePage(this.$el);
+            $.mobile.changePage('#language');
         },
 
         pagecreate: function () {
