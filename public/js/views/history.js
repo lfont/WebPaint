@@ -29,7 +29,7 @@ define([
             this.$el.html(this.template({
                         r: historyResources
                     }))
-                    .attr('id', 'history')
+                    .attr('id', 'history-view')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -43,7 +43,7 @@ define([
         },
 
         show: function () {
-            $.mobile.navigate('#history');
+            $.mobile.navigate('#history-view');
         },
 
         pagecreate: function () {

@@ -27,9 +27,10 @@ define([
                 r: aboutResources,
                 name: this.options.environment.get('appName'),
                 version: this.options.environment.get('appVersion')
-            })).addClass('about-view')
-               .addClass('ui-corner-all')
+            })).attr('id', 'about-view')
                .attr('data-position-to', 'window')
+               .addClass('about-view')
+               .addClass('ui-corner-all')
                .trigger('create')
                .popup();
 

@@ -31,7 +31,7 @@ define([
             this.$el.html(this.template({
                         r: inviteResources
                     }))
-                    .attr('id', 'invite')
+                    .attr('id', 'invite-view')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -47,7 +47,7 @@ define([
         },
 
         show: function () {
-            $.mobile.navigate('#invite');
+            $.mobile.navigate('#invite-view');
         },
 
         pagecreate: function () {

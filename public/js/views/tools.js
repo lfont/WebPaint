@@ -38,7 +38,7 @@ define([
                         r: toolsResources,
                         shapes: drawing.shapes
                     }))
-                    .attr('id', 'tools')
+                    .attr('id', 'tools-view')
                     .addClass('tools-view');
 
             if (this.isPopup) {
@@ -68,7 +68,7 @@ define([
                     positionTo: this.options.positionTo
                 });
             } else {
-                $.mobile.navigate('#tools');
+                $.mobile.navigate('#tools-view');
             }
         },
 

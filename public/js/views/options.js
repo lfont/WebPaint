@@ -68,7 +68,8 @@ define([
             this.$el.html(this.template({
                 r: optionsResources,
                 options: this.optionItems
-            })).addClass('options-view')
+            })).attr('id', 'options-view')
+               .addClass('options-view')
                .trigger('create')
                .popup();
 
@@ -97,54 +98,38 @@ define([
                 return item.option === option;
             });
 
-            switch (optionItem.type)
-            {
-                case 'action':
-                    this.options.drawer[option]();
-                    this.$el.popup('close');
-                    this.trigger('close');
-                    break;
-                case 'popup':
-                    require([
-                        'views/' + option
-                    ], function (View) {
-                        if (!_this[option]) {
-                            _this[option] = new View({
-                                el: $('<div></div>').appendTo(_this.$el.closest('.ui-page')),
-                                environment: _this.options.environment,
-                                drawer: _this.options.drawer,
-                                socket: _this.options.socket
-                            });
-                            _this[option].on('close', _this.trigger.bind(_this, 'close'));
-                            _this[option].render();
-                        }
-
-                        _this.$el.popup('close');
-
-                        window.setTimeout(function () {
-                            _this[option].show();
-                        }, 250);
-                    });
-                    break;
-                case 'page':
-                    require([
-                        'views/' + option
-                    ], function (View) {
-                        if (!_this[option]) {
-                            _this[option] = new View({
-                                el: $('<div></div>').appendTo('body'),
-                                environment: _this.options.environment,
-                                drawer: _this.options.drawer,
-                                socket: _this.options.socket
-                            });
-                            _this[option].on('close', _this.trigger.bind(_this, 'close'));
-                            _this[option].render();
-                        }
-
-                        _this[option].show();
-                    });
-                    break;
+            if (optionItem.type === 'action') {
+                this.options.drawer[option]();
+                this.$el.popup('close');
+                this.trigger('close');
+                return;
             }
+
+            require([
+                'views/' + option
+            ], function (View) {
+                if (!_this[option]) {
+                    _this[option] = new View({
+                        el: optionItem.type === 'page' ?
+                            $('<div></div>').appendTo('body') :
+                            $('<div></div>').appendTo(_this.$el
+                                                           .closest('.ui-page')),
+                        environment: _this.options.environment,
+                        drawer: _this.options.drawer,
+                        socket: _this.options.socket
+                    });
+                    _this[option].on('close', _this.trigger.bind(_this, 'close'));
+                    _this[option].render();
+                }
+
+                // wait for the popup to close before navigation so
+                // the url stay clean.
+                _this.$el.one('popupafterclose', function () {
+                    _this[option].show();
+                });
+
+                _this.$el.popup('close');
+            });
         }
     });
 });

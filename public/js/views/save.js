@@ -24,12 +24,13 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                        r: saveResources
-                    }))
-                    .addClass('ui-corner-all')
-                    .attr('data-position-to', 'window')
-                    .trigger('create')
-                    .popup();
+                r: saveResources
+            })).attr('id', 'save-view')
+               .attr('data-position-to', 'window')
+               .attr('data-dismissible', 'false')
+               .addClass('ui-corner-all')
+               .trigger('create')
+               .popup();
 
             return this;
         },

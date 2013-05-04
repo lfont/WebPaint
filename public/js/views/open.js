@@ -24,12 +24,13 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                        r: openResources
-                    }))
-                    .addClass('ui-corner-all')
-                    .attr('data-position-to', 'window')
-                    .trigger('create')
-                    .popup();
+                r: openResources
+            })).attr('id', 'open-view')
+               .attr('data-position-to', 'window')
+               .attr('data-dismissible', 'false')
+               .addClass('ui-corner-all')
+               .trigger('create')
+               .popup();
 
             return this;
         },

@@ -4,7 +4,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'require',
     'jquery',
     'backbone',
     'underscore',
@@ -13,7 +12,7 @@ define([
     'sprintf',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, Backbone, _, DrawerManager, DrawingClient,
+], function ($, Backbone, _, DrawerManager, DrawingClient,
              sprintf, mainTemplate, mainResources) {
     'use strict';
 
@@ -49,9 +48,9 @@ define([
                         name: this.options.environment.get('appName')
                     }));
 
-            this.$messageTooltip = this.$el.find('.messageTooltip');
-            this.$inviteRequestPopup = this.$el.find('.inviteRequestPopup');
-            this.$invitePendingPopup = this.$el.find('.invitePendingPopup');
+            this.$messageTooltip = this.$el.find('#main-message-tooltip');
+            this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
+            this.$invitePendingPopup = this.$el.find('#main-invite-pending-popup');
 
             if (this.options.environment.get('screenSize') !== 'small') {
                 require([

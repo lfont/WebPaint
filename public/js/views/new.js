@@ -28,7 +28,7 @@ define([
             this.$el.html(this.template({
                         r: newResources
                     }))
-                    .attr('id', 'new')
+                    .attr('id', 'new-view')
                     .attr('data-role', 'dialog')
                     .page();
 
@@ -46,7 +46,7 @@ define([
         },
 
         show: function () {
-            $.mobile.navigate('#new');
+            $.mobile.navigate('#new-view');
         },
 
         pagebeforeshow: function () {

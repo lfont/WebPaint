@@ -29,11 +29,10 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                        r: settingsResources
-                    }))
-                    .attr('id', 'language')
-                    .attr('data-role', 'dialog')
-                    .page();
+                r: settingsResources
+            })).attr('id', 'settings-view')
+               .attr('data-role', 'dialog')
+               .page();
 
             this.options.environment.on(
                 'change:locale',
@@ -47,7 +46,7 @@ define([
         },
 
         show: function () {
-            $.mobile.changePage('#language');
+            $.mobile.navigate('#settings-view');
         },
 
         pagecreate: function () {

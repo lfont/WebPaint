@@ -25,13 +25,13 @@
     <canvas />
 </div>
 
-<div data-role="popup" data-theme="b"
-    class="messageTooltip ui-content">
+<div id="main-message-tooltip" data-role="popup" data-theme="b"
+    class="message-tooltip ui-content">
     <p class="text"></p>
 </div>
 
-<div data-role="popup" data-position-to="window"
-    class="invitePendingPopup ui-corner-all message-popup">
+<div id="main-invite-pending-popup" data-role="popup" data-position-to="window"
+    class="ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>
@@ -40,8 +40,8 @@
     </div>
 </div>
 
-<div data-role="popup" data-position-to="window"
-    class="inviteRequestPopup ui-corner-all message-popup">
+<div id="main-invite-request-popup" data-role="popup" data-position-to="window"
+    class="ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>
