@@ -24,43 +24,44 @@ define([
         optionItems: [
             {
                 name: optionsResources['new'],
-                option: 'new',
-                type: 'page'
+                id: 'new',
+                action: 'page'
             },
             {
-                name: optionsResources.open,
-                option: 'open',
-                type: 'popup'
+                name: optionsResources.pick,
+                id: 'pick',
+                action: window.MozActivity ? 'activity' : 'popup',
+                data: { type: [ 'image/png', 'image/jpg', 'image/jpeg' ] }
             },
             {
                 name: optionsResources.save,
-                option: 'save',
-                type: 'popup'
+                id: 'save',
+                action: 'popup'
             },
             {
                 name: optionsResources.clear,
-                option: 'clear',
-                type: 'action'
+                id: 'clear',
+                action: 'drawer'
             },
             {
                 name: optionsResources.history,
-                option: 'history',
-                type: 'page'
+                id: 'history',
+                action: 'page'
             },
             {
                 name: optionsResources.invite,
-                option: 'invite',
-                type: 'page'
+                id: 'invite',
+                action: 'page'
             },
             {
                 name: optionsResources.settings,
-                option: 'settings',
-                type: 'page'
+                id: 'settings',
+                action: 'page'
             },
             {
                 name: optionsResources.about,
-                option: 'about',
-                type: 'popup'
+                id: 'about',
+                action: 'popup'
             }
         ],
 
@@ -86,31 +87,58 @@ define([
             this.trigger('open');
         },
 
+        pickActivitySuccessHanlder: function (activity) {
+            var _this = this,
+                image = new Image();
+            image.onload = function () {
+                _this.options.drawer.newDrawing(image);
+            };
+            image.src = URL.createObjectURL(activity.result.blob);
+        },
+
         option: function (event) {
             var _this = this,
-                $this = $(event.target),
-                option = $this.attr('data-option'),
-                optionItem;
+                selectedOptionId = $(event.target).attr('data-option'),
+                option = _.find(this.optionItems, function (item) {
+                    return item.id === selectedOptionId;
+                });
 
             event.preventDefault();
 
-            optionItem = _.find(this.optionItems, function (item) {
-                return item.option === option;
-            });
+            if (option.action === 'activity') {
+                var activity = new MozActivity({
+                    name: option.id,
+                    data: option.data
+                });
+                 
+                activity.onsuccess = function() {
+                    if (option.id === 'pick') {
+                        _this.pickActivitySuccessHanlder(this);
+                    }
+                };
+                 
+                activity.onerror = function () {
+                    console.log('The activity encouter en error: ' + this.error);
+                };
 
-            if (optionItem.type === 'action') {
-                this.options.drawer[option]();
+                this.$el.popup('close');
+                this.trigger('close');
+                return;
+            }
+
+            if (option.action === 'drawer') {
+                this.options.drawer[option.id]();
                 this.$el.popup('close');
                 this.trigger('close');
                 return;
             }
 
             require([
-                'views/' + option
+                'views/' + option.id
             ], function (View) {
-                if (!_this[option]) {
-                    _this[option] = new View({
-                        el: optionItem.type === 'page' ?
+                if (!_this[option.id]) {
+                    _this[option.id] = new View({
+                        el: option.action === 'page' ?
                             $('<div></div>').appendTo('body') :
                             $('<div></div>').appendTo(_this.$el
                                                            .closest('.ui-page')),
@@ -118,14 +146,14 @@ define([
                         drawer: _this.options.drawer,
                         socket: _this.options.socket
                     });
-                    _this[option].on('close', _this.trigger.bind(_this, 'close'));
-                    _this[option].render();
+                    _this[option.id].on('close', _this.trigger.bind(_this, 'close'));
+                    _this[option.id].render();
                 }
 
                 // wait for the popup to close before navigation so
                 // the url stay clean.
                 _this.$el.one('popupafterclose', function () {
-                    _this[option].show();
+                    _this[option.id].show();
                 });
 
                 _this.$el.popup('close');

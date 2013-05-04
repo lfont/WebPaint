@@ -7,7 +7,7 @@ define({
     "root": {
         "title": "Options",
         "new": "New",
-        "open": "Open",
+        "pick": "Open",
         "save": "Save",
         "clear": "Clear",
         "history": "History",

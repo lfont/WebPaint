@@ -5,7 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "new": "Nouveau",
-    "open": "Ouvrir",
+    "pick": "Ouvrir",
     "save": "Enregistrer",
     "clear": "Effacer",
     "history": "Historique",

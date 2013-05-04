@@ -7,9 +7,9 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!templates/open.html',
-    'i18n!nls/open-view'
-], function ($, Backbone, _, openTemplate, openResources) {
+    'text!templates/pick.html',
+    'i18n!nls/pick-view'
+], function ($, Backbone, _, pickTemplate, pickResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -20,12 +20,12 @@ define([
             'change .path': 'open'
         },
 
-        template: _.template(openTemplate),
+        template: _.template(pickTemplate),
 
         render: function () {
             this.$el.html(this.template({
-                r: openResources
-            })).attr('id', 'open-view')
+                r: pickResources
+            })).attr('id', 'pick-view')
                .attr('data-position-to', 'window')
                .attr('data-dismissible', 'false')
                .addClass('ui-corner-all')
@@ -74,8 +74,8 @@ define([
 
             reader = new FileReader();
 
-            reader.onload = function(e) {
-                var image = new window.Image();
+            reader.onload = function (e) {
+                var image = new Image();
                 image.onload = function () {
                     _this.options.drawer.newDrawing(image);
                 };
