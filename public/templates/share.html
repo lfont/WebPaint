@@ -1,0 +1,19 @@
+<!-- The data-role="header" and data-role="footer" classes are applied manually
+because these widgets are not standard widgets and they connot be initialized
+by triggering the "create" event (inside a popup). -->
+<div data-role="header" class="ui-corner-top ui-header ui-bar-a">
+    <h1 class="ui-title"><%= r.title %></h1>
+</div>
+
+<div data-role="content" class="ui-corner-bottom ui-content">
+    <div data-role="fieldcontain">
+        <label for="name"><%= r.fileName %></label>
+        <input type="text" id="name" name="name" class="name"
+            placeholder="<%= r.defaultFileName %>" />
+    </div>
+    <input type="hidden" name="data" class="data" />
+    <button data-inline="true" data-theme="c"
+        class="cancel"><%= r.cancelButton %></button>
+    <button data-inline="true" data-theme="b"
+        class="share"><%= r.shareButton %></button>
+</div>

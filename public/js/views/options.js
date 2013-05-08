@@ -13,15 +13,8 @@ define([
 ], function (require, $, Backbone, _, optionsTemplate, optionsResources) {
     'use strict';
 
-    return Backbone.View.extend({
-        events: {
-            'popupbeforeposition': 'popupbeforeposition',
-            'vclick .option': 'option'
-        },
-
-        template: _.template(optionsTemplate),
-
-        optionItems: [
+    var hasActivitySupport = !_.isUndefined(window.MozActivity),
+        options = [
             {
                 name: optionsResources['new'],
                 id: 'new',
@@ -30,13 +23,8 @@ define([
             {
                 name: optionsResources.pick,
                 id: 'pick',
-                action: window.MozActivity ? 'activity' : 'popup',
+                action: hasActivitySupport ? 'activity' : 'popup',
                 data: { type: [ 'image/png', 'image/jpg', 'image/jpeg' ] }
-            },
-            {
-                name: optionsResources.save,
-                id: 'save',
-                action: 'popup'
             },
             {
                 name: optionsResources.clear,
@@ -63,12 +51,34 @@ define([
                 id: 'about',
                 action: 'popup'
             }
-        ],
+        ];
+
+    if (hasActivitySupport) {
+        options.splice(2, 0, {
+            name: optionsResources.share,
+            id: 'share',
+            action: 'popup'
+        });
+    } else {
+        options.splice(2, 0, {
+            name: optionsResources.save,
+            id: 'save',
+            action: 'popup'
+        });
+    }
+
+    return Backbone.View.extend({
+        events: {
+            'popupbeforeposition': 'popupbeforeposition',
+            'vclick .option': 'option'
+        },
+
+        template: _.template(optionsTemplate),
 
         render: function () {
             this.$el.html(this.template({
                 r: optionsResources,
-                options: this.optionItems
+                options: options
             })).attr('id', 'options-view')
                .addClass('options-view')
                .trigger('create')
@@ -96,42 +106,35 @@ define([
             image.src = URL.createObjectURL(activity.result.blob);
         },
 
-        option: function (event) {
+        activityActionHandler: function (option) {
             var _this = this,
-                selectedOptionId = $(event.target).attr('data-option'),
-                option = _.find(this.optionItems, function (item) {
-                    return item.id === selectedOptionId;
-                });
-
-            event.preventDefault();
-
-            if (option.action === 'activity') {
-                var activity = new MozActivity({
+                activity = new MozActivity({
                     name: option.id,
                     data: option.data
                 });
-                 
-                activity.onsuccess = function() {
-                    if (option.id === 'pick') {
-                        _this.pickActivitySuccessHanlder(this);
-                    }
-                };
-                 
-                activity.onerror = function () {
-                    console.log('The activity encouter en error: ' + this.error);
-                };
+             
+            activity.onsuccess = function() {
+                if (option.id === 'pick') {
+                    _this.pickActivitySuccessHanlder(this);
+                }
+            };
+             
+            activity.onerror = function () {
+                console.log('The activity encouter en error: ' + this.error);
+            };
 
-                this.$el.popup('close');
-                this.trigger('close');
-                return;
-            }
+            this.$el.popup('close');
+            this.trigger('close');
+        },
 
-            if (option.action === 'drawer') {
-                this.options.drawer[option.id]();
-                this.$el.popup('close');
-                this.trigger('close');
-                return;
-            }
+        drawerActionHandler: function (option) {
+            this.options.drawer[option.id]();
+            this.$el.popup('close');
+            this.trigger('close');
+        },
+
+        pageActionHandler: function (option) {
+            var _this = this;
 
             require([
                 'views/' + option.id
@@ -158,6 +161,27 @@ define([
 
                 _this.$el.popup('close');
             });
+        },
+
+        popupActionHandler: function (option) {
+            this.pageActionHandler(option);
+        },
+
+        option: function (event) {
+            var selectedOptionId = $(event.target).attr('data-option'),
+                option = _.find(options, function (option) {
+                    return option.id === selectedOptionId;
+                }),
+                actionHandler = option.action + 'ActionHandler';
+
+            event.preventDefault();
+
+            if (this[actionHandler]) {
+                this[actionHandler](option);
+            } else {
+                throw new Error('The action type: ' + option.action +
+                                ' cannot be handled.');
+            }
         }
     });
 });

@@ -7,6 +7,7 @@ define({
     "new": "Nouveau",
     "pick": "Ouvrir",
     "save": "Enregistrer",
+    "share": "Partager",
     "clear": "Effacer",
     "history": "Historique",
     "invite": "Inviter",

@@ -9,6 +9,7 @@ define({
         "new": "New",
         "pick": "Open",
         "save": "Save",
+        "share": "Share",
         "clear": "Clear",
         "history": "History",
         "invite": "Invite",
