@@ -31,7 +31,6 @@ express.static.mime.define({ 'text/cache-manifest': [ 'appcache' ] });
 
 routes.register(app);
 
-
 // Socket IO
 
 drawingServer.listen(app);

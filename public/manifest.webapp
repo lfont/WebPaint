@@ -12,7 +12,11 @@
     "url": "http://blog.lfont.me"
   },
   "default_locale": "en",
-  "installs_allowed_from": [ "https://marketplace.firefox.com", "https://marketplace-dev.allizom.org" ],
+  "installs_allowed_from": [
+    "https://marketplace.firefox.com",
+    "https://marketplace-dev.allizom.org",
+    "http://webpaint.lfont.me"
+  ],
   "orientation": [ "portrait" ],
   "permissions": {
     "storage": {

@@ -112,13 +112,13 @@ define([
                     name: option.id,
                     data: option.data
                 });
-             
+
             activity.onsuccess = function() {
                 if (option.id === 'pick') {
                     _this.pickActivitySuccessHanlder(this);
                 }
             };
-             
+
             activity.onerror = function () {
                 console.log('The activity encouter en error: ' + this.error);
             };
