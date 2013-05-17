@@ -1,18 +1,17 @@
 <div data-role="header" data-position="fixed">
+    <button class="menu"
+            data-inline="true" data-icon="bars"
+            data-iconpos="notext" data-theme="b"><%= r.menuButton %></button>
+
     <h1>
         <span class="title title-offline"><%= name %></span>
     </h1>
 
     <span class="social-widgets"></span>
 
-    <div class="ui-btn-right">
-        <button class="tools"
-            data-inline="true" data-icon="grid"
-            data-iconpos="notext" data-theme="b"><%= r.toolsButton %></button>
-        <button class="quick-actions"
+    <button class="quick-actions ui-btn-right"
             data-inline="true" data-icon="plus"
             data-iconpos="notext" data-theme="b"><%= r.quickActionsButton %></button>
-    </div>
 </div>
 
 <div data-role="content">

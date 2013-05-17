@@ -5,7 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "root": {
-        "toolsButton": "Tools",
+        "menuButton": "Menu",
         "quickActionsButton": "Quick Actions",
         "onlineMessage": "WebPaint is online.",
         "offlineMessage": "WebPaint is offline.",

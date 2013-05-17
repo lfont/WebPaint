@@ -28,7 +28,7 @@ define([
     return Backbone.View.extend({
         events: {
             'pageshow': 'pageshow',
-            'vclick .tools': 'showTools',
+            'vclick .menu': 'showMenu',
             'vclick .quick-actions': 'showQuickActions',
             'vclick .accept': 'accept',
             'vclick .reject': 'reject'
@@ -208,7 +208,7 @@ define([
             return this;
         },
 
-        showTools: function (event) {
+        showMenu: function (event) {
             var _this = this;
             event.preventDefault();
 

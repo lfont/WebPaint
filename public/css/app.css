@@ -19,10 +19,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     width: 40px;
 }
 
-.ui-header .ui-btn {
-    margin-top: 3px;
-}
-
 .ui-content {
     text-align: center;
 }
@@ -41,7 +37,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 .main-view .ui-header .ui-title {
-    margin-left: 15px;
+    margin-left: 40px;
     text-align: left;
 }
 
@@ -52,7 +48,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 .main-view .ui-header .social-widgets {
     position: absolute;
-    left: 100px;
+    left: 125px;
     top: 10px;
 }
 
