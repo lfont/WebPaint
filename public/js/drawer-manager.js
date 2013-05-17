@@ -18,8 +18,7 @@ define([
             canvas = $canvas[0];
 
         canvas.height = $container.height() -
-                        ($canvas.outerHeight() - $canvas.height()) -
-                        4; // FIX: we should not set this manually
+                        ($canvas.outerHeight() - $canvas.height());
         canvas.width = $container.width() -
                        ($canvas.outerWidth() - $canvas.width());
     }

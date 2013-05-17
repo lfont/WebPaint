@@ -56,13 +56,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     top: 10px;
 }
 
-.main-view canvas {
-    border: 1px solid black;
+.main-view .ui-content,
+.main-view .ui-content canvas {
+    margin: 0;
+    padding: 0;
+}
+
+.main-view .ui-content {
+    overflow: hidden;
+}
+
+.main-view .ui-content canvas {
     background: transparent url("../img/background.png") repeat 0 0;
     cursor: pointer;
 }
 
-.main-view canvas:active {
+.main-view .ui-content canvas:active {
     cursor: crosshair;
 }
 
