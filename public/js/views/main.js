@@ -16,22 +16,20 @@ define([
              sprintf, mainTemplate, mainResources) {
     'use strict';
 
-    var fixContentGeometry = function ($header, $content) {
-            var contentHeight;
+    function fixContentGeometry ($header, $content) {
+        var contentHeight;
 
-            contentHeight = $(window).height() - $header.outerHeight() -
-                            ($content.outerHeight() - $content.height());
+        contentHeight = $(window).height() - $header.outerHeight() -
+                        ($content.outerHeight() - $content.height());
 
-            $content.height(contentHeight);
-        };
+        $content.height(contentHeight);
+    }
 
     return Backbone.View.extend({
         events: {
             'pageshow': 'pageshow',
-            'vclick .undo': 'undo',
-            'vclick .redo': 'redo',
             'vclick .tools': 'showTools',
-            'vclick .options': 'showOptions',
+            'vclick .quick-actions': 'showQuickActions',
             'vclick .accept': 'accept',
             'vclick .reject': 'reject'
         },
@@ -73,42 +71,32 @@ define([
         pageshow: function () {
             var _this = this;
 
-            if (this.drawer) {
+            if (this.drawerManager) {
                 return;
             }
 
             fixContentGeometry(this.$el.find('[data-role="header"]'),
                                this.$el.find('[data-role="content"]'));
 
-            this.drawer = new DrawerManager(this.$el.find('canvas'),
-                                            this.options.environment);
+            this.drawerManager = new DrawerManager(this.$el.find('canvas'),
+                                                   this.options.environment);
 
-            this.socket = new DrawingClient(this.drawer,
-                                            this.options.environment);
-            this.socket.on('message', this.showMessage.bind(this))
-                       .on('inviteGuestRequest', this.showInvitePending.bind(this))
-                       .on('inviteRequest', this.showInviteRequest.bind(this))
-                       .on('inviteResponse', this.showInviteResponse.bind(this))
-                       .on('inviteRequestCanceled', function () {
-                            _this.$inviteRequestPopup.popup('close');
-                       });
+            this.drawingClient = new DrawingClient(this.drawerManager,
+                                                   this.options.environment);
+            this.drawingClient.on('message', this.showMessage.bind(this))
+                              .on('inviteGuestRequest', this.showInvitePending.bind(this))
+                              .on('inviteRequest', this.showInviteRequest.bind(this))
+                              .on('inviteResponse', this.showInviteResponse.bind(this))
+                              .on('inviteRequestCanceled', function () {
+                                _this.$inviteRequestPopup.popup('close');
+                              });
 
             $(window).on('online', this.showNetworkStatus.bind(this, true))
                      .on('offline', this.showNetworkStatus.bind(this, false));
 
             this.showNetworkStatus(navigator.onLine);
 
-            this.drawer.on();
-        },
-
-        undo: function (event) {
-            event.preventDefault();
-            this.drawer.undo();
-        },
-
-        redo: function (event) {
-            event.preventDefault();
-            this.drawer.redo();
+            this.drawerManager.on();
         },
 
         accept: function (event) {
@@ -116,7 +104,7 @@ define([
                 nickname = $this.attr('data-value');
 
             event.preventDefault();
-            this.socket.sendResponse(nickname, true);
+            this.drawingClient.sendResponse(nickname, true);
             this.$inviteRequestPopup.popup('close');
         },
 
@@ -125,7 +113,7 @@ define([
                 nickname = $this.attr('data-value');
 
             event.preventDefault();
-            this.socket.sendResponse(nickname, false);
+            this.drawingClient.sendResponse(nickname, false);
             this.$inviteRequestPopup.popup('close');
         },
 
@@ -239,10 +227,12 @@ define([
                             event.target :
                             null,
                         environment: _this.options.environment,
-                        drawer: _this.drawer
+                        drawerManager: _this.drawerManager
                     });
-                    _this.toolsView.on('open', _this.drawer.off.bind(_this.drawer));
-                    _this.toolsView.on('close', _this.drawer.on.bind(_this.drawer));
+                    _this.toolsView.on('open', _this.drawerManager.off,
+                                       _this.drawerManager);
+                    _this.toolsView.on('close', _this.drawerManager.on,
+                                       _this.drawerManager);
                     _this.toolsView.render();
                 }
 
@@ -250,27 +240,30 @@ define([
             });
         },
 
-        showOptions: function (event) {
+        showQuickActions: function (event) {
             var _this = this;
             event.preventDefault();
 
             require([
-                'views/options'
-            ], function (OptionsView) {
-                if (!_this.optionsView) {
-                    _this.optionsView = new OptionsView({
+                'views/quick-actions'
+            ], function (QuickActionsView) {
+                if (!_this.quickActionsView) {
+                    _this.quickActionsView = new QuickActionsView({
                         el: $('<div></div>').appendTo(_this.$el),
+                        collection: _this.options.environment.get('actions'),
                         positionTo: event.target,
                         environment: _this.options.environment,
-                        drawer: _this.drawer,
-                        socket: _this.socket
+                        drawerManager: _this.drawerManager,
+                        drawingClient: _this.drawingClient
                     });
-                    _this.optionsView.on('open', _this.drawer.off.bind(_this.drawer));
-                    _this.optionsView.on('close', _this.drawer.on.bind(_this.drawer));
-                    _this.optionsView.render();
+                    _this.quickActionsView.on('open', _this.drawerManager.off,
+                                              _this.drawerManager);
+                    _this.quickActionsView.on('close', _this.drawerManager.on,
+                                              _this.drawerManager);
+                    _this.quickActionsView.render();
                 }
 
-                _this.optionsView.show();
+                _this.quickActionsView.show();
             });
         }
     });

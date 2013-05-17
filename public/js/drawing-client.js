@@ -10,7 +10,7 @@ define([
 ], function (Backbone, _, socketio) {
     'use strict';
         
-    return function (drawer, environment) {
+    return function (drawerManager, environment) {
         var _this                      = this,
             socket                     = socketio.connect('/'),
             guestCollection            = environment.get('guests'),
@@ -29,12 +29,12 @@ define([
         socket.on('nameResult', function (result) {
             userModel.set('nickname', result.name);
 
-            drawer.addDrawnHandler(function (shape) {
+            drawerManager.addDrawnHandler(function (shape) {
                 socket.emit('draw', shape);
             });
 
             socket.on('draw', function (data) {
-                drawer.draw(data.shape);
+                drawerManager.draw(data.shape);
             });
 
             socket.on('inviteRequest', function (request) {

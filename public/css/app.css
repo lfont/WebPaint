@@ -186,3 +186,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     height: 115px;
     width: 115px;
 }
+
+.quick-action-group[role='heading'] {
+    background: linear-gradient(rgb(255, 255, 255), rgb(241, 241, 241)) repeat scroll 0 0 rgb(238, 238, 238);
+    border: 1px solid rgb(204, 204, 204);
+    border-bottom: 0;
+    text-align: center;
+}
+
+.quick-action-group[role='heading'] .quick-action {
+    color: #304d46;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 8px;
+    text-shadow: 0 1px 0 rgb(255, 255, 255);
+}

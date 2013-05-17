@@ -77,7 +77,7 @@ define([
             reader.onload = function (e) {
                 var image = new Image();
                 image.onload = function () {
-                    _this.options.drawer.newDrawing(image);
+                    _this.options.drawerManager.newDrawing(image);
                 };
                 image.src = e.target.result;
             };

@@ -5,10 +5,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define({
     "root": {
-        "undoButton": "Undo",
-        "redoButton": "Redo",
         "toolsButton": "Tools",
-        "optionsButton": "Options",
+        "quickActionsButton": "Quick Actions",
         "onlineMessage": "WebPaint is online.",
         "offlineMessage": "WebPaint is offline.",
         "inviteTitle": "Invite",

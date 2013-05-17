@@ -54,7 +54,7 @@ define([
                     .val('')
                     .end()
                     .find('.data')
-                    .val(this.options.drawer.snapshot())
+                    .val(this.options.drawerManager.snapshot())
                     .end()
                     .popup('open');
         },

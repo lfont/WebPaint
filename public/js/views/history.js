@@ -64,7 +64,7 @@ define([
                 index = $this.attr('data-value');
 
             event.preventDefault();
-            this.options.drawer.cursor(parseInt(index, 10));
+            this.options.drawerManager.cursor(parseInt(index, 10));
             this.$el.dialog('close');
         },
 

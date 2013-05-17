@@ -72,8 +72,9 @@ define([
 
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
-            setTimeout(this.options.socket.sendInvite.bind(this.options.socket,
-                                                           nickname), 250);
+            setTimeout(this.options.drawingClient.sendInvite
+                                                 .bind(this.options.drawingClient,
+                                                       nickname), 250);
         },
 
         refreshUsers: function () {

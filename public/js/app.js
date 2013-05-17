@@ -94,7 +94,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.6.26',
+                    appVersion: '0.7.0',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
@@ -129,13 +129,63 @@ define([
                 'collections/colors',
                 'collections/languages',
                 'collections/users',
-                'models/user'
+                'models/user',
+                'models/quick-action',
             ], function (MainView, ColorCollection, LanguageCollection,
-                         UserCollection, UserModel) {
+                         UserCollection, UserModel, QuickActionModel) {
                 $(function () {
                     var mainView;
 
+                    function getQuickActions () {
+                        var notDefined,
+                            hasActivitySupport = window.MozActivity != notDefined,
+                            actions = [
+                                [
+                                    new QuickActionModel({
+                                        id: 'undo',
+                                        type: 'drawer'
+                                    }),
+                                    new QuickActionModel({
+                                        id: 'redo',
+                                        type: 'drawer'
+                                    })
+                                ],
+                                new QuickActionModel({
+                                    id: 'new',
+                                    type: 'page'
+                                }),
+                                new QuickActionModel({
+                                    id: 'pick',
+                                    type: hasActivitySupport ? 'activity' : 'popup',
+                                    data: { type: [ 'image/png', 'image/jpg', 'image/jpeg' ] }
+                                }),
+                                new QuickActionModel({
+                                    id: 'clear',
+                                    type: 'drawer'
+                                }),
+                                new QuickActionModel({
+                                    id: 'history',
+                                    type: 'page'
+                                })
+                            ];
+
+                        if (hasActivitySupport) {
+                            actions.splice(3, 0, new QuickActionModel({
+                                id: 'share',
+                                type: 'popup'
+                            }));
+                        } else {
+                            actions.splice(3, 0, new QuickActionModel({
+                                id: 'save',
+                                type: 'popup'
+                            }));
+                        }
+
+                        return actions;
+                    }
+
                     environment.set({
+                        actions: getQuickActions(),
                         colors: new ColorCollection([
                             { code: 'transparent' },
                             { code: '#000000' },
@@ -169,7 +219,7 @@ define([
 
                     $(window).unload(function () {
                         environment.set({
-                            background: mainView.drawer.snapshot()
+                            background: mainView.drawerManager.snapshot()
                         });
 
                         environment.save();

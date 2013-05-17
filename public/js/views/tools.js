@@ -56,7 +56,7 @@ define([
             }).render();
 
             this.shapeColorPicker.on('color', function (hex) {
-                _this.options.drawer.color(hex);
+                _this.options.drawerManager.color(hex);
             });
 
             return this;
@@ -76,15 +76,15 @@ define([
             var $shapes = this.$el.find('.shape'),
                 $width = this.$el.find('.width');
 
-            $shapes.filter('[value="' + this.options.drawer.shape() + '"]')
+            $shapes.filter('[value="' + this.options.drawerManager.shape() + '"]')
                    .attr('checked', true)
                    .end()
                    .checkboxradio('refresh');
 
-            $width.val(this.options.drawer.lineWidth())
+            $width.val(this.options.drawerManager.lineWidth())
                   .slider('refresh');
 
-            this.shapeColorPicker.value(this.options.drawer.color());
+            this.shapeColorPicker.value(this.options.drawerManager.color());
             this.trigger('open');
         },
 
@@ -92,8 +92,8 @@ define([
             var $shape = this.$el.find('.shape:checked'),
                 $width = this.$el.find('.width');
 
-            this.options.drawer.shape($shape.val());
-            this.options.drawer.lineWidth(parseInt($width.val(), 10));
+            this.options.drawerManager.shape($shape.val());
+            this.options.drawerManager.lineWidth(parseInt($width.val(), 10));
             this.trigger('close');
         },
 

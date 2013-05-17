@@ -38,7 +38,7 @@ define([
             }).render();
 
             this.backgroundColorPicker.on('color', function (hex) {
-                _this.options.drawer.newDrawing(hex);
+                _this.options.drawerManager.newDrawing(hex);
                 _this.$el.dialog('close');
             });
 
