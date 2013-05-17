@@ -12,8 +12,8 @@ define([
     'sprintf',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function ($, Backbone, _, DrawerManager, DrawingClient,
-             sprintf, mainTemplate, mainResources) {
+], function ($, Backbone, _, DrawerManager, DrawingClient, sprintf,
+             mainTemplate, mainResources) {
     'use strict';
 
     function fixContentGeometry ($header, $content) {
@@ -42,9 +42,9 @@ define([
             var _this = this;
 
             this.$el.html(this.template({
-                        r: mainResources,
-                        name: this.options.environment.get('appName')
-                    }));
+                r: mainResources,
+                name: this.options.environment.get('appName')
+            }));
 
             this.$messageTooltip = this.$el.find('#main-message-tooltip');
             this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
@@ -213,30 +213,22 @@ define([
             event.preventDefault();
 
             require([
-                'views/tools'
-            ], function (ToolsView) {
-                var isPopup = _this.options.environment.get('screenSize') !==
-                             'small';
-
-                if (!_this.toolsView) {
-                    _this.toolsView = new ToolsView({
-                        el: isPopup ?
-                            $('<div></div>').appendTo(_this.$el) :
-                            $('<div></div>').appendTo('body'),
-                        positionTo: isPopup ?
-                            event.target :
-                            null,
+                'views/menu'
+            ], function (MenuView) {
+                if (!_this.menuView) {
+                    _this.menuView = new MenuView({
+                        el: $('<div></div>').prependTo(_this.$el),
                         environment: _this.options.environment,
                         drawerManager: _this.drawerManager
                     });
-                    _this.toolsView.on('open', _this.drawerManager.off,
-                                       _this.drawerManager);
-                    _this.toolsView.on('close', _this.drawerManager.on,
-                                       _this.drawerManager);
-                    _this.toolsView.render();
+                    _this.menuView.on('open', _this.drawerManager.off,
+                                      _this.drawerManager);
+                    _this.menuView.on('close', _this.drawerManager.on,
+                                      _this.drawerManager);
+                    _this.menuView.render();
                 }
 
-                _this.toolsView.show();
+                _this.menuView.show();
             });
         },
 

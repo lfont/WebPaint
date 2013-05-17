@@ -8,7 +8,7 @@ require.config({
         'templates': '../templates',
         'i18n': 'lib/requirejs/i18n',
         'text': 'lib/requirejs/text',
-        'jquery': 'lib/jquery-2.0.0',
+        'jquery': 'lib/jquery-1.9.1',
         'underscore': 'lib/underscore',
         'backbone': 'lib/backbone',
         'socket.io': '/socket.io/socket.io.js',
