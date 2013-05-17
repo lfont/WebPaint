@@ -219,7 +219,8 @@ define([
                     _this.menuView = new MenuView({
                         el: $('<div></div>').prependTo(_this.$el),
                         environment: _this.options.environment,
-                        drawerManager: _this.drawerManager
+                        drawerManager: _this.drawerManager,
+                        drawingClient: _this.drawingClient
                     });
                     _this.menuView.on('open', _this.drawerManager.off,
                                       _this.drawerManager);

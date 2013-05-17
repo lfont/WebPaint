@@ -9,10 +9,8 @@ define([
     'backbone',
     'underscore',
     'views/quick-action-group',
-    'text!templates/quick-actions.html',
-    'i18n!nls/quick-actions-view'
-], function (require, $, Backbone, _, QuickActionGroupView, quickActionsTemplate,
-             quickActionsResources) {
+    'text!templates/quick-actions.html'
+], function (require, $, Backbone, _, QuickActionGroupView, quickActionsTemplate) {
     'use strict';
 
     var QuickActionsView = Backbone.View.extend({
@@ -25,10 +23,9 @@ define([
         render: function () {
             var $quickActionGroupAnchor;
 
-            this.$el.html(this.template({
-                r: quickActionsResources
-            })).attr('id', 'quick-actions-view')
-               .addClass('quick-actions-view');
+            this.$el.html(this.template())
+                .attr('id', 'quick-actions-view')
+                .addClass('quick-actions-view');
 
             $quickActionGroupAnchor = this.$el.find('.quick-action-group-anchor');
 

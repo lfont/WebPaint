@@ -14,17 +14,19 @@
             data-iconpos="notext" data-theme="b"><%= r.quickActionsButton %></button>
 </div>
 
-<div data-role="content">
+<div data-role="content" class="main-view-content">
     <canvas />
 </div>
 
-<div id="main-message-tooltip" data-role="popup" data-theme="b"
-    class="message-tooltip ui-content">
+<div id="main-message-tooltip"
+     data-role="popup" data-theme="b" data-dismissible="false"
+     class="message-tooltip ui-content">
     <p class="text"></p>
 </div>
 
-<div id="main-invite-pending-popup" data-role="popup" data-position-to="window"
-    class="ui-corner-all message-popup">
+<div id="main-invite-pending-popup"
+     data-role="popup" data-position-to="window" data-dismissible="false"
+     class="ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>
@@ -33,8 +35,9 @@
     </div>
 </div>
 
-<div id="main-invite-request-popup" data-role="popup" data-position-to="window"
-    class="ui-corner-all message-popup">
+<div id="main-invite-request-popup"
+     data-role="popup" data-position-to="window" data-dismissible="false"
+     class="ui-corner-all message-popup">
     <div data-role="header" class="ui-corner-top">
         <h1><%= r.inviteTitle %></h1>
     </div>

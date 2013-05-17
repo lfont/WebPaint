@@ -14,6 +14,8 @@ define([
 ], function (require, $, Backbone, _, ToolsView, menuTemplate, menuResources) {
     'use strict';
 
+    var windowHeight = $(window).height();
+
     return Backbone.View.extend({
         events: {
             'panelbeforeopen': 'panelbeforeopen',
@@ -29,6 +31,8 @@ define([
             this.$el.html(this.template({
                 r: menuResources
             })).attr('id', 'menu-view')
+               .attr('data-display', 'overlay')
+               .attr('data-theme', 'a')
                .addClass('menu-view');
 
             this.toolsView = new ToolsView({
@@ -41,8 +45,13 @@ define([
 
             this.toolsView.$el.appendTo(this.$el.find('.tools-view-anchor'));
 
+            this.$parent = this.$el.closest('.ui-page');
             this.$el.trigger('create')
-                    .panel();
+                    .panel()
+                    .css('overflow-y', 'scroll')
+                    // TODO: remove this magic number
+                    .css('min-height', windowHeight - 1)
+                    .css('max-height', windowHeight - 1);
 
             return this;
         },
@@ -52,8 +61,17 @@ define([
         },
 
         panelbeforeopen: function () {
+            var _this = this;
             this.toolsView.refresh();
             this.trigger('open');
+            // The panelopen event is not fired the first
+            // we open the panel on Firefox, so this seems
+            // to be a more reliable way.
+            setTimeout(function () {
+                // TODO: remove this magic number
+                _this.$parent
+                     .css('min-height', windowHeight - 100);
+            }, 0);
         },
 
         panelclose: function () {

@@ -52,22 +52,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     top: 10px;
 }
 
-.main-view .ui-content,
-.main-view .ui-content canvas {
+.main-view .main-view-content,
+.main-view .main-view-content canvas {
     margin: 0;
     padding: 0;
 }
 
-.main-view .ui-content {
+.main-view .main-view-content {
     overflow: hidden;
 }
 
-.main-view .ui-content canvas {
+.main-view .main-view-content canvas {
     background: transparent url("../img/background.png") repeat 0 0;
     cursor: pointer;
 }
 
-.main-view .ui-content canvas:active {
+.main-view .main-view-content canvas:active {
     cursor: crosshair;
 }
 
@@ -100,25 +100,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 .quick-actions-view .quick-action-group[role='heading'] {
-    background: linear-gradient(rgb(255, 255, 255), rgb(241, 241, 241)) repeat scroll 0 0 rgb(238, 238, 238);
-    border: 1px solid rgb(204, 204, 204);
+    background: linear-gradient( #444, #2d2d2d );
+    border: 1px solid #111;
     border-bottom: 0;
     text-align: center;
 }
 
 .quick-actions-view .quick-action-group[role='heading'] .quick-action {
-    color: #304d46;
+    color: white;
     cursor: pointer;
     display: inline-block;
     font-size: 16px;
     font-weight: bold;
     margin: 0 25px;
-    text-shadow: 0 1px 0 rgb(255, 255, 255);
-}
-
-.message-popup {
-    height: 150px;
-    max-width: 400px;
+    text-shadow: 0 1px 0 #111;
 }
 
 .block {
@@ -135,6 +130,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 .block .block-content {
     display: inline-block;
     margin: 0 auto;
+    text-align: center
+}
+
+.message-popup {
+    height: 150px;
+    max-width: 400px;
 }
 
 .colorpicker-custom-colors p,
