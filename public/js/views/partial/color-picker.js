@@ -7,44 +7,44 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!templates/color-picker.html',
+    'text!templates/partial/color-picker.html',
     'i18n!nls/color-picker-view'
 ], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
     'use strict';
 
-    var SELECTED_CLASS = 'colorpicker-color-selected',
+    var SELECTED_CLASS = 'colorpicker-color-selected';
 
-        hexFromRgb = function (r, g, b) {
-            var hex = [
-                    parseInt(r, 10).toString(16),
-                    parseInt(g, 10).toString(16),
-                    parseInt(b, 10).toString(16)
-                ];
+    function hexFromRgb (r, g, b) {
+        var hex = [
+                parseInt(r, 10).toString(16),
+                parseInt(g, 10).toString(16),
+                parseInt(b, 10).toString(16)
+            ];
 
-            _.each(hex, function (number, index) {
-                if (number.length === 1) {
-                    hex[index] = '0' + number;
-                }
-            });
-
-            return '#' + hex.join('');
-        },
-
-        rgbFromHex = function (hex) {
-            var match = /([\da-f]{2})([\da-f]{2})([\da-f]{2})/.exec(hex);
-
-            if (match && match.length === 4) {
-                return {
-                    r: parseInt(match[1], 16),
-                    g: parseInt(match[2], 16),
-                    b: parseInt(match[3], 16)
-                };
+        _.each(hex, function (number, index) {
+            if (number.length === 1) {
+                hex[index] = '0' + number;
             }
+        });
 
-            return null;
-        };
+        return '#' + hex.join('');
+    }
 
-    return Backbone.View.extend({
+    function rgbFromHex (hex) {
+        var match = /([\da-f]{2})([\da-f]{2})([\da-f]{2})/.exec(hex);
+
+        if (match && match.length === 4) {
+            return {
+                r: parseInt(match[1], 16),
+                g: parseInt(match[2], 16),
+                b: parseInt(match[3], 16)
+            };
+        }
+
+        return null;
+    }
+
+    var ColorPickerView = Backbone.View.extend({
         events: {
             'change .colorpicker-red': 'customColorUpdated',
             'change .colorpicker-green': 'customColorUpdated',
@@ -53,16 +53,16 @@ define([
             'vclick .colorpicker-predefined-color': 'colorSelected'
         },
 
+        className: 'color-picker',
         template: _.template(colorPickerTemplate),
 
         render: function () {
             this.$el.html(this.template({
                 r: colorPickerResources,
-                colors: this.options.colors.toJSON()
+                colors: this.collection.toJSON()
             }));
 
             this.$el.trigger('create');
-
             this.customColorUpdated();
 
             return this;
@@ -94,7 +94,7 @@ define([
         },
 
         hasPredefinedColor: function (code) {
-            return this.options.colors.any(function (color) {
+            return this.collection.any(function (color) {
                 return color.get('code') === code;
             });
         },
@@ -127,4 +127,6 @@ define([
             return this;
         }
     });
+
+    return ColorPickerView;
 });

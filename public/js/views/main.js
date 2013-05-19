@@ -52,7 +52,7 @@ define([
 
             if (this.options.environment.get('screenSize') !== 'small') {
                 require([
-                    'views/social-widgets'
+                    'views/partial/social-widgets'
                 ], function (SocialWidgetsView) {
                     var socialWidgetsView = new SocialWidgetsView({
                         el: _this.$el.find('.social-widgets')

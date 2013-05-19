@@ -8,8 +8,8 @@ define([
     'backbone',
     'underscore',
     'drawing',
-    'views/color-picker',
-    'text!templates/tools.html',
+    'views/partial/color-picker',
+    'text!templates/partial/tools.html',
     'i18n!nls/tools-view'
 ], function ($, Backbone, _, drawing, ColorPickerView, toolsTemplate,
              toolsResources) {
@@ -28,10 +28,12 @@ define([
                .addClass('tools-view');
 
             this.shapeColorPicker = new ColorPickerView({
-                el: this.$el.find('.color-picker'),
-                colors: this.model.colors
+                collection: this.model.colors
             }).render();
 
+            this.shapeColorPicker.$el
+                                 .appendTo(this.$el.find('.color-picker-anchor'));
+            
             this.shapeColorPicker.on('color', function (hex) {
                 _this.options.drawerManager.color(hex);
             });

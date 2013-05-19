@@ -7,7 +7,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!templates/social-widgets.html'
+    'text!templates/partial/social-widgets.html'
 ], function ($, Backbone, _, socialWidgetsTemplate) {
     'use strict';
 

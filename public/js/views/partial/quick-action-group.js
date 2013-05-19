@@ -8,7 +8,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'views/quick-action'
+    'views/partial/quick-action'
 ], function (require, $, Backbone, _, QuickActionView) {
     'use strict';
 

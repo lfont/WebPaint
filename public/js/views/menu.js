@@ -8,7 +8,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'views/tools',
+    'views/partial/tools',
     'text!templates/menu.html',
     'i18n!nls/menu-view'
 ], function (require, $, Backbone, _, ToolsView, menuTemplate, menuResources) {

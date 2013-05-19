@@ -8,7 +8,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!templates/quick-action.html'
+    'text!templates/partial/quick-action.html'
 ], function (require, $, Backbone, _, quickActionTemplate) {
     'use strict';
 

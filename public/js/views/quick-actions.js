@@ -8,7 +8,7 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'views/quick-action-group',
+    'views/partial/quick-action-group',
     'text!templates/quick-actions.html'
 ], function (require, $, Backbone, _, QuickActionGroupView, quickActionsTemplate) {
     'use strict';
