@@ -95,7 +95,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.7.1',
+                    appVersion: '0.7.2',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
@@ -132,8 +132,10 @@ define([
                 'collections/users',
                 'models/user',
                 'models/quick-action',
+                'notification-manager'
             ], function (MainView, ColorCollection, LanguageCollection,
-                         UserCollection, UserModel, QuickActionModel) {
+                         UserCollection, UserModel, QuickActionModel,
+                         NotificationManager) {
                 $(function () {
                     var mainView;
 
@@ -207,7 +209,8 @@ define([
                             { code: 'fr-fr' }
                         ]),
                         guests: new UserCollection(),
-                        user: new UserModel()
+                        user: new UserModel(),
+                        notificationManager: new NotificationManager()
                     });
 
                     mainView = new MainView({ environment: environment });

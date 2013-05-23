@@ -6,15 +6,18 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
     'backbone',
     'underscore',
-    'socket.io'
-], function (Backbone, _, socketio) {
+    'socket.io',
+    'sprintf',
+    'i18n!nls/drawing-client'
+], function (Backbone, _, socketio, sprintf, drawingClientResources) {
     'use strict';
         
     return function (drawerManager, environment) {
-        var _this                      = this,
-            socket                     = socketio.connect('/'),
-            guestCollection            = environment.get('guests'),
-            userModel                  = environment.get('user'),
+        var _this               = this,
+            socket              = socketio.connect('/'),
+            guestCollection     = environment.get('guests'),
+            userModel           = environment.get('user'),
+            notificationManager = environment.get('notificationManager'),
             inviteCancelationTimeoutId;
 
         _.extend(this, Backbone.Events);
@@ -57,7 +60,21 @@ define([
             });
 
             socket.on('inviteResponse', function (response) {
+                var message;
+                
+                switch (response.status) {
+                case 'accepted':
+                    message = drawingClientResources.inviteAccepted;
+                    break;
+                case 'rejected':
+                    message = drawingClientResources.inviteRejected;
+                    break;
+                default:
+                    message = drawingClientResources.inviteBusy;
+                }
+
                 _this.trigger('inviteResponse', response.from, response.status);
+                notificationManager.push(sprintf(message, response.from));
             });
 
             socket.on('guests', function (nicknames) {
@@ -75,11 +92,14 @@ define([
 
             socket.on('message', function (message) {
                 _this.trigger('message', message.text);
+                notificationManager.push(message.text);
             });
         });
 
         this.sendInvite = function (nickname) {
             _this.trigger('inviteGuestRequest', nickname);
+            notificationManager.push(sprintf(drawingClientResources.invitePending,
+                                             nickname));
             socket.emit('inviteGuestRequest', nickname);
         };
 

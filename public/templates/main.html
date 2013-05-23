@@ -4,7 +4,7 @@
             data-iconpos="notext" data-theme="b"><%= r.menuButton %></button>
 
     <h1>
-        <span class="title title-offline"><%= name %></span>
+        <a href="#" class="title title-offline"><%= name %></a>
     </h1>
 
     <div class="social-widgets-anchor"></div>
@@ -16,17 +16,6 @@
 
 <div data-role="content" class="main-view-content">
     <canvas />
-</div>
-
-<div id="main-invite-pending-popup"
-     data-role="popup" data-position-to="window" data-dismissible="false"
-     class="ui-corner-all message-popup">
-    <div data-role="header" class="ui-corner-top">
-        <h1><%= r.inviteTitle %></h1>
-    </div>
-    <div data-role="content" class="ui-corner-bottom ui-content">
-        <p class="message"></p>
-    </div>
 </div>
 
 <div id="main-invite-request-popup"

@@ -116,6 +116,25 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-shadow: 0 1px 0 #111;
 }
 
+.message-tooltip-view {
+    left: 0;
+    position: absolute;
+    top: 3px;
+    width: 100%;
+    z-index: 5000;
+}
+
+.message-tooltip-view > div {
+    background: #e0e0e0;
+    border: 1px solid gray;
+    border-radius: 6px;
+    color: #333;
+    line-height: 0.1em;
+    margin: 0 auto;
+    text-align: center;
+    width: 70%;
+}
+
 .block {
     margin-top: 1em;     
 }

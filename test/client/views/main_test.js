@@ -88,34 +88,5 @@ define([
             
         });
         
-        describe('message tooltip', function () {
-
-            beforeEach(function (done) {
-                testContext(['views/main'], function (MainView) {
-                    mainView = new MainView({
-                        environment: environment
-                    });
-                    mainView.render().$el.appendTo('body').trigger('create').page();
-                    mainView.pageshow();
-                    done();
-                });
-            });
-            
-            afterEach(function () {
-                mainView.remove();
-            });
-            
-            it('should not be visible when there is no message', function () {
-                expect(mainView.messageTooltipView.text()).to.be.empty;
-            });
-        
-            it('should be visible when a message is received', function () {
-                var expectedMessage = 'test message';
-                mainView.drawingClient.trigger('message', expectedMessage);
-                expect(mainView.messageTooltipView.text()).to.have.string(expectedMessage);
-            });
-            
-        });
-        
     });
 });

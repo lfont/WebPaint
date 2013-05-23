@@ -8,14 +8,13 @@ define([
     'jquery',
     'backbone',
     'underscore',
+    'sprintf',
     'drawer-manager',
     'drawing-client',
-    'sprintf',
-    'views/message-tooltip',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, Backbone, _, DrawerManager, DrawingClient, sprintf,
-             MessageTooltipView, mainTemplate, mainResources) {
+], function (require, $, Backbone, _, sprintf, DrawerManager, DrawingClient,
+             mainTemplate, mainResources) {
     'use strict';
 
     function fixContentGeometry ($header, $content) {
@@ -48,11 +47,6 @@ define([
                     r: mainResources,
                     name: this.options.environment.get('appName')
                 }));
-
-            this.messageTooltipView = new MessageTooltipView({
-                closeTimeout: 2000
-            }).render();
-            this.messageTooltipView.$el.appendTo(this.$el);
             
             this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
             this.$invitePendingPopup = this.$el.find('#main-invite-pending-popup');
@@ -89,18 +83,11 @@ define([
 
             this.drawingClient = new DrawingClient(this.drawerManager,
                                                    this.options.environment);
-            this.drawingClient.on('message', function (text) {
-                                // TODO: a message queue can be useful to
-                                // display all messages
-                                this.messageTooltipView.text(text);
-                                this.messageTooltipView.show();
-                            }, this)
-                              .on('inviteGuestRequest', this.showInvitePending, this)
-                              .on('inviteRequest', this.showInviteRequest, this)
-                              .on('inviteResponse', this.showInviteResponse, this)
-                              .on('inviteRequestCanceled', function () {
-                                this.$inviteRequestPopup.popup('close');
-                            }, this);
+            this.drawingClient.on('inviteRequest', this.showInviteRequest, this)
+                              .on('inviteRequestCanceled',
+                                  function () {
+                                    this.$inviteRequestPopup.popup('close');
+                                }, this);
 
             $(window).on('online', this.showNetworkStatus.bind(this, true))
                      .on('offline', this.showNetworkStatus.bind(this, false));
@@ -145,6 +132,9 @@ define([
                     .removeClass(removedClass)
                     .addClass(addedClass)
                     .attr('title', message);
+            
+            this.options.environment.get('notificationManager')
+                                    .push(message);
 
             return this;
         },
@@ -159,37 +149,6 @@ define([
                 .attr('data-value', nickname)
                 .end()
                 .popup('open');
-
-            return this;
-        },
-
-        showInvitePending: function (nickname) {
-            this.$invitePendingPopup
-                .find('.message')
-                .text(sprintf(mainResources.invitePending, nickname))
-                .end()
-                .popup('open');
-
-            return this;
-        },
-
-        showInviteResponse: function (nickname, status) {
-            var _this = this,
-                message = mainResources.inviteBusy;
-
-            if (status === 'accepted') {
-                message = mainResources.inviteAccepted;
-            } else if (status === 'rejected') {
-                message = mainResources.inviteRejected;
-            }
-
-            this.$invitePendingPopup
-                .find('.message')
-                .text(sprintf(message, nickname));
-
-            setTimeout(function () {
-                _this.$invitePendingPopup.popup('close');
-            }, 2000);
 
             return this;
         },
