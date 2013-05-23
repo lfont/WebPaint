@@ -8,50 +8,46 @@ define([
     'backbone',
     'underscore',
     'sprintf',
-    'text!templates/list-wrapper.html',
+    'views/partial/invite-item',
     'text!templates/invite.html',
     'i18n!nls/invite-view'
-], function ($, Backbone, _, sprintf, listWrapperTemplate,
-             inviteTemplate, inviteResources) {
+], function ($, Backbone, _, sprintf, InviteItemView, inviteTemplate,
+             inviteResources) {
     'use strict';
 
     return Backbone.View.extend({
         events: {
-            'pagecreate': 'pagecreate',
             'pagebeforeshow': 'pagebeforeshow',
-            'pagehide': 'pagehide',
-            'vclick .user': 'userSelected'
+            'pagehide': 'pagehide'
         },
-
-        template: _.template(listWrapperTemplate),
-
-        listTemplate: _.template(inviteTemplate),
+        
+        template: _.template(inviteTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                        r: inviteResources
-                    }))
-                    .attr('id', 'invite-view')
-                    .attr('data-role', 'dialog')
-                    .page();
+            this.$el
+                .html(this.template({
+                    r: inviteResources
+                }))
+                .attr('id', 'invite-view')
+                .attr('data-role', 'dialog')
+                .page();
 
-            this.options.environment.get('guests').on(
-                'change reset',
-                _.bind(this.refreshUsers, this));
+            this.$inviteList = this.$el.find('[data-role="listview"]');
+            this.$inviteInformation = this.$el.find('.invite-information');
+            
+            var guests = this.options.environment.get('guests');
+            this.listenTo(guests, 'change reset', this.setGuests);
+            this.setGuests(guests);
 
-            this.options.environment.get('user').on(
-                'change:nickname',
-                _.bind(this.refreshInformation, this));
+            var user = this.options.environment.get('user');
+            this.listenTo(user, 'change:nickname', this.setUser);
+            this.setUser(user, user.get('nickname'));
 
             return this;
         },
 
         show: function () {
             $.mobile.navigate('#invite-view');
-        },
-
-        pagecreate: function () {
-            this.refreshUsers();
         },
 
         pagebeforeshow: function () {
@@ -62,44 +58,34 @@ define([
             this.trigger('close');
         },
 
-        userSelected: function (event) {
-            var $this = $(event.target),
-                nickname = $this.attr('data-value');
-
-            event.preventDefault();
-
+        setGuest: function (guest) {
             this.$el.dialog('close');
-
+            
             // We set a little timeout because we need to be sure that the
             // mainView is visible.
             setTimeout(this.options.drawingClient.sendInvite
                                                  .bind(this.options.drawingClient,
-                                                       nickname), 250);
+                                                       guest.get('nickname')), 250);
         },
 
-        refreshUsers: function () {
-            var guests = this.options.environment.get('guests').toJSON();
+        setGuests: function (guests) {
+            guests.each(function (guest) {
+                var inviteItemView = new InviteItemView({
+                    environment: this.options.environment,
+                    model: guest
+                });
 
-            this.$el.find('.list-wrapper')
-                    .html(this.listTemplate({
-                        r: inviteResources,
-                        guests: guests
-                    }))
-                    .trigger('create');
+                inviteItemView.on('selected', this.setGuest, this);
+                guests.once('change reset', inviteItemView.remove, inviteItemView);
+                inviteItemView.render().$el.appendTo(this.$inviteList);
+            }, this);
 
-            this.refreshInformation();
-
-            return this;
+            this.$inviteList.listview('refresh');
         },
 
-        refreshInformation: function () {
-            var user = this.options.environment.get('user'),
-                nickname = user.get('nickname');
-
-            this.$el.find('.invite-information')
-                    .text(sprintf(inviteResources.inviteInformation, nickname));
-
-            return this;
+        setUser: function (user, nickname) {
+            this.$inviteInformation
+                .text(sprintf(inviteResources.inviteInformation, nickname));
         }
     });
 });

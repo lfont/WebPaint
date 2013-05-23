@@ -1,11 +1,9 @@
-<ul data-role="listview" data-divider-theme="c">
-    <li data-role="list-divider" class="invite-information"></li>
+<div data-role="header">
+    <h1><%= r.title %></h1>
+</div>
 
-    <% _.each(guests, function(guest) { %>
-        <li>
-            <a href="#" class="user" data-value="<%= guest.nickname %>">
-                <%= guest.nickname %>
-            </a>
-        </li>
-    <% }); %>
-</ul>
+<div data-role="content" data-theme="d">
+    <ul data-role="listview" data-divider-theme="c">
+        <li data-role="list-divider" class="invite-information"></li>
+    </ul>
+</div>

@@ -7,48 +7,39 @@ define([
     'jquery',
     'backbone',
     'underscore',
-    'text!templates/list-wrapper.html',
+    'views/partial/history-item',
     'text!templates/history.html',
     'i18n!nls/history-view'
-], function ($, Backbone, _, listWrapperTemplate, historyTemplate,
-             historyResources) {
+], function ($, Backbone, _, HistoryItemView, historyTemplate, historyResources) {
     'use strict';
 
     return Backbone.View.extend({
         events: {
-            'pagecreate': 'pagecreate',
             'pagebeforeshow': 'pagebeforeshow',
-            'pagehide': 'pagehide',
-            'vclick .history': 'snapshotSelected'
+            'pagehide': 'pagehide'
         },
 
-        template: _.template(listWrapperTemplate),
-        listTemplate: _.template(historyTemplate),
+        template: _.template(historyTemplate),
 
         render: function () {
             this.$el.html(this.template({
-                        r: historyResources
-                    }))
-                    .attr('id', 'history-view')
-                    .attr('data-role', 'dialog')
-                    .page();
+                r: historyResources
+            }))
+            .attr('id', 'history-view')
+            .attr('data-role', 'dialog')
+            .page();
 
-            this.options.environment.on(
-                'change:cursor', this.setSnapshot.bind(this));
+            this.$historyList = this.$el.find('[data-role="listview"]');
 
-            this.options.environment.on(
-                'change:snapshots', this.setSnapshots.bind(this));
+            this.snapshots = this.options.environment.get('snapshots');
+            this.listenTo(this.snapshots, 'set', this.setSnapshots);
+            this.setSnapshots(this.snapshots.value);
 
             return this;
         },
 
         show: function () {
             $.mobile.navigate('#history-view');
-        },
-
-        pagecreate: function () {
-            this.setSnapshots()
-                .setSnapshot();
         },
 
         pagebeforeshow: function () {
@@ -59,37 +50,27 @@ define([
             this.trigger('close');
         },
 
-        snapshotSelected: function (event) {
-            var $this = $(event.target),
-                index = $this.attr('data-value');
-
-            event.preventDefault();
-            this.options.drawerManager.cursor(parseInt(index, 10));
+        setSnapshot: function (snapshot) {
+            this.options.drawerManager.cursor(snapshot.index);
             this.$el.dialog('close');
         },
 
-        setSnapshot: function () {
-            this.$el.find('.history')
-                    .find('.ui-li-count')
-                    .hide()
-                    .end()
-                    .filter('[data-value="' +
-                            this.options.environment.get('cursor') + '"]')
-                    .find('.ui-li-count')
-                    .show();
+        setSnapshots: function (imageDataURLs) {
+            _.each(imageDataURLs, function (imageDataURL, index) {
+                var historyItemView = new HistoryItemView({
+                    environment: this.options.environment,
+                    model: {
+                        index: index,
+                        imageDataURL: imageDataURL
+                    }
+                });
 
-            return this;
-        },
+                historyItemView.on('selected', this.setSnapshot, this);
+                this.snapshots.once('set', historyItemView.remove, historyItemView);
+                historyItemView.render().$el.prependTo(this.$historyList);
+            }, this);
 
-        setSnapshots: function () {
-            this.$el.find('.list-wrapper')
-                    .html(this.listTemplate({
-                        r: historyResources,
-                        histories: this.options.environment.get('snapshots')
-                    }))
-                    .trigger('create');
-
-            return this;
+            this.$historyList.listview('refresh');
         }
     });
 });

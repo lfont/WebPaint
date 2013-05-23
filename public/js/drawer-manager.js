@@ -38,7 +38,7 @@ define([
         }
 
         if (background.match(/(?:^data:)|(?:\.(?:jpg|png)$)/)) {
-            image = new window.Image();
+            image = new Image();
             image.onload = function () {
                 setBackground(image);
             };
@@ -54,6 +54,20 @@ define([
         });
     }
 
+    function Observable () {
+        _.extend(this, Backbone.Events);
+
+        this.value = null;
+
+        this.set = function (value) {
+            var previousValue = this.value;
+            this.value = value;
+            if (previousValue !== value) {
+                this.trigger('set', value);
+            }
+        };
+    }
+
     return function ($canvas, environment) {
         var drawer = drawing.canvasDrawer($canvas[0]),
             shapeDrawer = drawer.eventShapeDrawer({
@@ -66,6 +80,7 @@ define([
 
         fixCanvasGeometry($canvas);
         restoreDrawer(drawer, environment);
+        environment.set('snapshots', new Observable());
 
         this.draw = function (shape) {
             drawer.draw(shape);
@@ -92,7 +107,7 @@ define([
         };
 
         this.on = function () {
-            window.setTimeout(function () {
+            setTimeout(function () {
                 shapeDrawer.on(environment.get('shape'));
             }, 250);
 
@@ -100,13 +115,9 @@ define([
         };
 
         this.off = function () {
-            environment.set({
-                snapshots: drawer.snapshots(),
-                cursor: drawer.cursor()
-            });
-
+            environment.set('cursor', drawer.cursor());
+            environment.get('snapshots').set(drawer.snapshots());
             shapeDrawer.off();
-
             return this;
         };
 
@@ -164,10 +175,7 @@ define([
         this.newDrawing = function (background) {
             var properties;
 
-            environment.set({
-                snapshots: null,
-                cursor: null
-            }, { silent: true });
+            environment.set({ cursor: null }, { silent: true });
 
             drawer.newDrawing(background);
             properties = drawer.properties();
@@ -179,9 +187,10 @@ define([
                 lineWidth: properties.lineWidth,
                 strokeStyle: properties.strokeStyle,
                 fillStyle: properties.fillStyle,
-                snapshots: drawer.snapshots(),
                 cursor: drawer.cursor()
             });
+
+            environment.get('snapshots').set(drawer.snapshots());
         };
 
         this.clear = function () {

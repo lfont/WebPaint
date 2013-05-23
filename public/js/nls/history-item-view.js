@@ -4,5 +4,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define({
-    "title": "Historique"
+    "root": {
+        "historyLabel": "History #"
+    },
+    "fr-fr": true
 });
