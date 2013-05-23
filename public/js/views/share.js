@@ -37,14 +37,16 @@ define([
         template: _.template(shareTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: shareResources
-            })).attr('id', 'share-view')
-               .attr('data-position-to', 'window')
-               .attr('data-dismissible', 'false')
-               .addClass('ui-corner-all')
-               .trigger('create')
-               .popup();
+            this.$el
+                .html(this.template({
+                    r: shareResources
+                }))
+                .attr('id', 'share-view')
+                .attr('data-position-to', 'window')
+                .attr('data-dismissible', 'false')
+                .addClass('ui-corner-all')
+                .trigger('create')
+                .popup();
 
             return this;
         },
@@ -90,11 +92,11 @@ define([
             activity = new MozActivity({
                 name: 'share',
                 data: {
-                  type: 'image/*',
-                  number: 1,
-                  blobs: [ blob ],
-                  filenames: [ name ],
-                  filepaths: [ name ]
+                    type: 'image/*',
+                    number: 1,
+                    blobs: [ blob ],
+                    filenames: [ name ],
+                    filepaths: [ name ]
                 }
             });
 
@@ -102,7 +104,7 @@ define([
                 _this.$el.popup('close');
             };
 
-            acivity.onerror = function () {
+            activity.onerror = function () {
                 console.log('The activity encouter en error: ' + this.error);
                 _this.$el.popup('close');
             };

@@ -1,55 +1,52 @@
 define([
-    'jquery',
+    'require',
     'views/main',
-    'models/environment',
-    'collections/colors',
-    'views/tools'
-], function ($, MainView, EnvironmentModel, ColorCollection) {
+    'models/environment'
+], function (require, MainView, EnvironmentModel) {
 
     describe('MainView', function () {
 
-        describe('showTools()', function () {
-            var environment, main;
+        describe('social widgets', function () {
+            var environment, mainView;
 
-            beforeEach(function () {
-                environment = new EnvironmentModel({
-                    colors: new ColorCollection()
-                });
-
+            before(function (done) {
+                environment = new EnvironmentModel();
+                
                 environment.fetch();
-
-                main = new MainView({
-                    el: $('<div></div>').appendTo('body'),
+                
+                require([ 'jquery.mobile' ], function () {
+                    done();
+                });
+            });
+            
+            beforeEach(function () {
+                mainView = new MainView({
                     environment: environment
                 });
-
-                main.render().pageshow();
             });
 
             afterEach(function () {
-                main.$el.remove();
+                mainView.remove();
             });
 
-            it('should show a dialog if the screen size is small', function (done) {
-                environment.set('screenSize', 'small');
-
-                main.$el.on('vclick', '.tools', function () {
-                    expect(main.toolsView.isPopup).to.be.false;
-                    done();
-                });
-
-                main.$el.find('.tools').click();
-            });
-
-            it('should show a popup if the screen size is not small', function (done) {
+            it('should be visible if the screen size is normal', function (done) {
                 environment.set('screenSize', 'normal');
-
-                main.$el.on('vclick', '.tools', function () {
-                    expect(main.toolsView.isPopup).to.be.true;
+                mainView.render().$el.appendTo('body').page();
+                
+                setTimeout(function () {
+                    expect(mainView.$el.find('.social-widgets').length).to.not.be.equal(0);
                     done();
-                });
+                }, 50);
+            });
 
-                main.$el.find('.tools').click();
+            it('should not be visible if the screen size is small', function (done) {
+                environment.set('screenSize', 'small');
+                mainView.render().$el.appendTo('body').page();
+                
+                setTimeout(function () {
+                    expect(mainView.$el.find('.social-widgets').length).to.be.equal(0);
+                    done();
+                }, 50);
             });
         });
     });

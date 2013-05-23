@@ -11,12 +11,16 @@ define([
 ], function ($, Backbone, _, socialWidgetsTemplate) {
     'use strict';
 
-    return Backbone.View.extend({
+    var SocialWidgetsView = Backbone.View.extend({
+        className: 'social-widgets',
         template: _.template(socialWidgetsTemplate),
 
         render: function () {
-            this.$el.html(this.template());
+            this.$el
+                .html(this.template());
             return this;
         }
     });
+    
+    return SocialWidgetsView;
 });

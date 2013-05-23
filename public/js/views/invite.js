@@ -28,12 +28,13 @@ define([
         listTemplate: _.template(inviteTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                        r: inviteResources
-                    }))
-                    .attr('id', 'invite-view')
-                    .attr('data-role', 'dialog')
-                    .page();
+            this.$el
+                .html(this.template({
+                    r: inviteResources
+                }))
+                .attr('id', 'invite-view')
+                .attr('data-role', 'dialog')
+                .page();
 
             this.options.environment.get('guests').on(
                 'change reset',
@@ -80,12 +81,13 @@ define([
         refreshUsers: function () {
             var guests = this.options.environment.get('guests').toJSON();
 
-            this.$el.find('.list-wrapper')
-                    .html(this.listTemplate({
-                        r: inviteResources,
-                        guests: guests
-                    }))
-                    .trigger('create');
+            this.$el
+                .find('.list-wrapper')
+                .html(this.listTemplate({
+                    r: inviteResources,
+                    guests: guests
+                }))
+                .trigger('create');
 
             this.refreshInformation();
 

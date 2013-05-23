@@ -64,11 +64,11 @@ define([
                 var myNickname = userModel.get('nickname'),
                     others = [];
 
-                    nicknames.forEach(function (nickname) {
-                        if (nickname !== myNickname) {
-                            others.push({ nickname: nickname });
-                        }
-                    });
+                nicknames.forEach(function (nickname) {
+                    if (nickname !== myNickname) {
+                        others.push({ nickname: nickname });
+                    }
+                });
 
                 guestCollection.reset(others);
             });

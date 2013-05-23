@@ -4,6 +4,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
+    'require',
     'jquery',
     'backbone',
     'underscore',
@@ -12,7 +13,7 @@ define([
     'sprintf',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function ($, Backbone, _, DrawerManager, DrawingClient, sprintf,
+], function (require, $, Backbone, _, DrawerManager, DrawingClient, sprintf,
              mainTemplate, mainResources) {
     'use strict';
 
@@ -41,10 +42,11 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                r: mainResources,
-                name: this.options.environment.get('appName')
-            }));
+            this.$el
+                .html(this.template({
+                    r: mainResources,
+                    name: this.options.environment.get('appName')
+                }));
 
             this.$messageTooltip = this.$el.find('#main-message-tooltip');
             this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
@@ -54,9 +56,10 @@ define([
                 require([
                     'views/social-widgets'
                 ], function (SocialWidgetsView) {
-                    var socialWidgetsView = new SocialWidgetsView({
-                        el: _this.$el.find('.social-widgets')
-                    }).render();
+                    var socialWidgetsView = new SocialWidgetsView();
+                    socialWidgetsView.render()
+                                     .$el
+                                     .appendTo(_this.$el.find('.social-widgets-anchor'));
                 });
             }
 
@@ -89,7 +92,7 @@ define([
                               .on('inviteResponse', this.showInviteResponse.bind(this))
                               .on('inviteRequestCanceled', function () {
                                 _this.$inviteRequestPopup.popup('close');
-                              });
+                            });
 
             $(window).on('online', this.showNetworkStatus.bind(this, true))
                      .on('offline', this.showNetworkStatus.bind(this, false));
@@ -139,7 +142,7 @@ define([
                     .addClass(addedClass)
                     .attr('title', message);
 
-             return this;
+            return this;
         },
 
         showMessage: function (text) {

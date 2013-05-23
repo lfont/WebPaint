@@ -56,10 +56,11 @@ define([
         template: _.template(colorPickerTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: colorPickerResources,
-                colors: this.options.colors.toJSON()
-            }));
+            this.$el
+                .html(this.template({
+                    r: colorPickerResources,
+                    colors: this.options.colors.toJSON()
+                }));
 
             this.$el.trigger('create');
 

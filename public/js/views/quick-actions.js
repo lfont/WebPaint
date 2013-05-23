@@ -23,7 +23,8 @@ define([
         render: function () {
             var $quickActionGroupAnchor;
 
-            this.$el.html(this.template())
+            this.$el
+                .html(this.template())
                 .attr('id', 'quick-actions-view')
                 .addClass('quick-actions-view');
 

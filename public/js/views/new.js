@@ -25,12 +25,13 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                        r: newResources
-                    }))
-                    .attr('id', 'new-view')
-                    .attr('data-role', 'dialog')
-                    .page();
+            this.$el
+                .html(this.template({
+                    r: newResources
+                }))
+                .attr('id', 'new-view')
+                .attr('data-role', 'dialog')
+                .page();
 
             this.backgroundColorPicker = new ColorPickerView({
                 el: this.$el.find('.color-picker'),

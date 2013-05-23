@@ -26,12 +26,13 @@ define([
         listTemplate: _.template(historyTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                        r: historyResources
-                    }))
-                    .attr('id', 'history-view')
-                    .attr('data-role', 'dialog')
-                    .page();
+            this.$el
+                .html(this.template({
+                    r: historyResources
+                }))
+                .attr('id', 'history-view')
+                .attr('data-role', 'dialog')
+                .page();
 
             this.options.environment.on(
                 'change:cursor', this.setSnapshot.bind(this));
@@ -82,12 +83,13 @@ define([
         },
 
         setSnapshots: function () {
-            this.$el.find('.list-wrapper')
-                    .html(this.listTemplate({
-                        r: historyResources,
-                        histories: this.options.environment.get('snapshots')
-                    }))
-                    .trigger('create');
+            this.$el
+                .find('.list-wrapper')
+                .html(this.listTemplate({
+                    r: historyResources,
+                    histories: this.options.environment.get('snapshots')
+                }))
+                .trigger('create');
 
             return this;
         }
