@@ -4,12 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
+    'require',
     'jquery',
     'backbone',
     'underscore',
     'text!templates/about.html',
     'i18n!nls/about-view'
-], function ($, Backbone, _, aboutTemplate, aboutResources) {
+], function (require, $, Backbone, _, aboutTemplate, aboutResources) {
     'use strict';
 
     return Backbone.View.extend({
@@ -23,24 +24,27 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                r: aboutResources,
-                name: this.options.environment.get('appName'),
-                version: this.options.environment.get('appVersion')
-            })).attr('id', 'about-view')
-               .attr('data-position-to', 'window')
-               .addClass('about-view')
-               .addClass('ui-corner-all')
-               .trigger('create')
-               .popup();
+            this.$el
+                .html(this.template({
+                    r: aboutResources,
+                    name: this.options.environment.get('appName'),
+                    version: this.options.environment.get('appVersion')
+                }))
+                .attr('id', 'about-view')
+                .attr('data-position-to', 'window')
+                .addClass('about-view')
+                .addClass('ui-corner-all')
+                .trigger('create')
+                .popup();
 
             if (this.options.environment.get('screenSize') === 'small') {
                 require([
                     'views/partial/social-widgets'
                 ], function (SocialWidgetsView) {
-                    var socialWidgetsView = new SocialWidgetsView({
-                        el: _this.$el.find('.social-widgets')
-                    }).render();
+                    var socialWidgetsView = new SocialWidgetsView();
+                    socialWidgetsView.render()
+                                     .$el
+                                     .appendTo(_this.$el.find('.social-widgets-anchor'));
                 });
             }
 

@@ -23,14 +23,16 @@ define([
         template: _.template(pickTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: pickResources
-            })).attr('id', 'pick-view')
-               .attr('data-position-to', 'window')
-               .attr('data-dismissible', 'false')
-               .addClass('ui-corner-all')
-               .trigger('create')
-               .popup();
+            this.$el
+                .html(this.template({
+                    r: pickResources
+                }))
+                .attr('id', 'pick-view')
+                .attr('data-position-to', 'window')
+                .attr('data-dismissible', 'false')
+                .addClass('ui-corner-all')
+                .trigger('create')
+                .popup();
 
             return this;
         },

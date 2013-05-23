@@ -36,8 +36,9 @@ require.config({
 });
 
 define([
-   'jquery'
-], function ($) {
+    'require',
+    'jquery'
+], function (require, $) {
     'use strict';
 
     function App () {
@@ -94,7 +95,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.7.0',
+                    appVersion: '0.7.1',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
@@ -138,7 +139,7 @@ define([
 
                     function getQuickActions () {
                         var notDefined,
-                            hasActivitySupport = window.MozActivity != notDefined,
+                            hasActivitySupport = window.MozActivity !== notDefined,
                             actions = [
                                 [
                                     new QuickActionModel({
@@ -299,7 +300,7 @@ define([
 
     var app = new App();
 
-    if (window['WebPaint'] && WebPaint.autoStart) {
+    if (window.WebPaint && WebPaint.autoStart) {
         if (navigator.mozApps) {
             app.isInstalled().done(function (isInstalled) {
                 if (isInstalled) {

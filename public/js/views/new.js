@@ -24,7 +24,8 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
+            this.$el
+                .html(this.template({
                 r: newResources
             }))
             .attr('id', 'new-view')

@@ -59,13 +59,15 @@ define([
         },
 
         setGuest: function (guest) {
+            var _this = this;
+            
             this.$el.dialog('close');
             
-            // We set a little timeout because we need to be sure that the
-            // mainView is visible.
-            setTimeout(this.options.drawingClient.sendInvite
-                                                 .bind(this.options.drawingClient,
-                                                       guest.get('nickname')), 250);
+            // wait for the popup to close before sending the invitation so
+            // the main view is visible.
+            this.$el.one('pagehide', function () {
+                _this.options.drawingClient.sendInvite(guest.get('nickname'));
+            });
         },
 
         setGuests: function (guests) {

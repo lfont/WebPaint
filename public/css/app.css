@@ -27,7 +27,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-decoration: none;
 }
 
-.about-view .ui-content .social-widgets {
+.about-view .ui-content .social-widgets-anchor {
     margin-left: 2em;
 }
 
@@ -46,7 +46,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center;
 }
 
-.main-view .ui-header .social-widgets {
+.main-view .ui-header .social-widgets-anchor {
     position: absolute;
     left: 125px;
     top: 10px;

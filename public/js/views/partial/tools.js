@@ -21,11 +21,13 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                r: toolsResources,
-                shapes: drawing.shapes
-            })).attr('id', 'tools-view')
-               .addClass('tools-view');
+            this.$el
+                .html(this.template({
+                    r: toolsResources,
+                    shapes: drawing.shapes
+                }))
+                .attr('id', 'tools-view')
+                .addClass('tools-view');
 
             this.shapeColorPicker = new ColorPickerView({
                 collection: this.model.colors

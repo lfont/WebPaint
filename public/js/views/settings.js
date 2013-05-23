@@ -28,11 +28,13 @@ define([
         languageBlockTemplate: _.template(languagesTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: settingsResources
-            })).attr('id', 'settings-view')
-               .attr('data-role', 'dialog')
-               .page();
+            this.$el
+                .html(this.template({
+                    r: settingsResources
+                }))
+                .attr('id', 'settings-view')
+                .attr('data-role', 'dialog')
+                .page();
 
             this.options.environment.on(
                 'change:locale',

@@ -22,12 +22,13 @@ define([
         template: _.template(historyTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: historyResources
-            }))
-            .attr('id', 'history-view')
-            .attr('data-role', 'dialog')
-            .page();
+            this.$el
+                .html(this.template({
+                    r: historyResources
+                }))
+                .attr('id', 'history-view')
+                .attr('data-role', 'dialog')
+                .page();
 
             this.$historyList = this.$el.find('[data-role="listview"]');
 
@@ -69,6 +70,7 @@ define([
                 this.snapshots.once('set', historyItemView.remove, historyItemView);
                 historyItemView.render().$el.prependTo(this.$historyList);
             }, this);
+
 
             this.$historyList.listview('refresh');
         }

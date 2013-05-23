@@ -4,16 +4,18 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
+    'require',
     'jquery',
     'backbone',
     'underscore',
     'drawer-manager',
     'drawing-client',
     'sprintf',
+    'views/message-tooltip',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function ($, Backbone, _, DrawerManager, DrawingClient, sprintf,
-             mainTemplate, mainResources) {
+], function (require, $, Backbone, _, DrawerManager, DrawingClient, sprintf,
+             MessageTooltipView, mainTemplate, mainResources) {
     'use strict';
 
     function fixContentGeometry ($header, $content) {
@@ -41,12 +43,17 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                r: mainResources,
-                name: this.options.environment.get('appName')
-            }));
+            this.$el
+                .html(this.template({
+                    r: mainResources,
+                    name: this.options.environment.get('appName')
+                }));
 
-            this.$messageTooltip = this.$el.find('#main-message-tooltip');
+            this.messageTooltipView = new MessageTooltipView({
+                closeTimeout: 2000
+            }).render();
+            this.messageTooltipView.$el.appendTo(this.$el);
+            
             this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
             this.$invitePendingPopup = this.$el.find('#main-invite-pending-popup');
 
@@ -54,9 +61,10 @@ define([
                 require([
                     'views/partial/social-widgets'
                 ], function (SocialWidgetsView) {
-                    var socialWidgetsView = new SocialWidgetsView({
-                        el: _this.$el.find('.social-widgets')
-                    }).render();
+                    var socialWidgetsView = new SocialWidgetsView();
+                    socialWidgetsView.render()
+                                     .$el
+                                     .appendTo(_this.$el.find('.social-widgets-anchor'));
                 });
             }
 
@@ -69,8 +77,6 @@ define([
         },
 
         pageshow: function () {
-            var _this = this;
-
             if (this.drawerManager) {
                 return;
             }
@@ -83,13 +89,18 @@ define([
 
             this.drawingClient = new DrawingClient(this.drawerManager,
                                                    this.options.environment);
-            this.drawingClient.on('message', this.showMessage.bind(this))
-                              .on('inviteGuestRequest', this.showInvitePending.bind(this))
-                              .on('inviteRequest', this.showInviteRequest.bind(this))
-                              .on('inviteResponse', this.showInviteResponse.bind(this))
+            this.drawingClient.on('message', function (text) {
+                                // TODO: a message queue can be useful to
+                                // display all messages
+                                this.messageTooltipView.text(text);
+                                this.messageTooltipView.show();
+                            }, this)
+                              .on('inviteGuestRequest', this.showInvitePending, this)
+                              .on('inviteRequest', this.showInviteRequest, this)
+                              .on('inviteResponse', this.showInviteResponse, this)
                               .on('inviteRequestCanceled', function () {
-                                _this.$inviteRequestPopup.popup('close');
-                              });
+                                this.$inviteRequestPopup.popup('close');
+                            }, this);
 
             $(window).on('online', this.showNetworkStatus.bind(this, true))
                      .on('offline', this.showNetworkStatus.bind(this, false));
@@ -117,10 +128,6 @@ define([
             this.$inviteRequestPopup.popup('close');
         },
 
-        isVisible: function () {
-            return $.mobile.activePage[0] === this.$el[0];
-        },
-
         showNetworkStatus: function (isOnline) {
             var removedClass, addedClass, message;
 
@@ -138,27 +145,6 @@ define([
                     .removeClass(removedClass)
                     .addClass(addedClass)
                     .attr('title', message);
-
-             return this;
-        },
-
-        showMessage: function (text) {
-            var _this = this;
-
-            // TODO: a message queue can be useful to
-            // display all messages
-            this.$messageTooltip
-                .find('.text')
-                .text(text)
-                .end()
-                .popup('open', {
-                    x: 0,
-                    y: 82
-                });
-
-            setTimeout(function () {
-                _this.$messageTooltip.popup('close');
-            }, 2000);
 
             return this;
         },

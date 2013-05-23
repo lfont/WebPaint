@@ -1,56 +1,121 @@
 define([
-    'jquery',
-    'views/main',
-    'models/environment',
-    'collections/colors',
-    'views/tools'
-], function ($, MainView, EnvironmentModel, ColorCollection) {
+    'require',
+    'backbone',
+    'underscore',
+    'models/environment'
+], function (require, Backbone, _, EnvironmentModel) {
 
+    function createTestContext () {
+        var require = window.require,
+            requireConfig = _.extend({}, require.s.contexts._.config),
+            map = {
+                'drawer-manager': 'drawer-manager-stub',
+                'drawing-client': 'drawing-client-stub'
+            };
+        
+        define(map['drawer-manager'], function () {
+            return function DrawerManagerStub () {
+                _.extend(this, Backbone.Events);
+            };
+        });
+        
+        define(map['drawing-client'], function () {
+            return function DrawingClientStub () {
+                _.extend(this, Backbone.Events);
+            };
+        });
+        
+        requireConfig.deps = null; // We don't need the deps of the parent context
+        requireConfig.context = 'main-view-test-context';
+        requireConfig.map = {
+            '*': map
+        };
+        
+        return require.config(requireConfig);
+    }
+    
     describe('MainView', function () {
-
-        describe('showTools()', function () {
-            var environment, main;
-
-            beforeEach(function () {
-                environment = new EnvironmentModel({
-                    colors: new ColorCollection()
+        var testContext = createTestContext(),
+            environment, mainView;
+        
+        before(function (done) {
+            environment = new EnvironmentModel();
+            environment.fetch();
+            
+            testContext([ 'jquery.mobile' ], function () {
+                done();
+            });
+        });
+        
+        after(function () {
+            mainView.remove();
+        });
+        
+        describe('social widgets', function () {
+            
+            beforeEach(function (done) {
+                testContext(['views/main'], function (MainView) {
+                    mainView = new MainView({
+                        environment: environment
+                    });
+                    done();
                 });
-
-                environment.fetch();
-
-                main = new MainView({
-                    el: $('<div></div>').appendTo('body'),
-                    environment: environment
-                });
-
-                main.render().pageshow();
             });
 
             afterEach(function () {
-                main.$el.remove();
+                mainView.remove();
             });
 
-            it('should show a dialog if the screen size is small', function (done) {
-                environment.set('screenSize', 'small');
-
-                main.$el.on('vclick', '.tools', function () {
-                    expect(main.toolsView.isPopup).to.be.false;
-                    done();
-                });
-
-                main.$el.find('.tools').click();
-            });
-
-            it('should show a popup if the screen size is not small', function (done) {
+            it('should be visible if the screen size is normal', function (done) {
                 environment.set('screenSize', 'normal');
+                mainView.render().$el.appendTo('body').page();
+                
+                setTimeout(function () {
+                    expect(mainView.$el.find('.social-widgets').length).to.not.be.equal(0);
+                    done();
+                }, 50);
+            });
 
-                main.$el.on('vclick', '.tools', function () {
-                    expect(main.toolsView.isPopup).to.be.true;
+            it('should not be visible if the screen size is small', function (done) {
+                environment.set('screenSize', 'small');
+                mainView.render().$el.appendTo('body').page();
+                
+                setTimeout(function () {
+                    expect(mainView.$el.find('.social-widgets').length).to.be.equal(0);
+                    done();
+                }, 50);
+            });
+            
+        });
+        
+        describe('message tooltip', function () {
+
+            beforeEach(function (done) {
+                testContext(['views/main'], function (MainView) {
+                    mainView = new MainView({
+                        environment: environment
+                    });
+                    mainView.render().$el.appendTo('body').trigger('create').page();
+                    mainView.pageshow();
                     done();
                 });
-
-                main.$el.find('.tools').click();
             });
+            
+            afterEach(function () {
+                mainView.remove();
+            });
+            
+            it('should not be visible when there is no message', function () {
+                expect(mainView.messageTooltipView.text()).to.be.empty;
+            });
+        
+            it('should be visible when a message is received', function () {
+                var expectedMessage = 'test message';
+                mainView.drawingClient.trigger('message', expectedMessage);
+                expect(mainView.messageTooltipView.text()).to.have.string(expectedMessage);
+            });
+            
         });
+        
     });
 });

@@ -28,12 +28,14 @@ define([
         render: function () {
             var _this = this;
 
-            this.$el.html(this.template({
-                r: menuResources
-            })).attr('id', 'menu-view')
-               .attr('data-display', 'overlay')
-               .attr('data-theme', 'a')
-               .addClass('menu-view');
+            this.$el
+                .html(this.template({
+                    r: menuResources
+                }))
+                .attr('id', 'menu-view')
+                .attr('data-display', 'overlay')
+                .attr('data-theme', 'a')
+                .addClass('menu-view');
 
             this.toolsView = new ToolsView({
                 model: {

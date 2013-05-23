@@ -38,7 +38,7 @@ define([
 
         updateMarker: function (environment, cursor) {
             if (this.model.index === cursor) {
-                this.$marker.show();    
+                this.$marker.show();
             } else {
                 this.$marker.hide();
             }

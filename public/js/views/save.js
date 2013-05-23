@@ -23,14 +23,15 @@ define([
         template: _.template(saveTemplate),
 
         render: function () {
-            this.$el.html(this.template({
-                r: saveResources
-            })).attr('id', 'save-view')
-               .attr('data-position-to', 'window')
-               .attr('data-dismissible', 'false')
-               .addClass('ui-corner-all')
-               .trigger('create')
-               .popup();
+            this.$el
+                .html(this.template({
+                    r: saveResources
+                })).attr('id', 'save-view')
+                .attr('data-position-to', 'window')
+                .attr('data-dismissible', 'false')
+                .addClass('ui-corner-all')
+                .trigger('create')
+                .popup();
 
             return this;
         },
