@@ -8,7 +8,7 @@ define([
 ], function (MessageTooltipView) {
     'use strict';
     
-    var MESSAGE_DURATION = 2000;
+    var MESSAGE_DURATION = 2500;
     
     return function NotificationManager () {
         var messageTooltipView = new MessageTooltipView(),

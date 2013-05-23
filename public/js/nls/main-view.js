@@ -9,6 +9,7 @@ define({
         "quickActionsButton": "Quick Actions",
         "onlineMessage": "WebPaint is online.",
         "offlineMessage": "WebPaint is offline.",
+        "inviteTitle": "Invite",
         "inviteRequest": "You have received an invite from %s.",
         "acceptButton": "Accept",
         "rejectButton": "Reject"

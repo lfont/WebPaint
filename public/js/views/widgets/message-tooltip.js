@@ -9,6 +9,10 @@ define([
     'text!templates/widgets/message-tooltip.html'
 ], function (Backbone, _, messageTooltipTemplate) {
     'use strict';
+    
+    var FROM_TOP_POSITION = -500,
+        TO_TOP_POSITION = 0,
+        ANIMATION_DURATION = 250;
 
     var MessageTooltipView = Backbone.View.extend({
         className: 'message-tooltip-view',
@@ -22,6 +26,7 @@ define([
         render: function () {
             this.$el
                 .html(this.template())
+                .css('top', FROM_TOP_POSITION)
                 .hide();
 
             this.$text = this.$el.find('.text');
@@ -30,13 +35,19 @@ define([
         },
 
         show: function () {
-            this.$el.show();
+            this.$el
+                .show()
+                .animate({ top: TO_TOP_POSITION }, ANIMATION_DURATION);
             this.isVisible = true;
         },
         
         hide: function () {
-            this.$el.hide();
-            this.isVisible = false;
+            var _this = this;
+            this.$el
+                .animate({ top: FROM_TOP_POSITION }, ANIMATION_DURATION, function () {
+                    _this.$el.hide();
+                    _this.isVisible = false;
+                });
         },
         
         text: function (text) {
