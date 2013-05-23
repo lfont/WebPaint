@@ -1,27 +1,64 @@
 define([
     'require',
-    'views/main',
+    'backbone',
+    'underscore',
     'models/environment'
-], function (require, MainView, EnvironmentModel) {
+], function (require, Backbone, _, EnvironmentModel) {
 
+    function createTestContext () {
+        var require = window.require,
+            requireConfig = _.extend({}, require.s.contexts._.config),
+            map = {
+                'drawer-manager': 'drawer-manager-stub',
+                'drawing-client': 'drawing-client-stub'
+            };
+        
+        define(map['drawer-manager'], function () {
+            return function DrawerManagerStub () {
+                _.extend(this, Backbone.Events);
+            };
+        });
+        
+        define(map['drawing-client'], function () {
+            return function DrawingClientStub () {
+                _.extend(this, Backbone.Events);
+            };
+        });
+        
+        requireConfig.deps = null; // We don't need the deps of the parent context
+        requireConfig.context = 'main-view-test-context';
+        requireConfig.map = {
+            '*': map
+        };
+        
+        return require.config(requireConfig);
+    }
+    
     describe('MainView', function () {
-
-        describe('social widgets', function () {
-            var environment, mainView;
-
-            before(function (done) {
-                environment = new EnvironmentModel();
-                
-                environment.fetch();
-                
-                require([ 'jquery.mobile' ], function () {
-                    done();
-                });
-            });
+        var testContext = createTestContext(),
+            environment, mainView;
+        
+        before(function (done) {
+            environment = new EnvironmentModel();
+            environment.fetch();
             
-            beforeEach(function () {
-                mainView = new MainView({
-                    environment: environment
+            testContext([ 'jquery.mobile' ], function () {
+                done();
+            });
+        });
+        
+        after(function () {
+            mainView.remove();
+        });
+        
+        describe('social widgets', function () {
+            
+            beforeEach(function (done) {
+                testContext(['views/main'], function (MainView) {
+                    mainView = new MainView({
+                        environment: environment
+                    });
+                    done();
                 });
             });
 
@@ -48,6 +85,37 @@ define([
                     done();
                 }, 50);
             });
+            
         });
+        
+        describe('message tooltip', function () {
+
+            beforeEach(function (done) {
+                testContext(['views/main'], function (MainView) {
+                    mainView = new MainView({
+                        environment: environment
+                    });
+                    mainView.render().$el.appendTo('body').trigger('create').page();
+                    mainView.pageshow();
+                    done();
+                });
+            });
+            
+            afterEach(function () {
+                mainView.remove();
+            });
+            
+            it('should not be visible when there is no message', function () {
+                expect(mainView.messageTooltipView.text()).to.be.empty;
+            });
+        
+            it('should be visible when a message is received', function () {
+                var expectedMessage = 'test message';
+                mainView.drawingClient.trigger('message', expectedMessage);
+                expect(mainView.messageTooltipView.text()).to.have.string(expectedMessage);
+            });
+            
+        });
+        
     });
 });

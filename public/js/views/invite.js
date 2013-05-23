@@ -64,18 +64,19 @@ define([
         },
 
         userSelected: function (event) {
-            var $this = $(event.target),
+            var _this = this,
+                $this = $(event.target),
                 nickname = $this.attr('data-value');
 
             event.preventDefault();
 
             this.$el.dialog('close');
-
-            // We set a little timeout because we need to be sure that the
-            // mainView is visible.
-            setTimeout(this.options.drawingClient.sendInvite
-                                                 .bind(this.options.drawingClient,
-                                                       nickname), 250);
+            
+            // wait for the popup to close before sending the invitation so
+            // the main view is visible.
+            this.$el.one('pagehide', function () {
+                _this.options.drawingClient.sendInvite(nickname);
+            });
         },
 
         refreshUsers: function () {
