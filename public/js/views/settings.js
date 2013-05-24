@@ -81,7 +81,7 @@ define([
 
             event.preventDefault();
             this.options.environment.set('locale', locale);
-            window.location = '/';
+            location.href = '/';
         },
 
         setLanguage: function () {

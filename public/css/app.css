@@ -16,7 +16,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- views -->
+/* views */
 
 .about-view .ui-content a {
     text-decoration: none;
@@ -37,7 +37,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 .main-view > .ui-header > .ui-btn {
     border: 0;
-    padding: 10px;
+    padding: 9px;
 }
 
 .main-view > .ui-header .ui-btn-icon-notext .ui-btn-inner {
@@ -137,10 +137,10 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- widgets -->
+/* widgets */
 
 .message-popup-view .ui-content {
-    max-height: 200px;
+    max-height: 125px;
     max-width: 400px;
 }
 
@@ -168,7 +168,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- partials -->
+/* partials */
 
 .colorpicker-custom-colors p,
 .colorpicker-predefined-colors p {
@@ -219,7 +219,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- reusable class -->
+/* reusable class */
 
 .block {
     margin-top: 1em;     
@@ -245,7 +245,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- global jquery mobile override -->
+/* global jquery mobile override */
 
 .ui-popup .ui-field-contain input.ui-slider-input {
     width: 40px;

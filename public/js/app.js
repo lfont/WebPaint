@@ -95,7 +95,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.7.5',
+                    appVersion: '0.7.6',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
@@ -108,7 +108,7 @@ define([
 
             // Set the UI language if it is defined by the user.
             if (locale) {
-                require.config({
+                window.require.config({
                     config: {
                         i18n: {
                             locale: locale

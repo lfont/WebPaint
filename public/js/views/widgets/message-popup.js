@@ -56,12 +56,7 @@ define([
                 this._isInitialized = true;
             }
             
-            this.$el
-                // FIXME: these values should
-                // be set in the stylesheet.
-                .css('max-height', '200px')
-                .css('max-width', '400px')
-                .popup('open');
+            this.$el.popup('open');
             this.isVisible = true;
         },
 
@@ -73,10 +68,10 @@ define([
         text: function (text) {
             if (_.isString(text)) {
                 this.$text
-                    .text(text);
+                    .html(text);
             }
             
-            return this.$text.text();
+            return this.$text.html();
         },
 
         onCancel: function (event) {

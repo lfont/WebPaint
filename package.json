@@ -2,7 +2,7 @@
   "name": "WebPaint",
   "description": "A simple drawing application for touch devices.",
   "author": "Loïc Fontaine <ljph.fontaine@gmail.com>",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "repository": {
     "type": "git",
     "url": "git://github.com/lfont/WebPaint.git"

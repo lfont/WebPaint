@@ -28,7 +28,10 @@ define([
     }
 
     return Backbone.View.extend({
-        attributes: { 'id': 'main-view', 'data-role': 'page' },
+        attributes: {
+            id: 'main-view',
+            'data-role': 'page'
+        },
         
         className: 'main-view',
         
@@ -40,6 +43,13 @@ define([
 
         template: _.template(mainTemplate),
 
+        initialize: function () {
+            window.applicationCache.addEventListener('updateready', this.onUpdateReady.bind(this));
+            if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+                this.onUpdateReady();
+            }
+        },
+        
         render: function () {
             var _this = this;
 
@@ -49,6 +59,7 @@ define([
                     name: this.options.environment.get('appName')
                 }));
             
+            // popup for the invites
             this.inviteMessagePopupView = new MessagePopupView({
                 title: mainResources.inviteTitle,
                 okButtonText: mainResources.acceptButton,
@@ -56,6 +67,24 @@ define([
             }).render();
             this.inviteMessagePopupView.$el.appendTo(this.$el);
 
+            // popup for the updates
+            this.updateMessagePopupView = new MessagePopupView({
+                title: mainResources.updateTitle,
+                okButtonText: mainResources.updateNowButton,
+                cancelButtonText: mainResources.updateLaterButton
+            })
+            .render()
+            .on('ok', function () {
+                location.href = '/';
+            }, this)
+            .on('cancel', function () {
+                this._hasUpdate = false;
+                this.updateMessagePopupView.hide();
+            }, this);
+            this.updateMessagePopupView.text(mainResources.updateReady);
+            this.updateMessagePopupView.$el.appendTo(this.$el);
+            
+            // social widgets
             if (this.options.environment.get('screenSize') !== 'small') {
                 require([
                     'views/partial/social-widgets'
@@ -76,6 +105,10 @@ define([
         },
 
         pageshow: function () {
+            if (this._hasUpdate) {
+                this.updateMessagePopupView.show();
+            }
+            
             if (this.drawerManager) {
                 return;
             }
@@ -100,31 +133,6 @@ define([
 
             this.showNetworkStatus(navigator.onLine);
             this.drawerManager.on();
-        },
-
-        onInviteRequest: function (nickname) {
-            this.inviteMessagePopupView.text(sprintf(mainResources.inviteRequest,
-                                                     nickname));
-            
-            this.inviteMessagePopupView.once('ok', function () {
-                this.drawingClient.sendResponse(nickname, true);
-                this.inviteMessagePopupView.off('cancel');
-                this.inviteMessagePopupView.hide();
-            }, this);
-            
-            this.inviteMessagePopupView.once('cancel', function () {
-                this.drawingClient.sendResponse(nickname, false);
-                this.inviteMessagePopupView.off('ok');
-                this.inviteMessagePopupView.hide();
-            }, this);
-            
-            this.inviteMessagePopupView.show();
-        },
-        
-        onInviteRequestCanceled: function (nickname) {
-            this.inviteMessagePopupView.off('ok')
-                                       .off('cancel')
-                                       .hide();
         },
 
         showNetworkStatus: function (isOnline) {
@@ -201,6 +209,39 @@ define([
 
                 _this.quickActionsView.show();
             });
+        },
+        
+        onInviteRequest: function (nickname) {
+            this.inviteMessagePopupView.text(sprintf(mainResources.inviteRequest,
+                                                     nickname));
+            
+            this.inviteMessagePopupView.once('ok', function () {
+                this.drawingClient.sendResponse(nickname, true);
+                this.inviteMessagePopupView.off('cancel');
+                this.inviteMessagePopupView.hide();
+            }, this);
+            
+            this.inviteMessagePopupView.once('cancel', function () {
+                this.drawingClient.sendResponse(nickname, false);
+                this.inviteMessagePopupView.off('ok');
+                this.inviteMessagePopupView.hide();
+            }, this);
+            
+            this.inviteMessagePopupView.show();
+        },
+        
+        onInviteRequestCanceled: function (nickname) {
+            this.inviteMessagePopupView.off('ok')
+                                       .off('cancel')
+                                       .hide();
+        },
+        
+        onUpdateReady: function () {
+            // we only set a flag because
+            // the view is probably not ready.
+            // The pageshow event will check this
+            // flag.
+            this._hasUpdate = true;
         }
     });
 });
