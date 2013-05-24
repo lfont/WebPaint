@@ -8,7 +8,8 @@ define([
 ], function (MessageTooltipView) {
     'use strict';
     
-    var MESSAGE_DURATION = 2500;
+    var MESSAGE_DURATION = 2500,
+        START_OFFSET = 750;
     
     return function NotificationManager () {
         var messageTooltipView = new MessageTooltipView(),
@@ -31,12 +32,17 @@ define([
         }
         
         this.push = function (message) {
-            var messageDate = getDate();
+            var messageDate, startTimeout;
             
             if (messageTooltipView.isVisible) {
+                messageDate = getDate();
+                startTimeout = MESSAGE_DURATION -
+                               (messageDate - lastMessageDate) +
+                               START_OFFSET;
+                
                 setTimeout(function () {
                     showMessage(message);
-                }, MESSAGE_DURATION - (messageDate - lastMessageDate));
+                }, startTimeout);
             } else {
                 showMessage(message);
             }

@@ -95,7 +95,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.7.3',
+                    appVersion: '0.7.4',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
