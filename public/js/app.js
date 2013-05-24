@@ -81,7 +81,7 @@ define([
             };
 
             request.onerror = function () {
-                alert('Install failed, error: ' + this.error.name);
+                console.log('Install failed, error: ' + this.error.name);
                 deferred.reject(this.error);
             };
 
@@ -95,7 +95,7 @@ define([
         ], function (EnvironmentModel) {
             var environment = new EnvironmentModel({
                     appName: 'WebPaint',
-                    appVersion: '0.7.6',
+                    appVersion: '0.7.7',
                     screenSize: $(window).height() <= 720 ||
                                 $(window).width() <= 480 ?
                                 'small' :
@@ -289,7 +289,7 @@ define([
             };
 
             request.onerror = function() {
-                alert('Update failed, error: ' + this.error.name);
+                console.log('Update failed, error: ' + this.error.name);
                 deferred.reject(this.error);
             };
         });
@@ -309,11 +309,21 @@ define([
                 if (isInstalled) {
                     app.canBeUpdated().done(function (canBeUpdated) {
                         if (canBeUpdated) {
-                            app.checkForUpdate();
+                            var updatePromise = app.checkForUpdate();
+                            updatePromise.fail(function (error) {
+                                if (error.name !== 'NETWORK_ERROR') {
+                                    alert('Update failed, error: ' + error.name);
+                                }
+                            });
                         }
                     });
                 } else {
-                    app.install();
+                    var installPromise = app.install();
+                    installPromise.fail(function (error) {
+                        if (error.name !== 'REINSTALL_FORBIDDEN') {
+                            alert('Install failed, error: ' + error.name);
+                        }
+                    });
                 }
             });
         }
