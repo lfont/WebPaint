@@ -16,17 +16,6 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- global jquery mobile override -->
-
-.ui-popup .ui-field-contain input.ui-slider-input {
-    width: 40px;
-}
-
-.ui-content {
-    text-align: center;
-}
-
-
 <!-- views -->
 
 .about-view .ui-content a {
@@ -147,6 +136,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-shadow: 0 1px 0 #111;
 }
 
+
+<!-- widgets -->
+
+.message-popup-view .ui-content {
+    max-height: 200px;
+    max-width: 400px;
+}
+
 .message-tooltip-view {
     left: 0;
     position: absolute;
@@ -171,7 +168,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 
-<!-- partial -->
+<!-- partials -->
 
 .colorpicker-custom-colors p,
 .colorpicker-predefined-colors p {
@@ -241,13 +238,19 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     text-align: center
 }
 
-.message-popup {
-    height: 150px;
-    max-width: 400px;
-}
-
 .webpaint-history-image {
     background: transparent url("../img/background.png") repeat 0 0;
     height: 115px;
     width: 115px;
+}
+
+
+<!-- global jquery mobile override -->
+
+.ui-popup .ui-field-contain input.ui-slider-input {
+    width: 40px;
+}
+
+.ui-content {
+    text-align: center;
 }

@@ -11,10 +11,11 @@ define([
     'sprintf',
     'drawer-manager',
     'drawing-client',
+    'views/widgets/message-popup',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, Backbone, _, sprintf, DrawerManager, DrawingClient,
-             mainTemplate, mainResources) {
+], function (require, $, Backbone, _, sprintf, DrawerManager,
+             DrawingClient, MessagePopupView, mainTemplate, mainResources) {
     'use strict';
 
     function fixContentGeometry ($header, $content) {
@@ -27,17 +28,17 @@ define([
     }
 
     return Backbone.View.extend({
+        attributes: { 'id': 'main-view', 'data-role': 'page' },
+        
+        className: 'main-view',
+        
         events: {
             'pageshow': 'pageshow',
             'vclick .menu': 'showMenu',
-            'vclick .quick-actions': 'showQuickActions',
-            'vclick .accept': 'accept',
-            'vclick .reject': 'reject'
+            'vclick .quick-actions': 'showQuickActions'
         },
 
         template: _.template(mainTemplate),
-        className: 'main-view',
-        attributes: { 'id': 'main-view', 'data-role': 'page' },
 
         render: function () {
             var _this = this;
@@ -48,8 +49,12 @@ define([
                     name: this.options.environment.get('appName')
                 }));
             
-            this.$inviteRequestPopup = this.$el.find('#main-invite-request-popup');
-            this.$invitePendingPopup = this.$el.find('#main-invite-pending-popup');
+            this.inviteMessagePopupView = new MessagePopupView({
+                title: mainResources.inviteTitle,
+                okButtonText: mainResources.acceptButton,
+                cancelButtonText: mainResources.rejectButton
+            }).render();
+            this.inviteMessagePopupView.$el.appendTo(this.$el);
 
             if (this.options.environment.get('screenSize') !== 'small') {
                 require([
@@ -83,36 +88,43 @@ define([
 
             this.drawingClient = new DrawingClient(this.drawerManager,
                                                    this.options.environment);
-            this.drawingClient.on('inviteRequest', this.showInviteRequest, this)
+            this.drawingClient.on('inviteRequest',
+                                  this.onInviteRequest,
+                                  this)
                               .on('inviteRequestCanceled',
-                                  function () {
-                                    this.$inviteRequestPopup.popup('close');
-                                }, this);
+                                  this.onInviteRequestCanceled,
+                                  this);
 
             $(window).on('online', this.showNetworkStatus.bind(this, true))
                      .on('offline', this.showNetworkStatus.bind(this, false));
 
             this.showNetworkStatus(navigator.onLine);
-
             this.drawerManager.on();
         },
 
-        accept: function (event) {
-            var $this = this.$el.find('.accept'),
-                nickname = $this.attr('data-value');
-
-            event.preventDefault();
-            this.drawingClient.sendResponse(nickname, true);
-            this.$inviteRequestPopup.popup('close');
+        onInviteRequest: function (nickname) {
+            this.inviteMessagePopupView.text(sprintf(mainResources.inviteRequest,
+                                                     nickname));
+            
+            this.inviteMessagePopupView.once('ok', function () {
+                this.drawingClient.sendResponse(nickname, true);
+                this.inviteMessagePopupView.off('cancel');
+                this.inviteMessagePopupView.hide();
+            }, this);
+            
+            this.inviteMessagePopupView.once('cancel', function () {
+                this.drawingClient.sendResponse(nickname, false);
+                this.inviteMessagePopupView.off('ok');
+                this.inviteMessagePopupView.hide();
+            }, this);
+            
+            this.inviteMessagePopupView.show();
         },
-
-        reject: function (event) {
-            var $this = this.$el.find('.reject'),
-                nickname = $this.attr('data-value');
-
-            event.preventDefault();
-            this.drawingClient.sendResponse(nickname, false);
-            this.$inviteRequestPopup.popup('close');
+        
+        onInviteRequestCanceled: function (nickname) {
+            this.inviteMessagePopupView.off('ok')
+                                       .off('cancel')
+                                       .hide();
         },
 
         showNetworkStatus: function (isOnline) {
@@ -135,20 +147,6 @@ define([
             
             this.options.environment.get('notificationManager')
                                     .push(message);
-
-            return this;
-        },
-
-        showInviteRequest: function (nickname) {
-            var _this = this;
-
-            this.$inviteRequestPopup.find('.message')
-                .text(sprintf(mainResources.inviteRequest, nickname))
-                .end()
-                .find('.accept, .reject')
-                .attr('data-value', nickname)
-                .end()
-                .popup('open');
 
             return this;
         },

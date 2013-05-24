@@ -50,7 +50,7 @@ define([
                     _this.trigger('inviteRequest', request.from);
                     inviteCancelationTimeoutId = setTimeout(function () {
                         inviteCancelationTimeoutId = null;
-                        _this.trigger('inviteRequestCanceled');
+                        _this.trigger('inviteRequestCanceled', request.from);
                         socket.emit('inviteGuestResponse', {
                             to: request.from,
                             status: 'busy'

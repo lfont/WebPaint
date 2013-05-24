@@ -1,5 +1,6 @@
 <div data-role="header" data-position="fixed">
     <a href="#" class="menu"
+       data-role="button"
        data-inline="true"
        data-icon="bars"
        data-iconpos="notext"
@@ -16,6 +17,7 @@
 
     <a href="#" class="quick-actions ui-btn-right"
        data-inline="true"
+       data-role="button"
        data-icon="plus"
        data-iconpos="notext"
        data-theme="a"
@@ -26,19 +28,4 @@
 
 <div data-role="content" class="main-view-content">
     <canvas />
-</div>
-
-<div id="main-invite-request-popup"
-     data-role="popup" data-position-to="window" data-dismissible="false"
-     class="ui-corner-all message-popup">
-    <div data-role="header" class="ui-corner-top">
-        <h1><%= r.inviteTitle %></h1>
-    </div>
-    <div data-role="content" class="ui-corner-bottom ui-content">
-        <p class="message"></p>
-        <a href="#" data-role="button" data-inline="true" data-theme="c"
-            class="reject"><%= r.rejectButton %></a>
-        <a href="#" data-role="button" data-inline="true" data-theme="b"
-            class="accept"><%= r.acceptButton %></a>
-    </div>
 </div>
