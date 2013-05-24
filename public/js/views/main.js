@@ -44,8 +44,8 @@ define([
         template: _.template(mainTemplate),
 
         initialize: function () {
-            window.applicationCache.addEventListener('updateready', this.onUpdateReady.bind(this));
-            if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+            applicationCache.addEventListener('updateready', this.onUpdateReady.bind(this));
+            if (applicationCache.status === applicationCache.UPDATEREADY) {
                 this.onUpdateReady();
             }
         },
@@ -211,6 +211,13 @@ define([
             });
         },
         
+        isVisible: function () {
+            if ($.mobile) {
+                return $.mobile.activePage[0] === this.$el[0];
+            }
+            return false;
+        },
+        
         onInviteRequest: function (nickname) {
             this.inviteMessagePopupView.text(sprintf(mainResources.inviteRequest,
                                                      nickname));
@@ -237,6 +244,11 @@ define([
         },
         
         onUpdateReady: function () {
+            if (this.isVisible()) {
+                this.updateMessagePopupView.show();
+                return;
+            }
+            
             // we only set a flag because
             // the view is probably not ready.
             // The pageshow event will check this
