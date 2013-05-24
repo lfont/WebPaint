@@ -7,11 +7,10 @@ by triggering the "create" event (inside a popup). -->
 
 <div data-role="content" class="ui-corner-bottom ui-content">
     <form method="post" action="/service/saveImage" data-ajax="false">
-        <div data-role="fieldcontain">
-            <label for="name"><%= r.fileName %></label>
+        <p>
             <input type="text" id="name" name="name" class="name"
                 placeholder="<%= r.defaultFileName %>" />
-        </div>
+        </p>
         <input type="hidden" name="data" class="data" />
         <button data-inline="true" data-theme="c"
             class="cancel"><%= r.cancelButton %></button>

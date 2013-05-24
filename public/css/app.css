@@ -15,6 +15,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     }
 }
 
+
+<!-- global jquery mobile override -->
+
 .ui-popup .ui-field-contain input.ui-slider-input {
     width: 40px;
 }
@@ -22,6 +25,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 .ui-content {
     text-align: center;
 }
+
+
+<!-- views -->
 
 .about-view .ui-content a {
     text-decoration: none;
@@ -32,12 +38,37 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 }
 
 .main-view {
-    -webkit-user-select: none;
     user-select: none;
 }
 
+.main-view > .ui-header-fixed.ui-fixed-hidden {
+    top: -1px;
+    padding-top: 1px;
+}
+
+.main-view > .ui-header > .ui-btn {
+    border: 0;
+    padding: 10px;
+}
+
+.main-view > .ui-header .ui-btn-icon-notext .ui-btn-inner {
+    border: 0;
+}
+
+.main-view > .ui-header-fixed > .ui-btn-icon-notext {
+    top: 0;
+}
+
+.main-view > .ui-header .ui-btn-left  {
+    left: 0;
+}
+
+.main-view > .ui-header .ui-btn-right {
+    right:  0;
+}
+
 .main-view .ui-header .ui-title {
-    margin-left: 40px;
+    margin-left: 55px;
     text-align: left;
 }
 
@@ -48,7 +79,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 .main-view .ui-header .social-widgets-anchor {
     position: absolute;
-    left: 125px;
+    left: 140px;
     top: 10px;
 }
 
@@ -139,27 +170,8 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
     padding: .5em;
 }
 
-.block {
-    margin-top: 1em;     
-}
 
-.block .block-title {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 1em;
-    text-align: left;    
-}
-
-.block .block-content {
-    display: inline-block;
-    margin: 0 auto;
-    text-align: center
-}
-
-.message-popup {
-    height: 150px;
-    max-width: 400px;
-}
+<!-- partial -->
 
 .colorpicker-custom-colors p,
 .colorpicker-predefined-colors p {
@@ -207,6 +219,31 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 .colorpicker-color-selected {
     cursor: pointer;
     box-shadow: 0 0 0 3px gray;
+}
+
+
+<!-- reusable class -->
+
+.block {
+    margin-top: 1em;     
+}
+
+.block .block-title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1em;
+    text-align: left;    
+}
+
+.block .block-content {
+    display: inline-block;
+    margin: 0 auto;
+    text-align: center
+}
+
+.message-popup {
+    height: 150px;
+    max-width: 400px;
 }
 
 .webpaint-history-image {

@@ -6,14 +6,15 @@ by triggering the "create" event (inside a popup). -->
 </div>
 
 <div data-role="content" class="ui-corner-bottom ui-content">
-    <div data-role="fieldcontain">
-        <label for="name"><%= r.fileName %></label>
-        <input type="text" id="name" name="name" class="name"
-            placeholder="<%= r.defaultFileName %>" />
-    </div>
-    <input type="hidden" name="data" class="data" />
-    <button data-inline="true" data-theme="c"
-        class="cancel"><%= r.cancelButton %></button>
-    <button data-inline="true" data-theme="b"
-        class="share"><%= r.shareButton %></button>
+    <form>
+        <p>
+            <input type="text" id="name" name="name" class="name"
+                placeholder="<%= r.defaultFileName %>" />
+        </p>
+        <input type="hidden" name="data" class="data" />
+        <button data-inline="true" data-theme="c"
+            class="cancel"><%= r.cancelButton %></button>
+        <button data-inline="true" data-theme="b"
+            class="share"><%= r.shareButton %></button>
+    </form>
 </div>
