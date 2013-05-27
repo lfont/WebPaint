@@ -21,6 +21,16 @@ define([
         },
 
         template: _.template(saveTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+                
+            this._environment = this._app.environment;
+            this._drawerManager = this._app.drawerManager;
+            this._$name = null;
+            this._$data = null;
+            this._$form = null;
+        },
 
         render: function () {
             this.$el
@@ -32,18 +42,18 @@ define([
                 .addClass('ui-corner-all')
                 .trigger('create')
                 .popup();
+            
+            this._$name = this.$el.find('.name');
+            this._$data = this.$el.find('.data');
+            this._$form = this.$el.find('form');
 
             return this;
         },
 
         show: function () {
-            this.$el.find('.name')
-                    .val('')
-                    .end()
-                    .find('.data')
-                    .val(this.options.drawerManager.snapshot())
-                    .end()
-                    .popup('open');
+            this._$name.val('');
+            this._$data.val(this._drawerManager.snapshot());
+            this.$el.popup('open');
         },
 
         popupbeforeposition: function () {
@@ -61,17 +71,17 @@ define([
 
         save: function (event) {
             var _this = this,
-                $name = this.$el.find('.name'),
-                data = this.$el.find('.data').val();
+                $name = this._$name,
+                data = this._$data.val();
 
             if ($name.val() === '') {
                 $name.val(saveResources.defaultFileName);
             }
 
-            this.$el.find('form').submit();
+            this._$form.submit();
 
-            window.setTimeout(function () {
-                if (_this.options.environment.get('openSavedPicture')) {
+            setTimeout(function () {
+                if (_this._environment.get('openSavedPicture')) {
                     window.open(data, '_blank');
                 }
                 _this.$el.popup('close');

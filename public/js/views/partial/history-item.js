@@ -17,30 +17,36 @@ define([
         },
 
         tagName: 'li',
+        
         template: _.template(historyItemTemplate),
 
+        initialize: function () {
+            this._environment = this.options.environment;
+        },
+        
         render: function () {
-            this.$el.html(this.template({
-                r: historyItemResources,
-                snapshot: this.model
-            }));
+            this.$el
+                .html(this.template({
+                    r: historyItemResources,
+                    snapshot: this.model
+                }));
 
-            this.$marker = this.$el.find('.ui-li-count');
+            this._$marker = this.$el.find('.ui-li-count');
 
-            this.listenTo(this.options.environment, 'change:cursor',
+            this.listenTo(this._environment, 'change:cursor',
                           this.updateMarker);
 
-            this.updateMarker(this.options.environment,
-                              this.options.environment.get('cursor'));
+            this.updateMarker(this._environment,
+                              this._environment.get('cursor'));
             
             return this;
         },
 
         updateMarker: function (environment, cursor) {
             if (this.model.index === cursor) {
-                this.$marker.show();
+                this._$marker.show();
             } else {
-                this.$marker.hide();
+                this._$marker.hide();
             }
         },
 

@@ -35,6 +35,14 @@ define([
         },
 
         template: _.template(shareTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+
+            this._drawerManager = this._app.drawerManager;
+            this._$name = null;
+            this._$data = null;
+        },
 
         render: function () {
             this.$el
@@ -47,18 +55,17 @@ define([
                 .addClass('ui-corner-all')
                 .trigger('create')
                 .popup();
+            
+            this._$name = this.$el.find('.name');
+            this._$data = this.$el.find('.data');
 
             return this;
         },
 
         show: function () {
-            this.$el.find('.name')
-                    .val('')
-                    .end()
-                    .find('.data')
-                    .val(this.options.drawerManager.snapshot())
-                    .end()
-                    .popup('open');
+            this._$name.val('');
+            this._$data.val(this._drawerManager.snapshot());
+            this.$el.popup('open');
         },
 
         popupbeforeposition: function () {
@@ -76,8 +83,8 @@ define([
 
         share: function (event) {
             var _this = this,
-                name = this.$el.find('.name').val(),
-                data = this.$el.find('.data').val(),
+                name = this._$name.val(),
+                data = this._$data.val(),
                 blob = dataUrlToBlob(data),
                 activity;
 

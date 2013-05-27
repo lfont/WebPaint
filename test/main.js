@@ -3,8 +3,8 @@ require.config({
 });
 
 require([
-    'app'
-], function (app) {
+    '/public/js/main.js'
+], function () {
     require([
         '/test/client/views/main_test.js',
         '/test/client/views/about_test.js'

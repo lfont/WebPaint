@@ -13,8 +13,9 @@ define([
     'use strict';
 
     var QuickActionGroupView = Backbone.View.extend({
-        tagName: 'li',
         className: 'quick-action-group',
+        
+        tagName: 'li',
 
         render: function () {
             var hasMultipleActions = this.collection.length > 1;

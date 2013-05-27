@@ -18,6 +18,10 @@ define([
     return Backbone.View.extend({
         template: _.template(toolsTemplate),
 
+        initialize: function () {
+            this._drawerManager = this.options.drawerManager;
+        },
+        
         render: function () {
             var _this = this;
 
@@ -37,7 +41,7 @@ define([
                                  .appendTo(this.$el.find('.color-picker-anchor'));
             
             this.shapeColorPicker.on('color', function (hex) {
-                _this.options.drawerManager.color(hex);
+                _this._drawerManager.color(hex);
             });
 
             return this;
@@ -47,23 +51,23 @@ define([
             var $shapes = this.$el.find('.shape'),
                 $width = this.$el.find('.width');
 
-            $shapes.filter('[value="' + this.options.drawerManager.shape() + '"]')
+            $shapes.filter('[value="' + this._drawerManager.shape() + '"]')
                    .attr('checked', true)
                    .end()
                    .checkboxradio('refresh');
 
-            $width.val(this.options.drawerManager.lineWidth())
+            $width.val(this._drawerManager.lineWidth())
                   .slider('refresh');
 
-            this.shapeColorPicker.value(this.options.drawerManager.color());
+            this.shapeColorPicker.value(this._drawerManager.color());
         },
 
         store: function () {
             var $shape = this.$el.find('.shape:checked'),
                 $width = this.$el.find('.width');
 
-            this.options.drawerManager.shape($shape.val());
-            this.options.drawerManager.lineWidth(parseInt($width.val(), 10));
+            this._drawerManager.shape($shape.val());
+            this._drawerManager.lineWidth(parseInt($width.val(), 10));
         }
     });
 });

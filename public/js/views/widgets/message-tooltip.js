@@ -20,7 +20,8 @@ define([
         template: _.template(messageTooltipTemplate),
         
         initialize: function () {
-            this.isVisible = false;
+            this._isVisible = false;
+            this._$text = null;
         },
         
         render: function () {
@@ -29,7 +30,7 @@ define([
                 .css('top', FROM_TOP_POSITION)
                 .hide();
 
-            this.$text = this.$el.find('.text');
+            this._$text = this.$el.find('.text');
             
             return this;
         },
@@ -38,7 +39,7 @@ define([
             this.$el
                 .show()
                 .animate({ top: TO_TOP_POSITION }, ANIMATION_DURATION);
-            this.isVisible = true;
+            this._isVisible = true;
         },
         
         hide: function () {
@@ -46,17 +47,21 @@ define([
             this.$el
                 .animate({ top: FROM_TOP_POSITION }, ANIMATION_DURATION, function () {
                     _this.$el.hide();
-                    _this.isVisible = false;
+                    _this._isVisible = false;
                 });
+        },
+        
+        isVisible: function () {
+            return this._isVisible;
         },
         
         text: function (text) {
             if (_.isString(text)) {
-                this.$text
-                    .text(text);
+                this._$text
+                    .html(text);
             }
             
-            return this.$text.text();
+            return this._$text.html();
         }
     });
     

@@ -16,6 +16,7 @@ define([
         },
 
         tagName: 'li',
+        
         template: _.template(inviteItemTemplate),
 
         render: function () {

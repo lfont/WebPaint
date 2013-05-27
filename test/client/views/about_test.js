@@ -1,29 +1,60 @@
 define([
     'require',
     'jquery',
-    'views/about',
+    'backbone',
+    'underscore',
     'models/environment'
-], function (require, $, AboutView, EnvironmentModel) {
+], function (require, $, Backbone, _, EnvironmentModel) {
 
+    function createTestContext () {
+        var require = window.require,
+            requireConfig = _.extend({}, require.s.contexts._.config),
+            map = {
+                'app': 'app-stub'
+            };
+        
+        define(map.app, function () {
+            return function AppStub () {
+                _.extend(this, Backbone.Events);
+                
+                this.environment = new EnvironmentModel();
+                this.environment.fetch();
+            };
+        });
+        
+        requireConfig.deps = null; // We don't need the deps of the parent context
+        requireConfig.context = 'about-view-test-context';
+        requireConfig.map = {
+            '*': map
+        };
+        
+        return require.config(requireConfig);
+    }
+    
     describe('AboutView', function () {
-
-        describe('social widgets', function () {
-            var environment, aboutView;
-
-            before(function (done) {
-                environment = new EnvironmentModel();
+        var testContext = createTestContext(),
+            app, aboutView;
+        
+        before(function (done) {
+            testContext([ 'app' ], function (App) {
+                app = new App();
                 
-                environment.fetch();
-                
-                require([ 'jquery.mobile' ], function () {
+                testContext([ 'jquery.mobile' ], function () {
                     done();
                 });
             });
+        });
+        
+        after(function () {
+            aboutView.remove();
+        });
+
+        describe('social widgets', function () {
             
-            beforeEach(function () {
-                aboutView = new AboutView({
-                    el: $('<div></div>').appendTo('body'),
-                    environment: environment
+            beforeEach(function (done) {
+                testContext([ 'views/about' ], function (AboutView) {
+                    aboutView = new AboutView({ app: app });
+                    done();
                 });
             });
 
@@ -32,7 +63,7 @@ define([
             });
 
             it('should be visible if the screen size is small', function (done) {
-                environment.set('screenSize', 'small');
+                app.environment.set('screenSize', 'small');
                 aboutView.render();
                 
                 setTimeout(function () {
@@ -42,7 +73,7 @@ define([
             });
 
             it('should not be visible if the screen size is normal', function (done) {
-                environment.set('screenSize', 'normal');
+                app.environment.set('screenSize', 'normal');
                 aboutView.render();
                 
                 setTimeout(function () {

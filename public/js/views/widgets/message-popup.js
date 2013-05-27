@@ -27,22 +27,27 @@ define([
         template: _.template(messagePopupTemplate),
 
         initialize: function () {
-            this.isVisible = false;
+            this._title = this.options.title;
+            this._okButtonText = this.options.okButtonText;
+            this._cancelButtonText = this.options.cancelButtonText;
+            
+            this._isVisible = false;
             this._isInitialized = false;
+            this._$text = null;
         },
         
         render: function () {
             this.$el
                 .html(this.template({
                     r: {
-                        title: this.options.title,
-                        okButton: this.options.okButtonText,
-                        cancelButton: this.options.cancelButtonText
+                        title: this._title,
+                        okButton: this._okButtonText,
+                        cancelButton: this._cancelButtonText
                     }
                 }))
                 .hide();
             
-            this.$text = this.$el.find('.text');
+            this._$text = this.$el.find('.text');
 
             return this;
         },
@@ -57,21 +62,25 @@ define([
             }
             
             this.$el.popup('open');
-            this.isVisible = true;
+            this._isVisible = true;
         },
 
         hide: function () {
             this.$el.popup('close');
-            this.isVisible = false;
+            this._isVisible = false;
+        },
+        
+        isVisible: function () {
+            return this._isVisible;
         },
         
         text: function (text) {
             if (_.isString(text)) {
-                this.$text
+                this._$text
                     .html(text);
             }
             
-            return this.$text.html();
+            return this._$text.html();
         },
 
         onCancel: function (event) {

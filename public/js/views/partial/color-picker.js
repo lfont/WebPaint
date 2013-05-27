@@ -45,6 +45,8 @@ define([
     }
 
     var ColorPickerView = Backbone.View.extend({
+        className: 'color-picker',
+        
         events: {
             'change .colorpicker-red': 'customColorUpdated',
             'change .colorpicker-green': 'customColorUpdated',
@@ -53,7 +55,6 @@ define([
             'vclick .colorpicker-predefined-color': 'colorSelected'
         },
 
-        className: 'color-picker',
         template: _.template(colorPickerTemplate),
 
         render: function () {

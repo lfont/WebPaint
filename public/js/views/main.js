@@ -9,13 +9,11 @@ define([
     'backbone',
     'underscore',
     'sprintf',
-    'drawer-manager',
-    'drawing-client',
     'views/widgets/message-popup',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, Backbone, _, sprintf, DrawerManager,
-             DrawingClient, MessagePopupView, mainTemplate, mainResources) {
+], function (require, $, Backbone, _, sprintf, MessagePopupView,
+             mainTemplate, mainResources) {
     'use strict';
 
     function fixContentGeometry ($header, $content) {
@@ -44,10 +42,34 @@ define([
         template: _.template(mainTemplate),
 
         initialize: function () {
-            applicationCache.addEventListener('updateready', this.onUpdateReady.bind(this));
-            if (applicationCache.status === applicationCache.UPDATEREADY) {
-                this.onUpdateReady();
-            }
+            var cacheUpdatePromise;
+            
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._environment = this._app.environment;
+            this._notificationManager = this._app.notificationManager;
+            this._drawingClient = null;
+            this._drawerManager = null;
+            this._hasUpdate = false;
+            this._$title = null;
+            
+            this._app.on('ready', function () {
+                this._drawingClient = this._app.drawingClient;
+                this._drawingClient
+                    .on('inviteRequest',
+                        this.onInviteRequest,
+                        this)
+                    .on('inviteRequestCanceled',
+                        this.onInviteRequestCanceled,
+                        this);
+                
+                this._drawerManager = this._app.drawerManager;
+                this._drawerManager.on();
+            }, this);
+            
+            cacheUpdatePromise = this._app.checkForCacheUpdate();
+            cacheUpdatePromise.done(this.onCacheUpdate.bind(this));
         },
         
         render: function () {
@@ -56,45 +78,50 @@ define([
             this.$el
                 .html(this.template({
                     r: mainResources,
-                    name: this.options.environment.get('appName')
+                    name: this._environment.get('appName')
                 }));
             
+            this._$title = this.$el.find('.title');
+            
             // popup for the invites
-            this.inviteMessagePopupView = new MessagePopupView({
+            this._views.inviteMessage = new MessagePopupView({
                 title: mainResources.inviteTitle,
                 okButtonText: mainResources.acceptButton,
                 cancelButtonText: mainResources.rejectButton
             }).render();
-            this.inviteMessagePopupView.$el.appendTo(this.$el);
+            this._views.inviteMessage.$el.appendTo(this.$el);
 
             // popup for the updates
-            this.updateMessagePopupView = new MessagePopupView({
+            this._views.updateMessage = new MessagePopupView({
                 title: mainResources.updateTitle,
                 okButtonText: mainResources.updateNowButton,
                 cancelButtonText: mainResources.updateLaterButton
             })
-            .render()
-            .on('ok', function () {
-                location.href = '/';
-            }, this)
+            .on('ok', this._app.reload, this._app)
             .on('cancel', function () {
                 this._hasUpdate = false;
-                this.updateMessagePopupView.hide();
-            }, this);
-            this.updateMessagePopupView.text(mainResources.updateReady);
-            this.updateMessagePopupView.$el.appendTo(this.$el);
+                this._views.updateMessage.hide();
+            }, this)
+            .render();
+            this._views.updateMessage.text(mainResources.updateReady);
+            this._views.updateMessage.$el.appendTo(this.$el);
             
             // social widgets
-            if (this.options.environment.get('screenSize') !== 'small') {
+            if (this._environment.get('screenSize') !== 'small') {
                 require([
                     'views/partial/social-widgets'
                 ], function (SocialWidgetsView) {
-                    var socialWidgetsView = new SocialWidgetsView();
-                    socialWidgetsView.render()
-                                     .$el
-                                     .appendTo(_this.$el.find('.social-widgets-anchor'));
+                    _this._views.socialWidgets = new SocialWidgetsView().render();
+                    _this._views.socialWidgets
+                                .$el
+                                .appendTo(_this.$el.find('.social-widgets-anchor'));
                 });
             }
+            
+            // network status
+            $(window).on('online', this.showNetworkStatus.bind(this, true))
+                     .on('offline', this.showNetworkStatus.bind(this, false));
+            this.showNetworkStatus(navigator.onLine);
 
             return this;
         },
@@ -106,33 +133,17 @@ define([
 
         pageshow: function () {
             if (this._hasUpdate) {
-                this.updateMessagePopupView.show();
+                this._views.updateMessage.show();
             }
             
-            if (this.drawerManager) {
+            if (this._drawingClient) {
                 return;
             }
 
             fixContentGeometry(this.$el.find('[data-role="header"]'),
                                this.$el.find('[data-role="content"]'));
-
-            this.drawerManager = new DrawerManager(this.$el.find('canvas'),
-                                                   this.options.environment);
-
-            this.drawingClient = new DrawingClient(this.drawerManager,
-                                                   this.options.environment);
-            this.drawingClient.on('inviteRequest',
-                                  this.onInviteRequest,
-                                  this)
-                              .on('inviteRequestCanceled',
-                                  this.onInviteRequestCanceled,
-                                  this);
-
-            $(window).on('online', this.showNetworkStatus.bind(this, true))
-                     .on('offline', this.showNetworkStatus.bind(this, false));
-
-            this.showNetworkStatus(navigator.onLine);
-            this.drawerManager.on();
+            
+            this.trigger('canvasReady', this.$el.find('canvas'));
         },
 
         showNetworkStatus: function (isOnline) {
@@ -148,13 +159,12 @@ define([
                 message = mainResources.offlineMessage;
             }
 
-            this.$el.find('.title')
-                    .removeClass(removedClass)
-                    .addClass(addedClass)
-                    .attr('title', message);
+            this._$title
+                .removeClass(removedClass)
+                .addClass(addedClass)
+                .attr('title', message);
             
-            this.options.environment.get('notificationManager')
-                                    .push(message);
+            this._notificationManager.push(message);
 
             return this;
         },
@@ -166,21 +176,19 @@ define([
             require([
                 'views/menu'
             ], function (MenuView) {
-                if (!_this.menuView) {
-                    _this.menuView = new MenuView({
+                var drawerManager = _this._drawerManager;
+                
+                if (!_this._views.menu) {
+                    _this._views.menu = new MenuView({
                         el: $('<div></div>').prependTo(_this.$el),
-                        environment: _this.options.environment,
-                        drawerManager: _this.drawerManager,
-                        drawingClient: _this.drawingClient
-                    });
-                    _this.menuView.on('open', _this.drawerManager.off,
-                                      _this.drawerManager);
-                    _this.menuView.on('close', _this.drawerManager.on,
-                                      _this.drawerManager);
-                    _this.menuView.render();
+                        app: _this._app
+                    })
+                    .on('open', drawerManager.off, drawerManager)
+                    .on('close', drawerManager.on, drawerManager)
+                    .render();
                 }
 
-                _this.menuView.show();
+                _this._views.menu.show();
             });
         },
 
@@ -191,23 +199,21 @@ define([
             require([
                 'views/quick-actions'
             ], function (QuickActionsView) {
-                if (!_this.quickActionsView) {
-                    _this.quickActionsView = new QuickActionsView({
+                var drawerManager = _this._drawerManager;
+                
+                if (!_this._views.quickActions) {
+                    _this._views.quickActions = new QuickActionsView({
                         el: $('<div></div>').appendTo(_this.$el),
-                        collection: _this.options.environment.get('actions'),
-                        positionTo: event.target,
-                        environment: _this.options.environment,
-                        drawerManager: _this.drawerManager,
-                        drawingClient: _this.drawingClient
-                    });
-                    _this.quickActionsView.on('open', _this.drawerManager.off,
-                                              _this.drawerManager);
-                    _this.quickActionsView.on('close', _this.drawerManager.on,
-                                              _this.drawerManager);
-                    _this.quickActionsView.render();
+                        app: _this._app,
+                        collection: _this._environment.get('actions'),
+                        positionTo: event.target
+                    })
+                    .on('open', drawerManager.off, drawerManager)
+                    .on('close', drawerManager.on, drawerManager)
+                    .render();
                 }
 
-                _this.quickActionsView.show();
+                _this._views.quickActions.show();
             });
         },
         
@@ -219,33 +225,36 @@ define([
         },
         
         onInviteRequest: function (nickname) {
-            this.inviteMessagePopupView.text(sprintf(mainResources.inviteRequest,
-                                                     nickname));
+            var inviteView = this._views.inviteMessage,
+                drawingClient = this._drawingClient;
             
-            this.inviteMessagePopupView.once('ok', function () {
-                this.drawingClient.sendResponse(nickname, true);
-                this.inviteMessagePopupView.off('cancel');
-                this.inviteMessagePopupView.hide();
-            }, this);
+            inviteView.text(sprintf(mainResources.inviteRequest,
+                                    nickname));
             
-            this.inviteMessagePopupView.once('cancel', function () {
-                this.drawingClient.sendResponse(nickname, false);
-                this.inviteMessagePopupView.off('ok');
-                this.inviteMessagePopupView.hide();
-            }, this);
+            inviteView.once('ok', function () {
+                drawingClient.sendResponse(nickname, true);
+                inviteView.off('cancel');
+                inviteView.hide();
+            });
             
-            this.inviteMessagePopupView.show();
+            inviteView.once('cancel', function () {
+                drawingClient.sendResponse(nickname, false);
+                inviteView.off('ok');
+                inviteView.hide();
+            });
+            
+            inviteView.show();
         },
         
         onInviteRequestCanceled: function (nickname) {
-            this.inviteMessagePopupView.off('ok')
-                                       .off('cancel')
-                                       .hide();
+            this._views.inviteMessage.off('ok')
+                                     .off('cancel')
+                                     .hide();
         },
         
-        onUpdateReady: function () {
+        onCacheUpdate: function () {
             if (this.isVisible()) {
-                this.updateMessagePopupView.show();
+                this._views.updateMessage.show();
                 return;
             }
             

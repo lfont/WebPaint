@@ -13,6 +13,7 @@ define([
 
     var SocialWidgetsView = Backbone.View.extend({
         className: 'social-widgets',
+        
         template: _.template(socialWidgetsTemplate),
 
         render: function () {

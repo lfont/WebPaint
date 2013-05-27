@@ -34,7 +34,7 @@ define([
         this.push = function (message) {
             var messageDate, startTimeout;
             
-            if (messageTooltipView.isVisible) {
+            if (messageTooltipView.isVisible()) {
                 messageDate = getDate();
                 startTimeout = MESSAGE_DURATION -
                                (messageDate - lastMessageDate) +

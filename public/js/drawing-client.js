@@ -12,12 +12,10 @@ define([
 ], function (Backbone, _, socketio, sprintf, drawingClientResources) {
     'use strict';
         
-    return function (drawerManager, environment) {
+    return function (drawerManager, guestCollection,
+                     userModel, notificationManager) {
         var _this               = this,
             socket              = socketio.connect('/'),
-            guestCollection     = environment.get('guests'),
-            userModel           = environment.get('user'),
-            notificationManager = environment.get('notificationManager'),
             inviteCancelationTimeoutId;
 
         _.extend(this, Backbone.Events);

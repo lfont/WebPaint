@@ -23,25 +23,35 @@ define([
         
         template: _.template(inviteTemplate),
 
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._guests = this._app.guests;
+            this._user = this._app.user;
+            this._drawingClient = this._app.drawingClient;
+            this._$inviteList = null;
+            this._$inviteInformation = null;
+        },
+        
         render: function () {
             this.$el
                 .html(this.template({
                     r: inviteResources
                 }))
                 .attr('id', 'invite-view')
-                .attr('data-role', 'dialog')
-                .page();
+                .attr('data-role', 'dialog');
 
-            this.$inviteList = this.$el.find('[data-role="listview"]');
-            this.$inviteInformation = this.$el.find('.invite-information');
+            this._$inviteList = this.$el.find('[data-role="listview"]');
+            this._$inviteInformation = this.$el.find('.invite-information');
             
-            var guests = this.options.environment.get('guests');
-            this.listenTo(guests, 'change reset', this.setGuests);
-            this.setGuests(guests);
+            this.$el.page();
+            
+            this.listenTo(this._guests, 'change reset', this.setGuests);
+            this.setGuests(this._guests);
 
-            var user = this.options.environment.get('user');
-            this.listenTo(user, 'change:nickname', this.setUser);
-            this.setUser(user, user.get('nickname'));
+            this.listenTo(this._user, 'change:nickname', this.setUser);
+            this.setUser(this._user, this._user.get('nickname'));
 
             return this;
         },
@@ -66,27 +76,29 @@ define([
             // wait for the popup to close before sending the invitation so
             // the main view is visible.
             this.$el.one('pagehide', function () {
-                _this.options.drawingClient.sendInvite(guest.get('nickname'));
+                _this._drawingClient.sendInvite(guest.get('nickname'));
             });
         },
 
         setGuests: function (guests) {
-            guests.each(function (guest) {
-                var inviteItemView = new InviteItemView({
-                    environment: this.options.environment,
+            this._views = {};
+            
+            guests.each(function (guest, index) {
+                var inviteItemView = this._views[index] = new InviteItemView({
                     model: guest
-                });
-
-                inviteItemView.on('selected', this.setGuest, this);
+                })
+                .on('selected', this.setGuest, this)
+                .render();
+                
                 guests.once('change reset', inviteItemView.remove, inviteItemView);
-                inviteItemView.render().$el.appendTo(this.$inviteList);
+                inviteItemView.$el.appendTo(this._$inviteList);
             }, this);
 
-            this.$inviteList.listview('refresh');
+            this._$inviteList.listview('refresh');
         },
 
         setUser: function (user, nickname) {
-            this.$inviteInformation
+            this._$inviteInformation
                 .text(sprintf(inviteResources.inviteInformation, nickname));
         }
     });

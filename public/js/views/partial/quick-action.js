@@ -13,12 +13,14 @@ define([
     'use strict';
 
     var QuickActionView = Backbone.View.extend({
+        className: 'quick-action',
+        
         events: {
             'vclick': 'actionClick'
         },
 
         tagName: 'a',
-        className: 'quick-action',
+        
         template: _.template(quickActionTemplate),
 
         render: function () {

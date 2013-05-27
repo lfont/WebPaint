@@ -20,6 +20,15 @@ define([
         },
 
         template: _.template(historyTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._environment = this._app.environment;
+            this._drawerManager = this._app.drawerManager;
+            this._$historyList = null;
+        },
 
         render: function () {
             this.$el
@@ -30,9 +39,9 @@ define([
                 .attr('data-role', 'dialog')
                 .page();
 
-            this.$historyList = this.$el.find('[data-role="listview"]');
+            this._$historyList = this.$el.find('[data-role="listview"]');
 
-            this.snapshots = this.options.environment.get('snapshots');
+            this.snapshots = this._environment.get('snapshots');
             this.listenTo(this.snapshots, 'set', this.setSnapshots);
             this.setSnapshots(this.snapshots.value);
 
@@ -52,27 +61,29 @@ define([
         },
 
         setSnapshot: function (snapshot) {
-            this.options.drawerManager.cursor(snapshot.index);
+            this._drawerManager.cursor(snapshot.index);
             this.$el.dialog('close');
         },
 
         setSnapshots: function (imageDataURLs) {
+            this._views = {};
+            
             _.each(imageDataURLs, function (imageDataURL, index) {
-                var historyItemView = new HistoryItemView({
-                    environment: this.options.environment,
+                var historyItemView = this._views[index] = new HistoryItemView({
+                    environment: this._environment,
                     model: {
                         index: index,
                         imageDataURL: imageDataURL
                     }
-                });
-
-                historyItemView.on('selected', this.setSnapshot, this);
+                })
+                .on('selected', this.setSnapshot, this)
+                .render();
+                
                 this.snapshots.once('set', historyItemView.remove, historyItemView);
-                historyItemView.render().$el.prependTo(this.$historyList);
+                historyItemView.$el.prependTo(this._$historyList);
             }, this);
 
-
-            this.$historyList.listview('refresh');
+            this._$historyList.listview('refresh');
         }
     });
 });

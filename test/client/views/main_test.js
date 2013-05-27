@@ -1,27 +1,32 @@
 define([
     'require',
+    'jquery',
     'backbone',
     'underscore',
     'models/environment'
-], function (require, Backbone, _, EnvironmentModel) {
+], function (require, $, Backbone, _, EnvironmentModel) {
 
     function createTestContext () {
         var require = window.require,
             requireConfig = _.extend({}, require.s.contexts._.config),
             map = {
-                'drawer-manager': 'drawer-manager-stub',
-                'drawing-client': 'drawing-client-stub'
+                'app': 'app-stub'
             };
         
-        define(map['drawer-manager'], function () {
-            return function DrawerManagerStub () {
+        define(map.app, function () {
+            return function AppStub () {
                 _.extend(this, Backbone.Events);
-            };
-        });
-        
-        define(map['drawing-client'], function () {
-            return function DrawingClientStub () {
-                _.extend(this, Backbone.Events);
+                
+                this.environment = new EnvironmentModel();
+                this.environment.fetch();
+                
+                this.notificationManager = {
+                    push: function () {}
+                };
+                
+                this.checkForCacheUpdate = function () {
+                    return $.Deferred().promise();
+                };
             };
         });
         
@@ -36,14 +41,15 @@ define([
     
     describe('MainView', function () {
         var testContext = createTestContext(),
-            environment, mainView;
+            app, mainView;
         
         before(function (done) {
-            environment = new EnvironmentModel();
-            environment.fetch();
-            
-            testContext([ 'jquery.mobile' ], function () {
-                done();
+            testContext([ 'app' ], function (App) {
+                app = new App();
+                
+                testContext([ 'jquery.mobile' ], function () {
+                    done();
+                });
             });
         });
         
@@ -54,10 +60,8 @@ define([
         describe('social widgets', function () {
             
             beforeEach(function (done) {
-                testContext(['views/main'], function (MainView) {
-                    mainView = new MainView({
-                        environment: environment
-                    });
+                testContext([ 'views/main' ], function (MainView) {
+                    mainView = new MainView({ app: app });
                     done();
                 });
             });
@@ -67,7 +71,7 @@ define([
             });
 
             it('should be visible if the screen size is normal', function (done) {
-                environment.set('screenSize', 'normal');
+                app.environment.set('screenSize', 'normal');
                 mainView.render().$el.appendTo('body').page();
                 
                 setTimeout(function () {
@@ -77,7 +81,7 @@ define([
             });
 
             it('should not be visible if the screen size is small', function (done) {
-                environment.set('screenSize', 'small');
+                app.environment.set('screenSize', 'small');
                 mainView.render().$el.appendTo('body').page();
                 
                 setTimeout(function () {

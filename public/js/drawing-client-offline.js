@@ -9,10 +9,8 @@ define([
 ], function (Backbone, _) {
     'use strict';
 
-    return function (drawer, environment) {
-        var guestCollection = environment.get('guests'),
-            userModel       = environment.get('user');
-
+    return function (drawerManager, guestCollection,
+                     userModel, notificationManager) {
         _.extend(this, Backbone.Events);
 
         userModel.set('nickname', 'unknown');

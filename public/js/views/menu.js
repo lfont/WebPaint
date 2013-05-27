@@ -25,6 +25,15 @@ define([
 
         template: _.template(menuTemplate),
 
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._environment = this._app.environment;
+            this._drawerManager = this._app.drawerManager;
+            this._$parent = null;
+        },
+        
         render: function () {
             var _this = this;
 
@@ -37,17 +46,17 @@ define([
                 .attr('data-theme', 'a')
                 .addClass('menu-view');
 
-            this.toolsView = new ToolsView({
+            this._views.tools = new ToolsView({
                 model: {
-                    colors: this.options.environment.get('colors')
-                                                    .getDrawableColors()
+                    colors: this._environment.get('colors')
+                                             .getDrawableColors()
                 },
-                drawerManager: this.options.drawerManager
+                drawerManager: this._drawerManager
             }).render();
+            this._views.tools.$el.appendTo(this.$el.find('.tools-view-anchor'));
 
-            this.toolsView.$el.appendTo(this.$el.find('.tools-view-anchor'));
-
-            this.$parent = this.$el.closest('.ui-page');
+            this._$parent = this.$el.closest('.ui-page');
+            
             this.$el.trigger('create')
                     .panel()
                     .css('overflow-y', 'scroll')
@@ -64,20 +73,20 @@ define([
 
         panelbeforeopen: function () {
             var _this = this;
-            this.toolsView.refresh();
+            this._views.tools.refresh();
             this.trigger('open');
             // The panelopen event is not fired the first
             // we open the panel on Firefox, so this seems
             // to be a more reliable way.
             setTimeout(function () {
                 // TODO: remove this magic number
-                _this.$parent
+                _this._$parent
                      .css('min-height', windowHeight - 100);
             }, 0);
         },
 
         panelclose: function () {
-            this.toolsView.store();
+            this._views.tools.store();
             this.trigger('close');
         },
 
@@ -94,24 +103,22 @@ define([
             require([
                 'views/' + subMenu.name
             ], function (View) {
-                if (!_this[subMenu.name]) {
-                    _this[subMenu.name] = new View({
+                if (!_this._views[subMenu.name]) {
+                    _this._views[subMenu.name] = new View({
                         el: subMenu.type === 'page' ?
                             $('<div></div>').appendTo('body') :
                             $('<div></div>').appendTo(_this.$el
                                                            .closest('.ui-page')),
-                        environment: _this.options.environment,
-                        drawerManager: _this.options.drawerManager,
-                        drawingClient: _this.options.drawingClient
-                    });
-                    _this[subMenu.name].on('close', _this.trigger.bind(_this, 'close'));
-                    _this[subMenu.name].render();
+                        app: _this._app
+                    })
+                    .on('close', _this.trigger.bind(_this, 'close'))
+                    .render();
                 }
 
                 // wait for the panel to close before navigation so
                 // the url stay clean.
                 _this.$el.one('panelclose', function () {
-                    _this[subMenu.name].show();
+                    _this._views[subMenu.name].show();
                 });
 
                 _this.$el.panel('close');

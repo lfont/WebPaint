@@ -21,6 +21,14 @@ define([
 
         template: _.template(newTemplate),
 
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._environment = this._app.environment;
+            this._drawerManager = this._app.drawerManager;
+        },
+        
         render: function () {
             var _this = this;
 
@@ -31,17 +39,16 @@ define([
             .attr('id', 'new-view')
             .attr('data-role', 'dialog');
 
-            this.backgroundColorPicker = new ColorPickerView({
-                collection: this.options.environment.get('colors')
-            }).render();
-
-            this.backgroundColorPicker.$el
-                                      .appendTo(this.$el.find('.color-picker-anchor'));
-
-            this.backgroundColorPicker.on('color', function (hex) {
-                _this.options.drawerManager.newDrawing(hex);
+            this._views.backgroundColorPicker = new ColorPickerView({
+                collection: this._environment.get('colors')
+            })
+            .on('color', function (hex) {
+                _this._drawerManager.newDrawing(hex);
                 _this.$el.dialog('close');
-            });
+            })
+            .render();
+            this._views.backgroundColorPicker.$el
+                                             .appendTo(this.$el.find('.color-picker-anchor'));
 
             this.$el.page();
 

@@ -24,8 +24,18 @@ define([
             'vclick .language': 'languageSelected'
         },
 
+        // TODO: one template per view!
         template: _.template(settingsTemplate),
         languageBlockTemplate: _.template(languagesTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+
+            this._environment = this._app.environment;
+            this._$openSavedPicture = null;
+            this._$language = null;
+            this._$languageWrapper = null;
+        },
 
         render: function () {
             this.$el
@@ -33,17 +43,19 @@ define([
                     r: settingsResources
                 }))
                 .attr('id', 'settings-view')
-                .attr('data-role', 'dialog')
-                .page();
+                .attr('data-role', 'dialog');
 
-            this.options.environment.on(
-                'change:locale',
-                _.bind(this.setLanguage, this));
+            this._$openSavedPicture = this.$el.find('.open-saved-picture');
+            this._$language = this.$el.find('.language');
+            this._$languageWrapper = this.$el.find('.languages-wrapper');
+            
+            this._environment.on('change:locale', _.bind(this.setLanguage, this));
 
-            this.options.environment.get('languages').on(
+            this._environment.get('languages').on(
                 'change reset',
                 _.bind(this.setLanguages, this));
 
+            this.$el.page();
             return this;
         },
 
@@ -57,20 +69,15 @@ define([
         },
 
         pagebeforeshow: function () {
-            var $openSavedPicture = this.$el.find('.open-saved-picture');
-
-            $openSavedPicture.attr('checked',
-                                   this.options.environment.get('openSavedPicture'))
-                             .checkboxradio('refresh');
+            this._$openSavedPicture
+                .attr('checked', this._environment.get('openSavedPicture'))
+                .checkboxradio('refresh');
 
             this.trigger('open');
         },
 
         pagehide: function () {
-            var $openSavedPicture = this.$el.find('.open-saved-picture');
-
-            this.options.environment.set('openSavedPicture',
-                                         $openSavedPicture[0].checked);
+            this._environment.set('openSavedPicture', this._$openSavedPicture[0].checked);
             this.trigger('close');
         },
 
@@ -80,31 +87,31 @@ define([
                 locale = (value === DEFAULT_LOCALE) ? '' : value;
 
             event.preventDefault();
-            this.options.environment.set('locale', locale);
-            location.href = '/';
+            this._environment.set('locale', locale);
+            this._app.reload();
         },
 
         setLanguage: function () {
-            var locale = this.options.environment.get('locale'),
+            var locale = this._environment.get('locale'),
                 language = locale === '' ? DEFAULT_LOCALE : locale;
 
-            this.$el.find('.language')
-                    .find('.ui-li-count')
-                    .hide()
-                    .end()
-                    .filter('[data-value="' + language + '"]')
-                    .find('.ui-li-count')
-                    .show();
+            this._$language
+                .find('.ui-li-count')
+                .hide()
+                .end()
+                .filter('[data-value="' + language + '"]')
+                .find('.ui-li-count')
+                .show();
 
             return this;
         },
 
         setLanguages: function () {
-            this.$el.find('.languages-wrapper')
+            this._$languageWrapper
                 .html(this.languageBlockTemplate({
                     r: settingsResources,
-                    languages: this.options.environment.get('languages')
-                                                       .toJSON()
+                    languages: this._environment.get('languages')
+                                                .toJSON()
                 }))
                 .trigger('create');
 

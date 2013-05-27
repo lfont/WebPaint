@@ -19,6 +19,14 @@ define([
         },
 
         template: _.template(quickActionsTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+            this._positionTo = this.options.positionTo;
+                
+            this._views = {};
+            this._drawerManager = this._app.drawerManager;
+        },
 
         render: function () {
             var $quickActionGroupAnchor;
@@ -30,8 +38,8 @@ define([
 
             $quickActionGroupAnchor = this.$el.find('.quick-action-group-anchor');
 
-            _.each(this.collection, function (action) {
-                var quickActionGroupView = _.isArray(action) ?
+            _.each(this.collection, function (action, index) {
+                var quickActionGroupView = this._views[index] = _.isArray(action) ?
                     new QuickActionGroupView({ collection: action }) :
                     new QuickActionGroupView({ collection: [ action ] });
 
@@ -50,7 +58,7 @@ define([
 
         show: function () {
             this.$el.popup('open', {
-                positionTo: this.options.positionTo
+                positionTo: this._positionTo
             });
         },
 
@@ -62,7 +70,7 @@ define([
             var _this = this,
                 image = new Image();
             image.onload = function () {
-                _this.options.drawerManager.newDrawing(image);
+                _this._drawerManager.newDrawing(image);
             };
             image.src = URL.createObjectURL(activity.result.blob);
         },
@@ -89,7 +97,7 @@ define([
         },
 
         drawerActionHandler: function (action) {
-            this.options.drawerManager[action.id]();
+            this._drawerManager[action.id]();
             this.$el.popup('close');
             this.trigger('close');
         },
@@ -100,24 +108,22 @@ define([
             require([
                 'views/' + action.id
             ], function (View) {
-                if (!_this[action.id]) {
-                    _this[action.id] = new View({
+                if (!_this._views[action.id]) {
+                    _this._views[action.id] = new View({
                         el: action.type === 'page' ?
                             $('<div></div>').appendTo('body') :
                             $('<div></div>').appendTo(_this.$el
                                                            .closest('.ui-page')),
-                        environment: _this.options.environment,
-                        drawerManager: _this.options.drawerManager,
-                        drawingClient: _this.options.drawingClient
-                    });
-                    _this[action.id].on('close', _this.trigger.bind(_this, 'close'));
-                    _this[action.id].render();
+                        app: _this._app
+                    })
+                    .on('close', _this.trigger.bind(_this, 'close'))
+                    .render();
                 }
 
                 // wait for the popup to close before navigation so
                 // the url stay clean.
                 _this.$el.one('popupafterclose', function () {
-                    _this[action.id].show();
+                    _this._views[action.id].show();
                 });
 
                 _this.$el.popup('close');

@@ -3,46 +3,23 @@ A simple drawing application for touch devices.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-require.config({
-    paths: {
-        'templates': '../templates',
-        'i18n': 'lib/requirejs/i18n',
-        'text': 'lib/requirejs/text',
-        'jquery': 'lib/jquery-1.9.1',
-        'underscore': 'lib/underscore-1.4.4',
-        'backbone': 'lib/backbone-1.0.0',
-        'socket.io': '/socket.io/socket.io.js',
-        'jquery.mobile': 'lib/jquery.mobile/jquery.mobile-1.3.1',
-        'jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
-        'drawing': 'lib/drawing/drawing-0.8.0',
-        'drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0',
-        'sprintf': 'lib/sprintf-0.6'
-    },
-    shim: {
-        'underscore': {
-            exports: '_'
-        },
-        'backbone': {
-            deps: [ 'underscore', 'jquery' ],
-            exports: 'Backbone'
-        },
-        'socket.io': {
-            exports: 'io'
-        },
-        'sprintf': {
-            exports: 'sprintf'
-        }
-    }
-});
-
 define([
     'require',
-    'jquery'
-], function (require, $) {
+    'jquery',
+    'backbone'
+], function (require, $, Backbone) {
     'use strict';
 
+    var notDefined;
+    
     function App () {
         var mozApp = null;
+        
+        $.extend(this, Backbone.Events);
+        
+        this.environment = null;
+        this.drawerManager = null;
+        this.drawingClient = null;
 
         this.getSelf = function () {
             var deferred = $.Deferred(),
@@ -90,21 +67,24 @@ define([
     }
 
     App.prototype.start = function () {
+        var _this = this;
+        
         require([
             'models/environment'
         ], function (EnvironmentModel) {
-            var environment = new EnvironmentModel({
-                    appName: 'WebPaint',
-                    appVersion: '0.7.7',
-                    screenSize: $(window).height() <= 720 ||
-                                $(window).width() <= 480 ?
-                                'small' :
-                                'normal'
-                }),
-                locale;
+            var locale;
+            
+            _this.environment = new EnvironmentModel({
+                appName: 'WebPaint',
+                appVersion: '0.7.8',
+                screenSize: $(window).height() <= 720 ||
+                            $(window).width() <= 480 ?
+                            'small' :
+                            'normal'
+            });
 
-            environment.fetch();
-            locale = environment.get('locale');
+            _this.environment.fetch();
+            locale = _this.environment.get('locale');
 
             // Set the UI language if it is defined by the user.
             if (locale) {
@@ -118,7 +98,7 @@ define([
             }
 
             $(document).on('mobileinit', function () {
-                var screenSize = environment.get('screenSize');
+                var screenSize = _this.environment.get('screenSize');
 
                 $.mobile.defaultPageTransition =
                     $.mobile.defaultDialogTransition =
@@ -132,16 +112,17 @@ define([
                 'collections/users',
                 'models/user',
                 'models/quick-action',
-                'notification-manager'
+                'notification-manager',
+                'drawer-manager',
+                'drawing-client'
             ], function (MainView, ColorCollection, LanguageCollection,
                          UserCollection, UserModel, QuickActionModel,
-                         NotificationManager) {
+                         NotificationManager, DrawerManager, DrawingClient) {
                 $(function () {
                     var mainView;
 
                     function getQuickActions () {
-                        var notDefined,
-                            hasActivitySupport = window.MozActivity !== notDefined,
+                        var hasActivitySupport = window.MozActivity !== notDefined,
                             actions = [
                                 [
                                     new QuickActionModel({
@@ -187,7 +168,7 @@ define([
                         return actions;
                     }
 
-                    environment.set({
+                    _this.environment.set({
                         actions: getQuickActions(),
                         colors: new ColorCollection([
                             { code: 'transparent' },
@@ -207,26 +188,38 @@ define([
                             { code: 'xx-xx' },
                             { code: 'en-us' },
                             { code: 'fr-fr' }
-                        ]),
-                        guests: new UserCollection(),
-                        user: new UserModel(),
-                        notificationManager: new NotificationManager()
+                        ])
                     });
+                    
+                    _this.guests = new UserCollection();
+                    _this.user = new UserModel();
+                    _this.notificationManager = new NotificationManager();
 
-                    mainView = new MainView({ environment: environment });
-                    mainView.render().$el.css('visibility', 'hidden')
-                                         .appendTo('body');
+                    mainView = new MainView({ app: _this })
+                        .on('canvasReady', function ($canvas) {
+                            this.drawerManager = new DrawerManager($canvas,
+                                                                   this.environment);
 
-                    require(['jquery.mobile'], function () {
-                        mainView.$el.css('visibility', 'visible');
-                    });
+                            this.drawingClient = new DrawingClient(this.drawerManager,
+                                                                   this.guests,
+                                                                   this.user,
+                                                                   this.notificationManager);
+                            
+                            this.trigger('ready');
+                        }, _this)
+                        .render();
+                    mainView.$el.css('visibility', 'hidden').appendTo('body');
 
                     $(window).unload(function () {
-                        environment.set({
-                            background: mainView.drawerManager.snapshot()
+                        _this.environment.set({
+                            background: _this.drawerManager.snapshot()
                         });
 
-                        environment.save();
+                        _this.environment.save();
+                    });
+                    
+                    require(['jquery.mobile'], function () {
+                        mainView.$el.css('visibility', 'visible');
                     });
                 });
             });
@@ -300,36 +293,25 @@ define([
 
         return deferred.promise();
     };
-
-    var app = new App();
-
-    if (window.WebPaint && WebPaint.autoStart) {
-        if (navigator.mozApps) {
-            app.isInstalled().done(function (isInstalled) {
-                if (isInstalled) {
-                    app.canBeUpdated().done(function (canBeUpdated) {
-                        if (canBeUpdated) {
-                            var updatePromise = app.checkForUpdate();
-                            updatePromise.fail(function (error) {
-                                if (error.name !== 'NETWORK_ERROR') {
-                                    alert('Update failed, error: ' + error.name);
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    var installPromise = app.install();
-                    installPromise.fail(function (error) {
-                        if (error.name !== 'REINSTALL_FORBIDDEN') {
-                            alert('Install failed, error: ' + error.name);
-                        }
-                    });
-                }
-            });
+    
+    App.prototype.checkForCacheUpdate = function () {
+        var _this = this,
+            deferred = $.Deferred();
+        
+        applicationCache.addEventListener('updateready', deferred.resolve.bind(_this));
+        
+        if (applicationCache.status === applicationCache.UPDATEREADY) {
+            setTimeout(function () {
+                deferred.resolve.call(_this);
+            }, 0);
         }
+        
+        return deferred.promise();
+    };
+      
+    App.prototype.reload = function () {
+        location.href = '/';
+    };
 
-        app.start();
-    }
-
-    return app;
+    return App;
 });

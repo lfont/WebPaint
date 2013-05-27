@@ -20,6 +20,13 @@ define([
         },
 
         template: _.template(aboutTemplate),
+        
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._views = {};
+            this._environment = this._app.environment;
+        },
 
         render: function () {
             var _this = this;
@@ -27,8 +34,8 @@ define([
             this.$el
                 .html(this.template({
                     r: aboutResources,
-                    name: this.options.environment.get('appName'),
-                    version: this.options.environment.get('appVersion')
+                    name: this._environment.get('appName'),
+                    version: this._environment.get('appVersion')
                 }))
                 .attr('id', 'about-view')
                 .attr('data-position-to', 'window')
@@ -37,14 +44,14 @@ define([
                 .trigger('create')
                 .popup();
 
-            if (this.options.environment.get('screenSize') === 'small') {
+            if (this._environment.get('screenSize') === 'small') {
                 require([
                     'views/partial/social-widgets'
                 ], function (SocialWidgetsView) {
-                    var socialWidgetsView = new SocialWidgetsView();
-                    socialWidgetsView.render()
-                                     .$el
-                                     .appendTo(_this.$el.find('.social-widgets-anchor'));
+                    _this._views.socialWidgets = new SocialWidgetsView().render();
+                    _this._views.socialWidgets
+                                .$el
+                                .appendTo(_this.$el.find('.social-widgets-anchor'));
                 });
             }
 

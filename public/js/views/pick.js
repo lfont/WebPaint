@@ -22,6 +22,13 @@ define([
 
         template: _.template(pickTemplate),
 
+        initialize: function () {
+            this._app = this.options.app;
+            
+            this._drawerManager = this._app.drawerManager;
+            this._$path = null;
+        },
+        
         render: function () {
             this.$el
                 .html(this.template({
@@ -33,15 +40,15 @@ define([
                 .addClass('ui-corner-all')
                 .trigger('create')
                 .popup();
+            
+            this._$path = this.$el.find('.path');
 
             return this;
         },
 
         show: function () {
-            this.$el.find('.path')
-                    .val('')
-                    .end()
-                    .popup('open');
+            this._$path.val('');
+            this.$el.popup('open');
         },
 
         popupbeforeposition: function () {
@@ -79,7 +86,7 @@ define([
             reader.onload = function (e) {
                 var image = new Image();
                 image.onload = function () {
-                    _this.options.drawerManager.newDrawing(image);
+                    _this._drawerManager.newDrawing(image);
                 };
                 image.src = e.target.result;
             };
@@ -87,7 +94,7 @@ define([
             // TODO: add a progress bar.
             reader.readAsDataURL(file);
 
-            window.setTimeout(function () {
+            setTimeout(function () {
                 _this.$el.popup('close');
             }, 250);
         }
