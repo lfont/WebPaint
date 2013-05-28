@@ -1,0 +1,1 @@
+define({"xx-xx":"Défaut"});

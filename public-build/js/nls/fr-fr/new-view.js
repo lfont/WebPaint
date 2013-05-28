@@ -1,0 +1,1 @@
+define({title:"Nouveau",background:"Arrière plan"});

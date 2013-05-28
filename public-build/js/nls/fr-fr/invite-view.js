@@ -1,0 +1,1 @@
+define({title:"Inviter (alpha)",inviteInformation:"Hé %s, tu peux inviter quelqu'un de la liste à dessiner avec toi."});

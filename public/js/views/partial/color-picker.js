@@ -4,14 +4,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/partial/color-picker.html',
     'i18n!nls/color-picker-view'
-], function ($, Backbone, _, colorPickerTemplate, colorPickerResources) {
+], function (require, colorPickerTemplate, colorPickerResources) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var SELECTED_CLASS = 'colorpicker-color-selected';
 
     function hexFromRgb (r, g, b) {

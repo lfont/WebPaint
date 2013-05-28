@@ -5,13 +5,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
     'views/partial/quick-action'
-], function (require, $, Backbone, _, QuickActionView) {
+], function (require, QuickActionView) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var QuickActionGroupView = Backbone.View.extend({
         className: 'quick-action-group',
         

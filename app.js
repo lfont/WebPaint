@@ -13,14 +13,15 @@ var app = module.exports = express.createServer();
 
 app.configure(function() {
     app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('development', function () {
+    app.use(express.static(__dirname + '/public'));
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function () {
+    app.use(express.static(__dirname + '/public-build'));
     app.use(express.errorHandler());
 });
 

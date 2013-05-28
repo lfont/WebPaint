@@ -4,14 +4,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'drawing',
     'i18n!nls/drawer-manager',
     'drawing.event'
-], function ($, Backbone, _, drawing, drawerManagerResources) {
+], function (require, drawing, drawerManagerResources) {
     'use strict';
+    
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
 
     function fixCanvasGeometry ($canvas) {
         var $container = $canvas.parent(),
@@ -46,12 +48,6 @@ define([
         } else {
             setBackground(background);
         }
-    }
-
-    function showToast (message) {
-        require(['jquery.mobile.toast'], function (toast) {
-            toast(message);
-        });
     }
 
     function Observable () {
@@ -92,7 +88,7 @@ define([
 
         this.undo = function () {
             if (!drawer.undo()) {
-                showToast(drawerManagerResources.lastUndo);
+                $.mobile.showToast(drawerManagerResources.lastUndo);
             }
 
             return this;
@@ -100,7 +96,7 @@ define([
 
         this.redo = function () {
             if (!drawer.redo()) {
-                showToast(drawerManagerResources.lastRedo);
+                $.mobile.showToast(drawerManagerResources.lastRedo);
             }
 
             return this;

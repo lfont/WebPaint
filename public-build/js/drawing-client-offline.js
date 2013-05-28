@@ -1,0 +1,1 @@
+define(["require","underscore","backbone"],function(e){var t=e("underscore"),n=e("backbone");return function(e,r,i,s){t.extend(this,n.Events),i.set("nickname","unknown"),r.reset([]),this.sendInvite=function(e){},this.sendResponse=function(e,t){}}});

@@ -4,14 +4,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/pick.html',
     'i18n!nls/pick-view'
-], function ($, Backbone, _, pickTemplate, pickResources) {
+], function (require, pickTemplate, pickResources) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     return Backbone.View.extend({
         events: {
             'popupbeforeposition': 'popupbeforeposition',

@@ -4,16 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/settings.html',
     'text!templates/languages.html',
     'i18n!nls/settings-view'
-], function ($, Backbone, _, settingsTemplate, languagesTemplate,
-             settingsResources) {
+], function (require, settingsTemplate, languagesTemplate, settingsResources) {
     'use strict';
 
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var DEFAULT_LOCALE = 'xx-xx';
 
     return Backbone.View.extend({

@@ -1,0 +1,1 @@
+define({title:"Enregistrer",defaultFileName:"mon_dessin",cancelButton:"Annuler",saveButton:"Enregistrer"});

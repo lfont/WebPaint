@@ -4,15 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'views/partial/history-item',
     'text!templates/history.html',
     'i18n!nls/history-view'
-], function ($, Backbone, _, HistoryItemView, historyTemplate, historyResources) {
+], function (require, HistoryItemView, historyTemplate, historyResources) {
     'use strict';
 
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
+    
     return Backbone.View.extend({
         events: {
             'pagebeforeshow': 'pagebeforeshow',

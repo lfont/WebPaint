@@ -5,13 +5,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
     'views/partial/quick-action-group',
     'text!templates/quick-actions.html'
-], function (require, $, Backbone, _, QuickActionGroupView, quickActionsTemplate) {
+], function (require, QuickActionGroupView, quickActionsTemplate) {
     'use strict';
+    
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
 
     var QuickActionsView = Backbone.View.extend({
         events: {
@@ -104,30 +105,26 @@ define([
 
         pageActionHandler: function (action) {
             var _this = this;
+            
+            if (!this._views[action.id]) {
+                var View = require('views/' + action.id);
+                this._views[action.id] = new View({
+                    el: action.type === 'page' ?
+                        $('<div></div>').appendTo('body') :
+                        $('<div></div>').appendTo(this.$el.closest('.ui-page')),
+                    app: this._app
+                })
+                .on('close', this.trigger.bind(this, 'close'))
+                .render();
+            }
 
-            require([
-                'views/' + action.id
-            ], function (View) {
-                if (!_this._views[action.id]) {
-                    _this._views[action.id] = new View({
-                        el: action.type === 'page' ?
-                            $('<div></div>').appendTo('body') :
-                            $('<div></div>').appendTo(_this.$el
-                                                           .closest('.ui-page')),
-                        app: _this._app
-                    })
-                    .on('close', _this.trigger.bind(_this, 'close'))
-                    .render();
-                }
-
-                // wait for the popup to close before navigation so
-                // the url stay clean.
-                _this.$el.one('popupafterclose', function () {
-                    _this._views[action.id].show();
-                });
-
-                _this.$el.popup('close');
+            // wait for the popup to close before navigation so
+            // the url stay clean.
+            this.$el.one('popupafterclose', function () {
+                _this._views[action.id].show();
             });
+
+            this.$el.popup('close');
         },
 
         popupActionHandler: function (action) {

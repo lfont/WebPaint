@@ -3,11 +3,11 @@ A simple drawing application for touch devices.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-define([
-    'backbone',
-    'underscore'
-], function (Backbone, _) {
+define(function (require) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     return function (drawerManager, guestCollection,
                      userModel, notificationManager) {

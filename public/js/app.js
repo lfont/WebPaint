@@ -5,21 +5,51 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone'
-], function (require, $, Backbone) {
+    'models/environment',
+    'sprintf'
+], function (require, EnvironmentModel) {
     'use strict';
-
-    var notDefined;
+    
+    var $          = require('jquery'),
+        _          = require('underscore'),
+        Backbone   = require('backbone'),
+        notDefined;
     
     function App () {
-        var mozApp = null;
+        var _this = this,
+            mozApp = null,
+            locale;
         
-        $.extend(this, Backbone.Events);
+        _.extend(this, Backbone.Events);
         
-        this.environment = null;
         this.drawerManager = null;
         this.drawingClient = null;
+        this.notificationManager = null;
+        this.guests = null;
+        this.user = null;
+            
+        this.environment = new EnvironmentModel({
+            appName: 'WebPaint',
+            appVersion: '0.7.9',
+            screenSize: $(window).height() <= 720 ||
+                        $(window).width() <= 480 ?
+                        'small' :
+                        'normal'
+        });
+
+        this.environment.fetch();
+        locale = this.environment.get('locale');
+
+        // Set the UI language if it is defined by the user.
+        if (locale) {
+            window.require.config({
+                config: {
+                    i18n: {
+                        locale: locale
+                    }
+                }
+            });
+        }
 
         this.getSelf = function () {
             var deferred = $.Deferred(),
@@ -67,164 +97,113 @@ define([
     }
 
     App.prototype.start = function () {
-        var _this = this;
+        var _this = this,
+            mainView;
         
         require([
-            'models/environment'
-        ], function (EnvironmentModel) {
-            var locale;
-            
-            _this.environment = new EnvironmentModel({
-                appName: 'WebPaint',
-                appVersion: '0.7.8',
-                screenSize: $(window).height() <= 720 ||
-                            $(window).width() <= 480 ?
-                            'small' :
-                            'normal'
-            });
+            'boot'
+        ], function () {
+            var QuickActionModel    = require('models/quick-action'),
+                ColorCollection     = require('collections/colors'),
+                LanguageCollection  = require('collections/languages'),
+                UserCollection      = require('collections/users'),
+                UserModel           = require('models/user'),
+                NotificationManager = require('notification-manager'),
+                MainView            = require('views/main'),
+                DrawerManager       = require('drawer-manager'),
+                DrawingClient       = require('drawing-client');
 
-            _this.environment.fetch();
-            locale = _this.environment.get('locale');
+            function getQuickActions () {
+                var hasActivitySupport = window.MozActivity !== notDefined,
+                    actions = [
+                        [
+                            new QuickActionModel({
+                                id: 'undo',
+                                type: 'drawer'
+                            }),
+                            new QuickActionModel({
+                                id: 'redo',
+                                type: 'drawer'
+                            })
+                        ],
+                        new QuickActionModel({
+                            id: 'new',
+                            type: 'page'
+                        }),
+                        new QuickActionModel({
+                            id: 'pick',
+                            type: hasActivitySupport ? 'activity' : 'popup',
+                            data: { type: [ 'image/png', 'image/jpg', 'image/jpeg' ] }
+                        }),
+                        new QuickActionModel({
+                            id: 'clear',
+                            type: 'drawer'
+                        }),
+                        new QuickActionModel({
+                            id: 'history',
+                            type: 'page'
+                        })
+                    ];
 
-            // Set the UI language if it is defined by the user.
-            if (locale) {
-                window.require.config({
-                    config: {
-                        i18n: {
-                            locale: locale
-                        }
-                    }
-                });
+                if (hasActivitySupport) {
+                    actions.splice(3, 0, new QuickActionModel({
+                        id: 'share',
+                        type: 'popup'
+                    }));
+                } else {
+                    actions.splice(3, 0, new QuickActionModel({
+                        id: 'save',
+                        type: 'popup'
+                    }));
+                }
+
+                return actions;
             }
 
-            $(document).on('mobileinit', function () {
-                var screenSize = _this.environment.get('screenSize');
-
-                $.mobile.defaultPageTransition =
-                    $.mobile.defaultDialogTransition =
-                        screenSize === 'small' ? 'fade': 'slide';
+            _this.environment.set({
+                actions: getQuickActions(),
+                colors: new ColorCollection([
+                    { code: 'transparent' },
+                    { code: '#000000' },
+                    { code: '#d2691e' },
+                    { code: '#ffffff' },
+                    { code: '#ffc0cb' },
+                    { code: '#ff0000' },
+                    { code: '#ffa500' },
+                    { code: '#ee82ee' },
+                    { code: '#0000ff' },
+                    { code: '#40e0d0' },
+                    { code: '#008000' },
+                    { code: '#ffff00' }
+                ]),
+                languages: new LanguageCollection([
+                    { code: 'xx-xx' },
+                    { code: 'en-us' },
+                    { code: 'fr-fr' }
+                ])
             });
+            
+            _this.guests = new UserCollection();
+            _this.user = new UserModel();
+            _this.notificationManager = new NotificationManager();
 
-            require([
-                'views/main',
-                'collections/colors',
-                'collections/languages',
-                'collections/users',
-                'models/user',
-                'models/quick-action',
-                'notification-manager',
-                'drawer-manager',
-                'drawing-client'
-            ], function (MainView, ColorCollection, LanguageCollection,
-                         UserCollection, UserModel, QuickActionModel,
-                         NotificationManager, DrawerManager, DrawingClient) {
-                $(function () {
-                    var mainView;
+            mainView = new MainView({ app: _this })
+                .on('canvasReady', function ($canvas) {
+                    this.drawerManager = new DrawerManager($canvas,
+                                                           this.environment);
 
-                    function getQuickActions () {
-                        var hasActivitySupport = window.MozActivity !== notDefined,
-                            actions = [
-                                [
-                                    new QuickActionModel({
-                                        id: 'undo',
-                                        type: 'drawer'
-                                    }),
-                                    new QuickActionModel({
-                                        id: 'redo',
-                                        type: 'drawer'
-                                    })
-                                ],
-                                new QuickActionModel({
-                                    id: 'new',
-                                    type: 'page'
-                                }),
-                                new QuickActionModel({
-                                    id: 'pick',
-                                    type: hasActivitySupport ? 'activity' : 'popup',
-                                    data: { type: [ 'image/png', 'image/jpg', 'image/jpeg' ] }
-                                }),
-                                new QuickActionModel({
-                                    id: 'clear',
-                                    type: 'drawer'
-                                }),
-                                new QuickActionModel({
-                                    id: 'history',
-                                    type: 'page'
-                                })
-                            ];
-
-                        if (hasActivitySupport) {
-                            actions.splice(3, 0, new QuickActionModel({
-                                id: 'share',
-                                type: 'popup'
-                            }));
-                        } else {
-                            actions.splice(3, 0, new QuickActionModel({
-                                id: 'save',
-                                type: 'popup'
-                            }));
-                        }
-
-                        return actions;
-                    }
-
-                    _this.environment.set({
-                        actions: getQuickActions(),
-                        colors: new ColorCollection([
-                            { code: 'transparent' },
-                            { code: '#000000' },
-                            { code: '#d2691e' },
-                            { code: '#ffffff' },
-                            { code: '#ffc0cb' },
-                            { code: '#ff0000' },
-                            { code: '#ffa500' },
-                            { code: '#ee82ee' },
-                            { code: '#0000ff' },
-                            { code: '#40e0d0' },
-                            { code: '#008000' },
-                            { code: '#ffff00' }
-                        ]),
-                        languages: new LanguageCollection([
-                            { code: 'xx-xx' },
-                            { code: 'en-us' },
-                            { code: 'fr-fr' }
-                        ])
-                    });
+                    this.drawingClient = new DrawingClient(this.drawerManager,
+                                                           this.guests,
+                                                           this.user,
+                                                           this.notificationManager);
                     
-                    _this.guests = new UserCollection();
-                    _this.user = new UserModel();
-                    _this.notificationManager = new NotificationManager();
-
-                    mainView = new MainView({ app: _this })
-                        .on('canvasReady', function ($canvas) {
-                            this.drawerManager = new DrawerManager($canvas,
-                                                                   this.environment);
-
-                            this.drawingClient = new DrawingClient(this.drawerManager,
-                                                                   this.guests,
-                                                                   this.user,
-                                                                   this.notificationManager);
-                            
-                            this.trigger('ready');
-                        }, _this)
-                        .render();
-                    mainView.$el.css('visibility', 'hidden').appendTo('body');
-
-                    $(window).unload(function () {
-                        _this.environment.set({
-                            background: _this.drawerManager.snapshot()
-                        });
-
-                        _this.environment.save();
-                    });
-                    
-                    require(['jquery.mobile'], function () {
-                        mainView.$el.css('visibility', 'visible');
-                    });
-                });
-            });
+                    this.trigger('ready');
+                }, _this)
+                .render();
+            mainView.$el.appendTo('body');
+            mainView.show();
         });
-    };
+    };$
 
     App.prototype.installOrigin = function () {
         return 'http://webpaint.lfont.me';

@@ -4,15 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'views/partial/color-picker',
     'text!templates/new.html',
     'i18n!nls/new-view'
-], function ($, Backbone, _, ColorPickerView, newTemplate, newResources) {
+], function (require, ColorPickerView, newTemplate, newResources) {
     'use strict';
 
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
+    
     return Backbone.View.extend({
         events: {
             'pagebeforeshow': 'pagebeforeshow',

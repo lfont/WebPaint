@@ -4,12 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/partial/social-widgets.html'
-], function ($, Backbone, _, socialWidgetsTemplate) {
+], function (require, socialWidgetsTemplate) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     var SocialWidgetsView = Backbone.View.extend({
         className: 'social-widgets',

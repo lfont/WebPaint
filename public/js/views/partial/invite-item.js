@@ -4,11 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/partial/invite-item.html'
-], function (Backbone, _, inviteItemTemplate) {
+], function (require, inviteItemTemplate) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     var InviteItemView = Backbone.View.extend({
         events: {

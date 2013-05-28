@@ -1,0 +1,1 @@
+define({inviteButton:"Inviter",settingsButton:"Réglages",aboutButton:"A Propos"});

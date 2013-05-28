@@ -4,14 +4,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/save.html',
     'i18n!nls/save-view'
-], function ($, Backbone, _, saveTemplate, saveResources) {
+], function (require, saveTemplate, saveResources) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     return Backbone.View.extend({
         events: {
             'popupbeforeposition': 'popupbeforeposition',

@@ -5,12 +5,12 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
     'text!templates/partial/quick-action.html'
-], function (require, $, Backbone, _, quickActionTemplate) {
+], function (require, quickActionTemplate) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     var QuickActionView = Backbone.View.extend({
         className: 'quick-action',

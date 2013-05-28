@@ -41,7 +41,8 @@ require([
 ], function (App) {
     'use strict';
     
-    var app = new App();
+    var $   = require('jquery'),
+        app = new App();
 
     if (!window.WebPaint) {
         return;
@@ -70,7 +71,26 @@ require([
             }
         });
     }
+            
+    $(document).on('mobileinit', function () {
+        var screenSize = app.environment.get('screenSize');
+
+        $.mobile.defaultPageTransition =
+            $.mobile.defaultDialogTransition =
+                screenSize === 'small' ? 'fade': 'slide';
+    });
+    
+    $(window).unload(function () {
+        app.environment.set({
+            background: app.drawerManager.snapshot()
+        });
+
+        app.environment.save();
+    });
 
     WebPaint.app = app;
-    app.start();
+    
+    $(function () {
+        app.start();
+    });
 });

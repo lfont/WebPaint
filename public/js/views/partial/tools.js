@@ -4,16 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
-    'drawing',
+    'require',
     'views/partial/color-picker',
     'text!templates/partial/tools.html',
     'i18n!nls/tools-view'
-], function ($, Backbone, _, drawing, ColorPickerView, toolsTemplate,
+], function (require, ColorPickerView, toolsTemplate,
              toolsResources) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone'),
+        drawing  = require('drawing');
 
     return Backbone.View.extend({
         template: _.template(toolsTemplate),

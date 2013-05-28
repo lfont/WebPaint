@@ -1,0 +1,1 @@
+define({lastUndo:"Rien à défaire",lastRedo:"Rien à refaire"});

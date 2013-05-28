@@ -4,11 +4,13 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/widgets/message-tooltip.html'
-], function (Backbone, _, messageTooltipTemplate) {
+], function (require, messageTooltipTemplate) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
     
     var FROM_TOP_POSITION = -500,
         TO_TOP_POSITION = 0,

@@ -5,16 +5,20 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
-    'sprintf',
     'views/widgets/message-popup',
+    'views/partial/social-widgets',
+    'views/menu',
+    'views/quick-actions',
     'text!templates/main.html',
     'i18n!nls/main-view'
-], function (require, $, Backbone, _, sprintf, MessagePopupView,
-             mainTemplate, mainResources) {
+], function (require, MessagePopupView, SocialWidgetsView,
+             MenuView, QuickActionsView, mainTemplate, mainResources) {
     'use strict';
+    
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone'),
+        sprintf  = require('sprintf');
 
     function fixContentGeometry ($header, $content) {
         var contentHeight;
@@ -27,8 +31,9 @@ define([
 
     return Backbone.View.extend({
         attributes: {
-            id: 'main-view',
-            'data-role': 'page'
+            id: '/',
+            'data-role': 'page',
+            'data-url': '/'
         },
         
         className: 'main-view',
@@ -73,8 +78,6 @@ define([
         },
         
         render: function () {
-            var _this = this;
-
             this.$el
                 .html(this.template({
                     r: mainResources,
@@ -108,14 +111,10 @@ define([
             
             // social widgets
             if (this._environment.get('screenSize') !== 'small') {
-                require([
-                    'views/partial/social-widgets'
-                ], function (SocialWidgetsView) {
-                    _this._views.socialWidgets = new SocialWidgetsView().render();
-                    _this._views.socialWidgets
-                                .$el
-                                .appendTo(_this.$el.find('.social-widgets-anchor'));
-                });
+                this._views.socialWidgets = new SocialWidgetsView().render();
+                this._views.socialWidgets
+                            .$el
+                            .appendTo(this.$el.find('.social-widgets-anchor'));
             }
             
             // network status
@@ -127,7 +126,9 @@ define([
         },
 
         show: function () {
-            $.mobile.navigate('#main-view');
+            $.mobile.changePage('#' + this.attributes.id, {
+                transition: 'none'
+            });
             return this;
         },
 
@@ -170,51 +171,37 @@ define([
         },
 
         showMenu: function (event) {
-            var _this = this;
             event.preventDefault();
 
-            require([
-                'views/menu'
-            ], function (MenuView) {
-                var drawerManager = _this._drawerManager;
-                
-                if (!_this._views.menu) {
-                    _this._views.menu = new MenuView({
-                        el: $('<div></div>').prependTo(_this.$el),
-                        app: _this._app
-                    })
-                    .on('open', drawerManager.off, drawerManager)
-                    .on('close', drawerManager.on, drawerManager)
-                    .render();
-                }
+            if (!this._views.menu) {
+                this._views.menu = new MenuView({
+                    el: $('<div></div>').prependTo(this.$el),
+                    app: this._app
+                })
+                .on('open', this._drawerManager.off, this._drawerManager)
+                .on('close', this._drawerManager.on, this._drawerManager)
+                .render();
+            }
 
-                _this._views.menu.show();
-            });
+            this._views.menu.show();
         },
 
         showQuickActions: function (event) {
-            var _this = this;
             event.preventDefault();
 
-            require([
-                'views/quick-actions'
-            ], function (QuickActionsView) {
-                var drawerManager = _this._drawerManager;
-                
-                if (!_this._views.quickActions) {
-                    _this._views.quickActions = new QuickActionsView({
-                        el: $('<div></div>').appendTo(_this.$el),
-                        app: _this._app,
-                        collection: _this._environment.get('actions'),
-                        positionTo: event.target
-                    })
-                    .on('open', drawerManager.off, drawerManager)
-                    .on('close', drawerManager.on, drawerManager)
-                    .render();
-                }
+            if (!this._views.quickActions) {
+                this._views.quickActions = new QuickActionsView({
+                    el: $('<div></div>').appendTo(this.$el),
+                    app: this._app,
+                    collection: this._environment.get('actions'),
+                    positionTo: event.target
+                })
+                .on('open', this._drawerManager.off, this._drawerManager)
+                .on('close', this._drawerManager.on, this._drawerManager)
+                .render();
+            }
 
-                _this._views.quickActions.show();
-            });
+            this._views.quickActions.show();
         },
         
         isVisible: function () {

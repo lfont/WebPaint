@@ -4,13 +4,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/share.html',
     'i18n!nls/share-view'
-], function ($, Backbone, _, shareTemplate, shareResources) {
+], function (require, shareTemplate, shareResources) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     function dataUrlToBlob(dataUrl) {
         var parts = dataUrl.split(';base64,'),

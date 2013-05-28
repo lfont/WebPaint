@@ -5,13 +5,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
+    'views/partial/social-widgets',
     'text!templates/about.html',
     'i18n!nls/about-view'
-], function (require, $, Backbone, _, aboutTemplate, aboutResources) {
+], function (require, SocialWidgetsView, aboutTemplate, aboutResources) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone');
 
     return Backbone.View.extend({
         events: {
@@ -29,8 +30,6 @@ define([
         },
 
         render: function () {
-            var _this = this;
-
             this.$el
                 .html(this.template({
                     r: aboutResources,
@@ -45,14 +44,10 @@ define([
                 .popup();
 
             if (this._environment.get('screenSize') === 'small') {
-                require([
-                    'views/partial/social-widgets'
-                ], function (SocialWidgetsView) {
-                    _this._views.socialWidgets = new SocialWidgetsView().render();
-                    _this._views.socialWidgets
-                                .$el
-                                .appendTo(_this.$el.find('.social-widgets-anchor'));
-                });
+                this._views.socialWidgets = new SocialWidgetsView().render();
+                this._views.socialWidgets
+                            .$el
+                            .appendTo(this.$el.find('.social-widgets-anchor'));
             }
 
             return this;

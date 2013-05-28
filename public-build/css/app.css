@@ -1,0 +1,196 @@
+
+@media screen and (orientation: landscape) {
+    html, body {
+        width: 100%;
+    }
+}
+@media screen and (orientation: portrait) {
+    html, body {
+        width: 100%;
+    }
+}
+.about-view .ui-content a {
+    text-decoration: none;
+}
+.about-view .ui-content .social-widgets-anchor {
+    margin-left: 2em;
+}
+.main-view {
+    user-select: none;
+}
+.main-view > .ui-header-fixed.ui-fixed-hidden {
+    top: -1px;
+    padding-top: 1px;
+}
+.main-view > .ui-header > .ui-btn {
+    border: 0;
+    padding: 9px;
+}
+.main-view > .ui-header .ui-btn-icon-notext .ui-btn-inner {
+    border: 0;
+}
+.main-view > .ui-header-fixed > .ui-btn-icon-notext {
+    top: 0;
+}
+.main-view > .ui-header .ui-btn-left  {
+    left: 0;
+}
+.main-view > .ui-header .ui-btn-right {
+    right:  0;
+}
+.main-view .ui-header .ui-title {
+    margin-left: 55px;
+    text-align: left;
+}
+.main-view .ui-popup .ui-header .ui-title {
+    margin: .6em 30% .8em;
+    text-align: center;
+}
+.main-view .ui-header .social-widgets-anchor {
+    position: absolute;
+    left: 140px;
+    top: 10px;
+}
+.main-view .main-view-content,
+.main-view .main-view-content canvas {
+    margin: 0;
+    padding: 0;
+}
+.main-view .main-view-content {
+    overflow: hidden;
+}
+.main-view .main-view-content canvas {
+    background: transparent url("../img/background.png") repeat 0 0;
+    cursor: pointer;
+}
+.main-view .main-view-content canvas:active {
+    cursor: crosshair;
+}
+.main-view .ui-bar-a .title-online,
+.main-view .ui-bar-a .title-offline {
+    cursor: default;
+    text-decoration: none;
+}
+.main-view .ui-bar-a .title-online,
+.main-view .ui-bar-a .title-online:active,
+.main-view .ui-bar-a .title-online:hover,
+.main-view .ui-bar-a .title-online:visited {
+    color: white;
+}
+.main-view .ui-bar-a .title-offline,
+.main-view .ui-bar-a .title-offline:active,
+.main-view .ui-bar-a .title-offline:hover,
+.main-view .ui-bar-a .title-offline:visited {
+    color: red;
+}
+.quick-actions-view .ui-listview {
+    min-width: 210px;
+}
+.quick-actions-view .ui-listview .ui-li-divider {
+    font-size: 16px;
+}
+.quick-actions-view .quick-action-group[role='heading'] {
+    background: linear-gradient( #444, #2d2d2d );
+    border: 1px solid #111;
+    border-bottom: 0;
+    text-align: center;
+}
+.quick-actions-view .quick-action-group[role='heading'] .quick-action {
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 25px;
+    text-shadow: 0 1px 0 #111;
+}
+.message-popup-view .ui-content {
+    max-height: 125px;
+    max-width: 400px;
+}
+.message-tooltip-view {
+    left: 0;
+    position: absolute;
+    top: 3px;
+    width: 100%;
+    z-index: 5000;
+}
+.message-tooltip-view > div {
+    background: #e0e0e0;
+    border: 1px solid gray;
+    border-radius: 0 0 6px 6px;
+    color: #333;
+    margin: 0 auto;
+    text-align: center;
+    width: 70%;
+}
+.message-tooltip-view .text {
+    margin: 0;
+    padding: .5em;
+}
+.colorpicker-custom-colors p,
+.colorpicker-predefined-colors p {
+    margin-top: 0;
+}
+.colorpicker-custom-colors label {
+    display: inline-block;
+    margin-top: 7px;
+    text-align: left;
+    vertical-align: top;
+    width: 10%;
+}
+    
+.colorpicker-predefined-colors>div {
+    margin: 0 auto;
+}
+.colorpicker-custom-color,
+.colorpicker-predefined-color {
+    border: 1px solid gray;
+    height: 30px;
+    width: 30px;
+}
+.colorpicker-custom-color,
+.colorpicker-predefined-color-wrapper,
+.colorpicker-predefined-color {
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+.colorpicker-custom-color {
+    margin: 0.5em auto;
+}
+.colorpicker-predefined-color-wrapper {
+    background: transparent url("../img/background.png") repeat 0 0;
+    display: inline-block;
+    margin: 0 0.5em 1em 0.5em;
+}
+.colorpicker-custom-color:hover,
+.colorpicker-predefined-color:hover,
+.colorpicker-color-selected {
+    cursor: pointer;
+    box-shadow: 0 0 0 3px gray;
+}
+.block {
+    margin-top: 1em;     
+}
+.block .block-title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1em;
+    text-align: left;    
+}
+.block .block-content {
+    display: inline-block;
+    margin: 0 auto;
+    text-align: center
+}
+.webpaint-history-image {
+    background: transparent url("../img/background.png") repeat 0 0;
+    height: 115px;
+    width: 115px;
+}
+.ui-popup .ui-field-contain input.ui-slider-input {
+    width: 40px;
+}
+.ui-content {
+    text-align: center;
+}

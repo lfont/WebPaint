@@ -4,12 +4,14 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/widgets/message-popup.html'
-], function (Backbone, _, messagePopupTemplate) {
+], function (require, messagePopupTemplate) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var MessagePopupView = Backbone.View.extend({
         attributes: {
             id: 'message-popup-view-' + Date.now(),

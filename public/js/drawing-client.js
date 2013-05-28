@@ -4,13 +4,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'backbone',
-    'underscore',
+    'require',
     'socket.io',
-    'sprintf',
     'i18n!nls/drawing-client'
-], function (Backbone, _, socketio, sprintf, drawingClientResources) {
+], function (require, socketio, drawingClientResources) {
     'use strict';
+    
+    var _        = require('underscore'),
+        Backbone = require('backbone'),
+        sprintf  = require('sprintf');
         
     return function (drawerManager, guestCollection,
                      userModel, notificationManager) {

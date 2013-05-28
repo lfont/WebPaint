@@ -4,16 +4,17 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'jquery',
-    'backbone',
-    'underscore',
-    'sprintf',
+    'require',
     'views/partial/invite-item',
     'text!templates/invite.html',
     'i18n!nls/invite-view'
-], function ($, Backbone, _, sprintf, InviteItemView, inviteTemplate,
-             inviteResources) {
+], function (require, InviteItemView, inviteTemplate, inviteResources) {
     'use strict';
+    
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone'),
+        sprintf  = require('sprintf');
 
     return Backbone.View.extend({
         events: {

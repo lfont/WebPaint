@@ -4,13 +4,15 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
 define([
-    'backbone',
-    'underscore',
+    'require',
     'text!templates/partial/history-item.html',
     'i18n!nls/history-item-view'
-], function (Backbone, _, historyItemTemplate, historyItemResources) {
+], function (require, historyItemTemplate, historyItemResources) {
     'use strict';
 
+    var _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var HistoryItemView = Backbone.View.extend({
         events: {
             'vclick': 'snapshotClick'

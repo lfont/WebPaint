@@ -5,15 +5,16 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'jquery',
-    'backbone',
-    'underscore',
     'views/partial/tools',
     'text!templates/menu.html',
     'i18n!nls/menu-view'
-], function (require, $, Backbone, _, ToolsView, menuTemplate, menuResources) {
+], function (require, ToolsView, menuTemplate, menuResources) {
     'use strict';
 
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        Backbone = require('backbone');
+    
     var windowHeight = $(window).height();
 
     return Backbone.View.extend({
@@ -100,29 +101,25 @@ define([
 
             event.preventDefault();
 
-            require([
-                'views/' + subMenu.name
-            ], function (View) {
-                if (!_this._views[subMenu.name]) {
-                    _this._views[subMenu.name] = new View({
-                        el: subMenu.type === 'page' ?
-                            $('<div></div>').appendTo('body') :
-                            $('<div></div>').appendTo(_this.$el
-                                                           .closest('.ui-page')),
-                        app: _this._app
-                    })
-                    .on('close', _this.trigger.bind(_this, 'close'))
-                    .render();
-                }
+            if (!this._views[subMenu.name]) {
+                var View = require('views/' + subMenu.name);
+                this._views[subMenu.name] = new View({
+                    el: subMenu.type === 'page' ?
+                        $('<div></div>').appendTo('body') :
+                        $('<div></div>').appendTo(this.$el.closest('.ui-page')),
+                    app: this._app
+                })
+                .on('close', this.trigger.bind(this, 'close'))
+                .render();
+            }
 
-                // wait for the panel to close before navigation so
-                // the url stay clean.
-                _this.$el.one('panelclose', function () {
-                    _this._views[subMenu.name].show();
-                });
-
-                _this.$el.panel('close');
+            // wait for the panel to close before navigation so
+            // the url stay clean.
+            this.$el.one('panelclose', function () {
+                _this._views[subMenu.name].show();
             });
+
+            this.$el.panel('close');
         }
     });
 });
