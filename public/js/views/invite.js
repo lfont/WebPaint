@@ -52,13 +52,16 @@ define([
             this.setGuests(this._guests);
 
             this.listenTo(this._user, 'change:nickname', this.setUser);
-            this.setUser(this._user, this._user.get('nickname'));
+            
+            if (this._app.isOnline) {
+                this.setUser(this._user, this._user.get('nickname'));
+            } else {
+                this.setOfflineMessage();
+            }
             
             this.listenTo(this._app, 'online',
                           this.setUser.bind(this, this._user, this._user.get('nickname')));
-            this.listenTo(this._app, 'offline',
-                          this._$inviteInformation.text.bind(this._$inviteInformation,
-                                                             inviteResources.disconnected));
+            this.listenTo(this._app, 'offline', this.setOfflineMessage);
 
             return this;
         },
@@ -107,6 +110,11 @@ define([
         setUser: function (user, nickname) {
             this._$inviteInformation
                 .text(sprintf(inviteResources.connected, nickname));
+        },
+        
+        setOfflineMessage: function () {
+            this._$inviteInformation
+                .text(inviteResources.disconnected);
         }
     });
 });

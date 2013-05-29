@@ -27,6 +27,7 @@ define([
         this.notificationManager = null;
         this.guests = null;
         this.user = null;
+        this.isOnline = navigator.onLine;
             
         this.environment = new EnvironmentModel({
             appName: 'WebPaint',
@@ -207,12 +208,16 @@ define([
                     // network status
                     $(window)
                     .on('online', function () {
+                        this.isOnline = true;
                         _this.trigger('online');
                         applicationCache.update();
                     })
-                    .on('offline', this.trigger.bind(this, 'offline'));
+                    .on('offline', function () {
+                        _this.isOnline = false;
+                        _this.trigger('offline');
+                    });
                     
-                    this.trigger(navigator.onLine ? 'online': 'offline');
+                    this.trigger(this.isOnline ? 'online': 'offline');
                 }, _this)
                 .render();
             mainView.$el.appendTo('body');
