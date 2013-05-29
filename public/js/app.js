@@ -199,9 +199,25 @@ define([
                     
                     this.trigger('ready');
                     
+                    // cache update
+                    applicationCache.addEventListener('updateready',
+                                                      this.trigger.bind(this, 'updateready'));
+                    
+                    if (applicationCache.status === applicationCache.UPDATEREADY) {
+                        this.trigger('updateready');
+                    }
+                    
+                    setInterval(applicationCache.update.bind(applicationCache),
+                                1000 * 60 * 3600); // check for update every hour
+                    
                     // network status
-                    $(window).on('online', this.trigger.bind(this, 'online'))
-                             .on('offline', this.trigger.bind(this, 'offline'));
+                    $(window)
+                    .on('online', function () {
+                        _this.trigger('online');
+                        applicationCache.update();
+                    })
+                    .on('offline', this.trigger.bind(this, 'offline'));
+                    
                     this.trigger(navigator.onLine ? 'online': 'offline');
                 }, _this)
                 .render();
@@ -275,21 +291,6 @@ define([
             deferred.reject(error);
         });
 
-        return deferred.promise();
-    };
-    
-    App.prototype.checkForCacheUpdate = function () {
-        var _this = this,
-            deferred = $.Deferred();
-        
-        applicationCache.addEventListener('updateready', deferred.resolve.bind(_this));
-        
-        if (applicationCache.status === applicationCache.UPDATEREADY) {
-            setTimeout(function () {
-                deferred.resolve.call(_this);
-            }, 0);
-        }
-        
         return deferred.promise();
     };
       

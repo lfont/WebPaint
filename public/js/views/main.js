@@ -73,11 +73,9 @@ define([
                 this._drawerManager.on();
                 
                 this._app.on('online', this.showNetworkStatus.bind(this, true))
-                         .on('offline', this.showNetworkStatus.bind(this, false));
+                         .on('offline', this.showNetworkStatus.bind(this, false))
+                         .on('updateready', this.onCacheUpdate, this);
             }, this);
-            
-            cacheUpdatePromise = this._app.checkForCacheUpdate();
-            cacheUpdatePromise.done(this.onCacheUpdate.bind(this));
         },
         
         render: function () {
