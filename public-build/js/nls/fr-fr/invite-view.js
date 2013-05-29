@@ -1,1 +1,1 @@
-define({title:"Inviter (alpha)",inviteInformation:"Hé %s, tu peux inviter quelqu'un de la liste à dessiner avec toi."});
+define({title:"Inviter (alpha)",connected:"Hé %s, tu peux inviter quelqu'un de la liste à dessiner avec toi.",disconnected:"Tu n'es pas connecté. Réessaye quand WebPaint est en ligne."});

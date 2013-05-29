@@ -10,7 +10,7 @@ define([
 
     return Backbone.Model.extend({
         defaults: {
-            nickname: 'unknown',
+            nickname: null,
         }
     });
 });

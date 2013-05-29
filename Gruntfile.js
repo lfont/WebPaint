@@ -27,8 +27,7 @@ module.exports = function(grunt) {
                             exclude: [
                                 'jquery',
                                 'underscore',
-                                'backbone',
-                                'drawing-client'
+                                'backbone'
                             ]
                         }
                     ],
@@ -55,8 +54,6 @@ module.exports = function(grunt) {
             generate: {
                 options: {
                     basePath: './public-build/',
-                    fallback: ["/js/drawing-client.js /js/drawing-client-offline.js"],
-                    exclude: ["js/drawing-client.js"],
                     preferOnline: false,
                     verbose: true,
                     timestamp: true

@@ -5,19 +5,22 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 define([
     'require',
-    'socket.io',
     'i18n!nls/drawing-client'
-], function (require, socketio, drawingClientResources) {
+], function (require, drawingClientResources) {
     'use strict';
     
     var _        = require('underscore'),
         Backbone = require('backbone'),
         sprintf  = require('sprintf');
         
-    return function (drawerManager, guestCollection,
-                     userModel, notificationManager) {
-        var _this               = this,
-            socket              = socketio.connect('/'),
+    function DrawingClient (app) {
+        var drawerManager = app.drawerManager,
+            guestCollection = app.guests,
+            userModel = app.user,
+            notificationManager = app.notificationManager;
+                     
+        var _this = this,
+            socket,
             inviteCancelationTimeoutId;
 
         _.extend(this, Backbone.Events);
@@ -28,75 +31,77 @@ define([
             return inviteCancelationTimeoutId !== notDefined &&
                    inviteCancelationTimeoutId !== null;
         }
-
-        socket.on('nameResult', function (result) {
-            userModel.set('nickname', result.name);
-
-            drawerManager.addDrawnHandler(function (shape) {
+        
+        function onLocalDraw (shape) {
+            if (socket) {
                 socket.emit('draw', shape);
-            });
-
-            socket.on('draw', function (data) {
-                drawerManager.draw(data.shape);
-            });
-
-            socket.on('inviteRequest', function (request) {
-                if (hasPendingRequest()) {
+            }
+        }
+        
+        function onRemoteDraw (data) {
+            drawerManager.draw(data.shape);
+        }
+        
+        function onInviteRequest (request) {
+            if (hasPendingRequest()) {
+                socket.emit('inviteGuestResponse', {
+                    to: request.from,
+                    status: 'busy'
+                });
+            } else {
+                _this.trigger('inviteRequest', request.from);
+                inviteCancelationTimeoutId = setTimeout(function () {
+                    inviteCancelationTimeoutId = null;
+                    _this.trigger('inviteRequestCanceled', request.from);
                     socket.emit('inviteGuestResponse', {
                         to: request.from,
                         status: 'busy'
                     });
-                } else {
-                    _this.trigger('inviteRequest', request.from);
-                    inviteCancelationTimeoutId = setTimeout(function () {
-                        inviteCancelationTimeoutId = null;
-                        _this.trigger('inviteRequestCanceled', request.from);
-                        socket.emit('inviteGuestResponse', {
-                            to: request.from,
-                            status: 'busy'
-                        });
-                    }, 15000);
+                }, 15000);
+            }
+        }
+        
+        function onInviteResponse (response) {
+            var message;
+            
+            switch (response.status) {
+            case 'accepted':
+                message = drawingClientResources.inviteAccepted;
+                break;
+            case 'rejected':
+                message = drawingClientResources.inviteRejected;
+                break;
+            default:
+                message = drawingClientResources.inviteBusy;
+            }
+
+            _this.trigger('inviteResponse', response.from, response.status);
+            notificationManager.push(sprintf(message, response.from));
+        }
+        
+        function onNewGuests (nicknames) {
+            var myNickname = userModel.get('nickname'),
+                others = [];
+    
+            nicknames.forEach(function (nickname) {
+                if (nickname !== myNickname) {
+                    others.push({ nickname: nickname });
                 }
             });
-
-            socket.on('inviteResponse', function (response) {
-                var message;
-                
-                switch (response.status) {
-                case 'accepted':
-                    message = drawingClientResources.inviteAccepted;
-                    break;
-                case 'rejected':
-                    message = drawingClientResources.inviteRejected;
-                    break;
-                default:
-                    message = drawingClientResources.inviteBusy;
-                }
-
-                _this.trigger('inviteResponse', response.from, response.status);
-                notificationManager.push(sprintf(message, response.from));
-            });
-
-            socket.on('guests', function (nicknames) {
-                var myNickname = userModel.get('nickname'),
-                    others = [];
-
-                nicknames.forEach(function (nickname) {
-                    if (nickname !== myNickname) {
-                        others.push({ nickname: nickname });
-                    }
-                });
-
-                guestCollection.reset(others);
-            });
-
-            socket.on('message', function (message) {
-                _this.trigger('message', message.text);
-                notificationManager.push(message.text);
-            });
-        });
+    
+            guestCollection.reset(others);
+        }
+        
+        function onMessage (message) {
+            _this.trigger('message', message.text);
+            notificationManager.push(message.text);
+        }
 
         this.sendInvite = function (nickname) {
+            if (!socket) {
+                return;
+            }
+            
             _this.trigger('inviteGuestRequest', nickname);
             notificationManager.push(sprintf(drawingClientResources.invitePending,
                                              nickname));
@@ -104,6 +109,10 @@ define([
         };
 
         this.sendResponse = function (nickname, accepted) {
+            if (!socket) {
+                return;
+            }
+            
             clearTimeout(inviteCancelationTimeoutId);
             inviteCancelationTimeoutId = null;
             socket.emit('inviteGuestResponse', {
@@ -111,5 +120,36 @@ define([
                 status: accepted ? 'accepted' : 'rejected'
             });
         };
-    };
+        
+        // start
+        drawerManager.addDrawnHandler(onLocalDraw);
+        
+        app
+        .on('online', function () {
+            if (socket) {
+                return;
+            }
+            
+            require([
+                'socket.io'
+            ], function (socketio) {
+                socket = socketio.connect('/');
+                
+                socket.on('nameResult', function (result) {
+                    userModel.set('nickname', result.name);
+                    
+                    socket.on('draw', onRemoteDraw);
+                    socket.on('inviteRequest', onInviteRequest);
+                    socket.on('inviteResponse', onInviteResponse);
+                    socket.on('guests', onNewGuests);
+                    socket.on('message', onMessage);
+                });
+            });
+        })
+        .on('offline', function () {
+            guestCollection.reset();
+        });
+    }
+    
+    return DrawingClient;
 });

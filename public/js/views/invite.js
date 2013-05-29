@@ -53,6 +53,12 @@ define([
 
             this.listenTo(this._user, 'change:nickname', this.setUser);
             this.setUser(this._user, this._user.get('nickname'));
+            
+            this.listenTo(this._app, 'online',
+                          this.setUser.bind(this, this._user, this._user.get('nickname')));
+            this.listenTo(this._app, 'offline',
+                          this._$inviteInformation.text.bind(this._$inviteInformation,
+                                                             inviteResources.disconnected));
 
             return this;
         },
@@ -100,7 +106,7 @@ define([
 
         setUser: function (user, nickname) {
             this._$inviteInformation
-                .text(sprintf(inviteResources.inviteInformation, nickname));
+                .text(sprintf(inviteResources.connected, nickname));
         }
     });
 });

@@ -30,7 +30,7 @@ define([
             
         this.environment = new EnvironmentModel({
             appName: 'WebPaint',
-            appVersion: '0.7.9',
+            appVersion: '0.7.10',
             screenSize: $(window).height() <= 720 ||
                         $(window).width() <= 480 ?
                         'small' :
@@ -189,14 +189,8 @@ define([
 
             mainView = new MainView({ app: _this })
                 .on('canvasReady', function ($canvas) {
-                    this.drawerManager = new DrawerManager($canvas,
-                                                           this.environment);
-
-                    this.drawingClient = new DrawingClient(this.drawerManager,
-                                                           this.guests,
-                                                           this.user,
-                                                           this.notificationManager);
-                    
+                    this.drawerManager = new DrawerManager($canvas, this.environment);
+                    this.drawingClient = new DrawingClient(this);
                     this.trigger('ready');
                     
                     // cache update
