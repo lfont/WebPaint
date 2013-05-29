@@ -71,6 +71,9 @@ define([
                 
                 this._drawerManager = this._app.drawerManager;
                 this._drawerManager.on();
+                
+                this._app.on('online', this.showNetworkStatus.bind(this, true))
+                         .on('offline', this.showNetworkStatus.bind(this, false));
             }, this);
             
             cacheUpdatePromise = this._app.checkForCacheUpdate();
@@ -116,11 +119,6 @@ define([
                             .$el
                             .appendTo(this.$el.find('.social-widgets-anchor'));
             }
-            
-            // network status
-            $(window).on('online', this.showNetworkStatus.bind(this, true))
-                     .on('offline', this.showNetworkStatus.bind(this, false));
-            this.showNetworkStatus(navigator.onLine);
 
             return this;
         },

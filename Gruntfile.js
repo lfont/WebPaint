@@ -13,6 +13,7 @@ module.exports = function(grunt) {
                     keepBuildDir: false,
                     mainConfigFile: './public/js/main.js',
                     locale: 'en-us',
+                    optimize: 'uglify2',
                     removeCombined: true,
                     paths: {
                         'socket.io': 'empty:'

@@ -198,12 +198,17 @@ define([
                                                            this.notificationManager);
                     
                     this.trigger('ready');
+                    
+                    // network status
+                    $(window).on('online', this.trigger.bind(this, 'online'))
+                             .on('offline', this.trigger.bind(this, 'offline'));
+                    this.trigger(navigator.onLine ? 'online': 'offline');
                 }, _this)
                 .render();
             mainView.$el.appendTo('body');
             mainView.show();
         });
-    };$
+    };
 
     App.prototype.installOrigin = function () {
         return 'http://webpaint.lfont.me';
