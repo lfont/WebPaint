@@ -121,6 +121,12 @@ define([
             });
         };
         
+        this.disconnect = function () {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+        
         // start
         drawerManager.addDrawnHandler(onLocalDraw);
         

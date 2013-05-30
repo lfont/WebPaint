@@ -86,6 +86,7 @@ require([
         });
 
         app.environment.save();
+        app.drawingClient.disconnect();
     });
 
     WebPaint.app = app;
