@@ -15,7 +15,8 @@
   "installs_allowed_from": [
     "https://marketplace.firefox.com",
     "https://marketplace-dev.allizom.org",
-    "http://webpaint.lfont.me"
+    "http://webpaint.lfont.me",
+    "http://localhost:3000"
   ],
   "orientation": [ "portrait" ],
   "permissions": {

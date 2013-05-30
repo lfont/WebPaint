@@ -15,6 +15,8 @@ module.exports = function(grunt) {
                     locale: 'en-us',
                     optimize: 'uglify2',
                     removeCombined: true,
+                    inlineJSON: false,
+                    preserveLicenseComments: false,
                     paths: {
                         'socket.io': 'empty:'
                     },
@@ -27,7 +29,8 @@ module.exports = function(grunt) {
                             exclude: [
                                 'jquery',
                                 'underscore',
-                                'backbone'
+                                'backbone',
+                                'text'
                             ]
                         }
                     ],
@@ -46,9 +49,10 @@ module.exports = function(grunt) {
             }
         },
         
-        clean: [
-            './public-build/templates'
-        ],
+        clean: {
+            templates: [ './public-build/templates' ],
+            config: [ './public-build/config.json' ]
+        },
         
         manifest: {
             generate: {
@@ -61,6 +65,7 @@ module.exports = function(grunt) {
                 src: [
                     '**/*.html',
                     '**/*.js',
+                    '**/*.json',
                     '**/*.css',
                     '**/*.png',
                     '**/*.gif'
@@ -77,6 +82,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-manifest');
 
     // Default task(s).
-    grunt.registerTask('default', [ 'requirejs', 'clean', 'manifest' ]);
+    grunt.registerTask('default', [ 'requirejs', 'clean:templates', 'manifest', 'clean:config' ]);
 
 };

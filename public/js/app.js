@@ -6,8 +6,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 define([
     'require',
     'models/environment',
+    'json!/config.json',
     'sprintf'
-], function (require, EnvironmentModel) {
+], function (require, EnvironmentModel, config) {
     'use strict';
     
     var $          = require('jquery'),
@@ -31,7 +32,7 @@ define([
             
         this.environment = new EnvironmentModel({
             appName: 'WebPaint',
-            appVersion: '0.7.10',
+            appVersion: config.version,
             screenSize: $(window).height() <= 720 ||
                         $(window).width() <= 480 ?
                         'small' :
@@ -79,7 +80,7 @@ define([
 
         this.install = function () {
             var _this = this,
-                manifestUrl = this.installOrigin() + '/manifest.webapp',
+                manifestUrl = config.installOrigin + '/manifest.webapp',
                 deferred = $.Deferred(),
                 request = navigator.mozApps.install(manifestUrl);
 
@@ -225,10 +226,6 @@ define([
         });
     };
 
-    App.prototype.installOrigin = function () {
-        return 'http://webpaint.lfont.me';
-    };
-
     App.prototype.isInstalled = function () {
         var deferred = $.Deferred(),
             request = navigator.mozApps.getInstalled();
@@ -259,7 +256,7 @@ define([
 
         promise.done(function (mozApp) {
             deferred.resolve(mozApp &&
-                             mozApp.installOrigin === _this.installOrigin());
+                             mozApp.installOrigin === config.installOrigin);
         });
 
         promise.fail(function (error) {

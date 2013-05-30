@@ -5,7 +5,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 
 var qs = require('querystring');
 
-exports.save = function (req, res) {
+exports.download = function (req, res) {
     var data = '';
 
     req.on('data', function (chunk) {

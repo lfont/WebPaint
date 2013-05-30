@@ -13,6 +13,9 @@ js/lib/underscore-1.4.4.js
 js/lib/jquery-1.9.1.js
 js/lib/backbone-1.0.0.js
 js/models/environment.js
+js/lib/requirejs/text-2.0.1.js
+js/lib/requirejs/json-0.3.1.js
+json!/config.json
 js/lib/sprintf-0.6.js
 js/app.js
 js/main.js
@@ -21,7 +24,7 @@ js/boot.js
 ----------------
 js/lib/jquery.mobile/jquery.mobile-1.3.1.js
 js/lib/jquery.mobile/jquery.mobile.toast.js
-js/lib/requirejs/i18n.js
+js/lib/requirejs/i18n-2.0.1.js
 js/nls/color-model.js
 i18n!nls/color-model
 js/models/color.js
@@ -43,7 +46,6 @@ js/drawer-manager.js
 js/nls/drawing-client.js
 i18n!nls/drawing-client
 js/drawing-client.js
-js/lib/requirejs/text.js
 text!templates/widgets/message-tooltip.html
 js/views/widgets/message-tooltip.js
 js/notification-manager.js

@@ -6,7 +6,7 @@ by triggering the "create" event (inside a popup). -->
 </div>
 
 <div data-role="content" class="ui-corner-bottom ui-content">
-    <form method="post" action="/service/saveImage" data-ajax="false">
+    <form method="post" action="/api/image/download" data-ajax="false">
         <p>
             <input type="text" id="name" name="name" class="name"
                 placeholder="<%= r.defaultFileName %>" />

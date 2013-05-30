@@ -6,8 +6,9 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
 require.config({
     paths: {
         'templates': '../templates',
-        'i18n': 'lib/requirejs/i18n',
-        'text': 'lib/requirejs/text',
+        'i18n': 'lib/requirejs/i18n-2.0.1',
+        'text': 'lib/requirejs/text-2.0.1',
+        'json': 'lib/requirejs/json-0.3.1',
         'jquery': 'lib/jquery-1.9.1',
         'underscore': 'lib/underscore-1.4.4',
         'backbone': 'lib/backbone-1.0.0',
