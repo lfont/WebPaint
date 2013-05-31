@@ -10,6 +10,7 @@ var package       = require('./package.json'),
 
 var app = module.exports = express.createServer(),
     appConfig = {
+        name: package.name,
         version: package.version
     };
 

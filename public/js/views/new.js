@@ -49,8 +49,9 @@ define([
                 _this.$el.dialog('close');
             })
             .render();
-            this._views.backgroundColorPicker.$el
-                                             .appendTo(this.$el.find('.color-picker-anchor'));
+            this._views.backgroundColorPicker
+                       .$el
+                       .appendTo(this.$el.find('.color-picker-anchor'));
 
             this.$el.page();
 

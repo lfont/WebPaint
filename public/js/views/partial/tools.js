@@ -8,8 +8,7 @@ define([
     'views/partial/color-picker',
     'text!templates/partial/tools.html',
     'i18n!nls/tools-view'
-], function (require, ColorPickerView, toolsTemplate,
-             toolsResources) {
+], function (require, ColorPickerView, toolsTemplate, toolsResources) {
     'use strict';
     
     var _        = require('underscore'),
@@ -17,58 +16,62 @@ define([
         drawing  = require('drawing');
 
     return Backbone.View.extend({
+        attributes: {
+            id: 'tools-view'
+        },
+        
+        className: 'tools-view',
+        
         template: _.template(toolsTemplate),
 
         initialize: function () {
             this._drawerManager = this.options.drawerManager;
+            
+            this._views = {};
         },
         
         render: function () {
-            var _this = this;
-
             this.$el
                 .html(this.template({
                     r: toolsResources,
                     shapes: drawing.shapes
-                }))
-                .attr('id', 'tools-view')
-                .addClass('tools-view');
+                }));
 
-            this.shapeColorPicker = new ColorPickerView({
+            this._views.shapeColorPicker = new ColorPickerView({
                 collection: this.model.colors
             }).render();
 
-            this.shapeColorPicker.$el
-                                 .appendTo(this.$el.find('.color-picker-anchor'));
+            this._views
+                .shapeColorPicker
+                .$el
+                .appendTo(this.$el.find('.color-picker-anchor'));
             
-            this.shapeColorPicker.on('color', function (hex) {
-                _this._drawerManager.color(hex);
-            });
+            this.listenTo(this._views.shapeColorPicker, 'color',
+                          this._drawerManager.color.bind(this._drawerManager));
+            
+            this._$shapes = this.$el.find('.shape');
+            this._$width = this.$el.find('.width');
 
             return this;
         },
 
         refresh: function () {
-            var $shapes = this.$el.find('.shape'),
-                $width = this.$el.find('.width');
+            this._$shapes.filter('[value="' + this._drawerManager.shape() + '"]')
+                         .attr('checked', true)
+                         .end()
+                         .checkboxradio('refresh');
 
-            $shapes.filter('[value="' + this._drawerManager.shape() + '"]')
-                   .attr('checked', true)
-                   .end()
-                   .checkboxradio('refresh');
+            this._$width.val(this._drawerManager.lineWidth())
+                        .slider('refresh');
 
-            $width.val(this._drawerManager.lineWidth())
-                  .slider('refresh');
-
-            this.shapeColorPicker.value(this._drawerManager.color());
+            this._views.shapeColorPicker.value(this._drawerManager.color());
         },
 
         store: function () {
-            var $shape = this.$el.find('.shape:checked'),
-                $width = this.$el.find('.width');
+            var $shape = this._$shapes.filter(':checked');
 
             this._drawerManager.shape($shape.val());
-            this._drawerManager.lineWidth(parseInt($width.val(), 10));
+            this._drawerManager.lineWidth(parseInt(this._$width.val(), 10));
         }
     });
 });

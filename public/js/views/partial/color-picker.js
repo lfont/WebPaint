@@ -10,7 +10,8 @@ define([
 ], function (require, colorPickerTemplate, colorPickerResources) {
     'use strict';
 
-    var _        = require('underscore'),
+    var $        = require('jquery'),
+        _        = require('underscore'),
         Backbone = require('backbone');
     
     var SELECTED_CLASS = 'colorpicker-color-selected';
@@ -58,6 +59,14 @@ define([
 
         template: _.template(colorPickerTemplate),
 
+        initialize: function () {
+            this._$customColor = null;
+            this._$predefinedColors = null;
+            this._$red = null;
+            this._$green = null;
+            this._$blue = null;
+        },
+        
         render: function () {
             this.$el
                 .html(this.template({
@@ -65,32 +74,48 @@ define([
                     colors: this.collection.toJSON()
                 }));
 
-            this.$el.trigger('create');
-            this.customColorUpdated();
+            this._$customColor = this.$el.find('.colorpicker-custom-color');
+            this._$predefinedColors = this.$el.find('.colorpicker-predefined-color');
+            
+            this.setCustomColor('#000000');
 
             return this;
         },
+        
+        bindWidgets: function () {
+            if (this._$red) {
+                return;
+            }
+            
+            this._$red = this.$el.find('.colorpicker-red');
+            this._$green = this.$el.find('.colorpicker-green');
+            this._$blue = this.$el.find('.colorpicker-blue');
+        },
+        
+        setCustomColor: function (hex) {
+            this._$customColor.removeClass(SELECTED_CLASS)
+                              .css('background-color', hex)
+                              .attr('data-value', hex);
+        },
 
         customColorUpdated: function () {
-            var $customColor = this.$el.find('.colorpicker-custom-color'),
-                $red = this.$el.find('.colorpicker-red'),
-                $green = this.$el.find('.colorpicker-green'),
-                $blue = this.$el.find('.colorpicker-blue'),
-                hex = hexFromRgb($red.val(), $green.val(), $blue.val());
+            var hex;
+            
+            this.bindWidgets();
+            
+            hex = hexFromRgb(this._$red.val(),
+                             this._$green.val(),
+                             this._$blue.val());
 
-            $customColor.removeClass(SELECTED_CLASS)
-                        .css('background-color', hex)
-                        .attr('data-value', hex);
+            this.setCustomColor(hex);
         },
 
         colorSelected: function (event) {
             var $this = $(event.target),
-                $customColor = this.$el.find('.colorpicker-custom-color'),
-                $predefinedColors = this.$el.find('.colorpicker-predefined-color'),
                 hex = $this.attr('data-value');
 
-            $customColor.removeClass(SELECTED_CLASS);
-            $predefinedColors.removeClass(SELECTED_CLASS);
+            this._$customColor.removeClass(SELECTED_CLASS);
+            this._$predefinedColors.removeClass(SELECTED_CLASS);
             $this.addClass(SELECTED_CLASS);
 
             this.trigger('color', hex);
@@ -103,28 +128,23 @@ define([
         },
 
         value: function (hex) {
-            var $customColor = this.$el.find('.colorpicker-custom-color'),
-                $predefinedColors, $red, $green, $blue, rgb;
+            var rgb;
 
             if (this.hasPredefinedColor(hex)) {
-                $customColor.removeClass(SELECTED_CLASS);
+                this._$customColor.removeClass(SELECTED_CLASS);
 
-                $predefinedColors = this.$el.find('.colorpicker-predefined-color');
-                $predefinedColors.filter('[data-value="' + hex + '"]')
-                                 .addClass(SELECTED_CLASS);
+                this._$predefinedColors.filter('[data-value="' + hex + '"]')
+                                       .addClass(SELECTED_CLASS);
             } else {
+                this.bindWidgets();
+                
                 rgb = rgbFromHex(hex);
 
-                $red = this.$el.find('.colorpicker-red');
-                $red.val(rgb.r).slider('refresh');
+                this._$red.val(rgb.r).slider('refresh');
+                this._$green.val(rgb.g).slider('refresh');
+                this._$blue.val(rgb.b).slider('refresh');
 
-                $green = this.$el.find('.colorpicker-green');
-                $green.val(rgb.g).slider('refresh');
-
-                $blue = this.$el.find('.colorpicker-blue');
-                $blue.val(rgb.b).slider('refresh');
-
-                $customColor.addClass(SELECTED_CLASS);
+                this._$customColor.addClass(SELECTED_CLASS);
             }
 
             return this;

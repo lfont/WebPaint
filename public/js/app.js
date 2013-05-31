@@ -31,7 +31,7 @@ define([
         this.isOnline = navigator.onLine;
             
         this.environment = new EnvironmentModel({
-            appName: 'WebPaint',
+            appName: config.name,
             appVersion: config.version,
             screenSize: $(window).height() <= 720 ||
                         $(window).width() <= 480 ?
@@ -204,7 +204,7 @@ define([
                     }
                     
                     setInterval(applicationCache.update.bind(applicationCache),
-                                1000 * 60 * 3600); // check for update every hour
+                                1000 * 60 * 60); // check for update every hour
                     
                     // network status
                     $(window)
@@ -233,7 +233,7 @@ define([
         request.onsuccess = function () {
             var isInstalled = false;
             $.each(this.result, function(index, app) {
-                if (app.manifest.name === 'WebPaint') {
+                if (app.manifest.name === config.name) {
                     isInstalled = true;
                     return false;
                 }
