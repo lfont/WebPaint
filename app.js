@@ -3,12 +3,11 @@ A simple drawing application for touch devices.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-var package       = require('./package.json'),
-    express       = require('express'),
-    routes        = require('./routes'),
-    drawingServer = require('./lib/drawing-server');
+var package = require('./package.json'),
+    express = require('express'),
+    routes  = require('./routes');
 
-var app = module.exports = express.createServer(),
+var app = module.exports = express(),
     appConfig = {
         name: package.name,
         version: package.version
@@ -16,7 +15,8 @@ var app = module.exports = express.createServer(),
 
 // Configuration
 
-app.configure(function() {
+app.configure(function () {
+    app.use(express.favicon(__dirname + '/public/img/icon-32.png'));
     app.use(app.router);
 });
 
@@ -42,13 +42,9 @@ express.static.mime.define({ 'text/cache-manifest': [ 'appcache' ] });
 app.get('/config.json', function (req, res) {
     appConfig.installOrigin = appConfig.environment === 'production' ?
         'http://webpaint.lfont.me' :
-        'http://localhost:' + app.address().port;
+        'http://localhost:' + app.get('port');
     
     res.send(appConfig);
 });
 
 routes.register(app);
-
-// Socket IO
-
-drawingServer.listen(app);

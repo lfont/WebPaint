@@ -2,13 +2,13 @@
   "name": "WebPaint",
   "description": "A simple drawing application for touch devices.",
   "author": "Loïc Fontaine <ljph.fontaine@gmail.com>",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "repository": {
     "type": "git",
     "url": "git://github.com/lfont/WebPaint.git"
   },
   "dependencies": {
-    "express": "~2.5.11",
+    "express": "~3.2.5",
     "socket.io": "~0.9.10"
   },
   "devDependencies": {
@@ -20,8 +20,8 @@
     "grunt-contrib-clean": "~0.4.1"
   },
   "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
+    "node": "0.10.x",
+    "npm": "1.2.x"
   },
   "scripts": {
     "start": "node server.js"
