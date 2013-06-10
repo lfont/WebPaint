@@ -3,17 +3,17 @@ A simple canvas drawing library.
 Loïc Fontaine - http://github.com/lfont - MIT Licensed
 */
 
-(function (window, document, jQuery, undefined) {
+(function (window, document, undefined) {
     'use strict';
 
     (function (factory) {
         if (typeof(define) === 'function' && define['amd']) {
-            define(['jquery', 'exports'], factory);
+            define(['exports'], factory);
         } else {
-            factory(jQuery, window['drawing'] = {});
+            factory(window['drawing'] = {});
         }
-    }(function ($, exports) {
-        var defaultOptions = {
+    }(function (exports) {
+        var DEFAULT_OPTIONS = {
                 backgroundColor: 'transparent',
                 historicSize: 100
             },
@@ -67,10 +67,43 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                 context.fillRect(0, 0, canvas.width, canvas.height);
                 context.fillStyle = fillStyle;
             },
+            
+            resizeImage = function (background, width, height) {
+                var size;
+                
+                function scale (target, from, to) {
+                    var ratio = from / to;
+                    return target / ratio;
+                }
+                
+                size = {
+                    height: scale(background.height, background.width, width),
+                    width: width
+                };
+                
+                if (size.height > height) {
+                    size.width = scale(size.width, size.height, height);
+                    size.height = height;
+                }
+                
+                return size;
+            },
 
             setBackground = function (context, background) {
-                if (background instanceof window.Image) {
-                    context.drawImage(background, 0, 0);
+                var canvas = context.canvas,
+                    size;
+                
+                if (background instanceof Image) {
+                    if (background.width > canvas.width ||
+                        background.height > canvas.height) {
+                        size = resizeImage(background, canvas.width,
+                                           canvas.height);
+                        context.drawImage(background,
+                                          0, 0,
+                                          size.width, size.height);
+                    } else {
+                        context.drawImage(background, 0, 0);
+                    }
                 } else {
                     setBackgroundFromColor(context, background);
                 }
@@ -130,7 +163,7 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                         var width = current.x - origin.x,
                             height = current.y - origin.y;
                         
-                       context.strokeRect(origin.x, origin.y, width, height);
+                        context.strokeRect(origin.x, origin.y, width, height);
                     };
             
                 return function (context) {
@@ -245,11 +278,25 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
                     return pencil;
                 };
             },
+            
+            extend = function (target, defaults, overrides) {
+                function copy (target, source) {
+                    for (var property in source) {
+                        if (source.hasOwnProperty(property)) {
+                            target[property] = source[property];
+                        }
+                    }
+                    return target;
+                }
+                
+                target = copy(target, defaults);
+                return copy(target, overrides);
+            },
 
             CanvasDrawer = function (canvas, options) {
                 var _this = this,
                     context = canvas.getContext('2d'),
-                    opts = $.extend({}, defaultOptions, options),
+                    opts = extend({}, DEFAULT_OPTIONS, options),
                     snapshots = [],
                     cursor = 0,
                     properties = getContextProperties(context),
@@ -446,4 +493,4 @@ Loïc Fontaine - http://github.com/lfont - MIT Licensed
             pencil: buildPencilDrawer()
         };
     }));
-}(window, document, window['jQuery']));
+}(window, document));

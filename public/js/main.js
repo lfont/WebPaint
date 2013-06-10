@@ -15,7 +15,7 @@ require.config({
         'socket.io': '/socket.io/socket.io.js',
         'jquery.mobile': 'lib/jquery.mobile/jquery.mobile-1.3.1',
         'jquery.mobile.toast': 'lib/jquery.mobile/jquery.mobile.toast',
-        'drawing': 'lib/drawing/drawing-0.8.0',
+        'drawing': 'lib/drawing/drawing-0.9.0',
         'drawing.event': 'lib/drawing/drawing.event.jquery-0.7.0',
         'sprintf': 'lib/sprintf-0.6'
     },
