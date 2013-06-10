@@ -1,5 +1,16 @@
+<div class="colorpicker-predefined-colors">
+    <div>
+        <% _.each(colors, function (color) { %>
+            <div title="<%= color.name %>" class="colorpicker-predefined-color-wrapper">
+                <div style="background-color: <%= color.code %>"
+                    data-value="<%= color.code %>"
+                    class="colorpicker-predefined-color">
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
 <div class="colorpicker-custom-colors">
-    <p><%= r.customColorHint %></p>
     <div class="colorpicker-custom-color"></div>
     <form>
         <div data-role="fieldcontain">
@@ -21,17 +32,4 @@
                 class="colorpicker-blue" />
         </div>
     </form>
-</div>
-<div class="colorpicker-predefined-colors">
-    <p><%= r.predefinedColorHint %></p>
-    <div>
-        <% _.each(colors, function (color) { %>
-            <div title="<%= color.name %>" class="colorpicker-predefined-color-wrapper">
-                <div style="background-color: <%= color.code %>"
-                    data-value="<%= color.code %>"
-                    class="colorpicker-predefined-color">
-                </div>
-            </div>
-        <% }); %>
-    </div>
 </div>
