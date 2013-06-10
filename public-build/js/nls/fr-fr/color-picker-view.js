@@ -1,1 +1,1 @@
-define({customColorHint:"Créez votre propre couleur : ",predefinedColorHint:"Ou choisissez en une prédéfinie : ",redLabel:"R : ",greenLabel:"V : ",blueLabel:"B : "});
+define({redLabel:"R : ",greenLabel:"V : ",blueLabel:"B : "});
