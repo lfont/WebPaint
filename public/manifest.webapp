@@ -9,13 +9,13 @@
   },
   "developer": {
     "name": "Loïc Fontaine",
-    "url": "http://blog.lfont.me"
+    "url": "http://blog.unfamous.org"
   },
   "default_locale": "en",
   "installs_allowed_from": [
     "https://marketplace.firefox.com",
     "https://marketplace-dev.allizom.org",
-    "http://webpaint.lfont.me",
+    "http://webpaint.unfamous.org",
     "http://localhost:3000"
   ],
   "orientation": [ "portrait" ],
