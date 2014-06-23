@@ -23,14 +23,14 @@ app.configure(function () {
 app.configure('development', function () {
     app.use(express.static(__dirname + '/public'));
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-    
+
     appConfig.environment = 'development';
 });
 
 app.configure('production', function () {
     app.use(express.static(__dirname + '/public-build'));
     app.use(express.errorHandler());
-    
+
     appConfig.environment = 'production';
 });
 
@@ -41,9 +41,9 @@ express.static.mime.define({ 'text/cache-manifest': [ 'appcache' ] });
 
 app.get('/config.json', function (req, res) {
     appConfig.installOrigin = appConfig.environment === 'production' ?
-        'http://webpaint.lfont.me' :
+        'http://webpaint.unfamous.org' :
         'http://localhost:' + app.get('port');
-    
+
     res.send(appConfig);
 });
 
